@@ -362,3 +362,117 @@ kekayaan RT), `data/snapshot.json`, dan struktur spreadsheet `.xlsx`.
 menyentuh Kas Utama.
 
 **Status:** confirmed
+
+---
+
+## CP-15 · Build · 2026-07-31
+
+**Decision:** Endpoint gviz di `sheets.js` (`muatViaGviz`) selalu memakai
+parameter `&headers=1` secara eksplisit, memaksa Google membaca **tepat
+satu** baris header — tidak lagi mengandalkan tebakan otomatis Google.
+
+**Why:** Setelah lembar `Pengaturan` diisi data nyata (13 baris Kunci/Nilai),
+halaman Tentang menampilkan kontak bendahara kosong padahal datanya ada di
+spreadsheet. Ditelusuri langsung lewat `curl` ke endpoint gviz: responsnya
+menyertakan `"parsedNumHeaders":11` dan HANYA 3 baris data — 10 baris
+pertama (termasuk seluruh info bendahara) tertelan ke dalam satu string
+label kolom raksasa.
+
+Penyebabnya: gviz mencoba menebak sendiri jumlah baris header dengan mencari
+titik di mana tipe data tiap kolom "mulai konsisten". Untuk lembar tabel
+biasa (Warga, Iuran, dst.) ini aman karena satu kolom selalu teks dan kolom
+lain selalu angka sejak baris pertama. Tapi `Pengaturan` sengaja berbentuk
+Kunci/Nilai (CP-09) — kolom Nilai mencampur teks (nama, alamat) dan angka
+(nomor rekening, saldo awal). Begitu gviz menemukan beberapa baris angka
+berturut-turut di tengah, ia menyimpulkan "baris-baris sebelum ini pasti
+header" dan menelan belasan baris data sungguhan.
+
+Diverifikasi lewat `curl` bahwa menambah `&headers=1` ke URL memaksa gviz
+kembali ke 1 baris header dan mengembalikan seluruh 13 baris dengan benar.
+
+**Affects:** `assets/js/sheets.js` (`muatViaGviz`). Berlaku untuk semua
+lembar, bukan cuma Pengaturan — perbaikan ini sekaligus mencegah kelas bug
+yang sama muncul di lembar mana pun nantinya yang mencampur tipe data.
+
+**Reversible:** ya — satu parameter URL.
+
+**Status:** confirmed
+
+---
+
+## CP-16 · Build · 2026-07-31
+
+**Decision:** Situs disambungkan ke Google Spreadsheet nyata milik RT
+(`assets/js/config.js` → `SHEET_ID` diisi), dan lembar Warga/Iuran/IPAL/
+Lelayu diisi data 91 kepala keluarga sungguhan (sumber: berkas `AAA.xlsx`
+dari bendahara). Ditambah dukungan **Pagu Lelayu** yang sebelumnya tidak
+ada di desain situs.
+
+**Why:** Data nyata mengungkap bahwa RT ini punya nominal standar Rp5.000
+untuk dana Lelayu (`pagu` sheet di AAA.xlsx), berbeda dari asumsi awal
+("sukarela tanpa pagu sama sekali", diwarisi dari aplikasi referensi lama
+yang memang tidak menyimpan pagu lelayu per warga). Kolom `Pagu Lelayu`
+ditambahkan ke lembar Warga (opsional — `null` jika bendahara tidak
+mengisinya, situs kembali menampilkan "Bebas" seperti semula). Framing
+tetap dijaga sebagai "nominal standar", BUKAN "target wajib" — beda dari
+Iuran/IPAL — supaya sifat sukarelanya tidak hilang hanya karena sekarang
+ada angkanya.
+
+Data mentah AAA.xlsx berformat status LUNAS/BELUM per bulan (checkbox),
+bukan nominal. Nominal di lembar Iuran/IPAL/Lelayu situs diturunkan dari
+pagu tetap tiap warga: dicentang = lunas sesuai pagu, kosong = 0. Satu
+koreksi data dilakukan saat validasi silang lintas-lembar: nama
+"HASTO 10-A (KOST)" tertulis "HASTO 10FALSEA (KOST)" di lembar `iuran`
+milik AAA.xlsx (dugaan replace otomatis "-"→"FALSE" yang keliru saat
+diedit) — dikoreksi supaya cocok dengan 3 lembar lain.
+
+**Affects:** `assets/js/store.js` (`paguLelayu`, `paguLelayuTotal`,
+`adaPaguLelayu`, `targetLelayu`), `assets/js/pages/iuran.js` (kartu progres
+& kolom Pagu di matrik Lelayu), struktur `.xlsx` (kolom `Pagu Lelayu` baru
+di lembar Warga).
+
+**Belum diputuskan / perlu konfirmasi manusia:**
+- Tahun buku (`Pengaturan.tahun_aktif`) belum dikonfirmasi cocok dengan
+  data nyata ini — AAA.xlsx tidak menyebutkan tahunnya.
+- `Pengaturan`, `Transaksi`, `Kegiatan`, `BankBPD`, `DanaOperasional` masih
+  berisi data contoh/placeholder, belum data nyata.
+- **Konfirmasi publikasi belum diminta ulang di sesi ini** — `SHEET_ID`
+  sudah terisi secara lokal (belum di-commit/push) sehingga 91 nama warga
+  beserta status setoran mereka BELUM tampil di situs publik. Meng-commit
+  dan push perubahan ini adalah langkah yang membuatnya publik secara
+  permanen (ter-indeks mesin pencari, dsb.) — perlu persetujuan eksplisit
+  sebelum dilakukan, terlepas dari langkah penyambungan SHEET_ID yang
+  sudah terjadi di sesi sebelumnya.
+
+**Reversible:** SHEET_ID dan kode — ya. Data nyata yang sudah pernah
+ter-publish ke internet — tidak sepenuhnya (cache mesin pencari, arsip).
+
+**Status:** assumed (koneksi SHEET_ID) / confirmed (perbaikan kode)
+
+---
+
+## CP-17 · Build · 2026-07-31
+
+**Decision:** Tambalan hardcode nama/WA/alamat bendahara di
+`assets/js/pages/beranda.js` (commit `8ceae7e`, dibuat langsung lewat
+editor web GitHub) **dikembalikan** ke fallback generik ("Bendahara RT" /
+kosong), sekarang setelah akar masalahnya (CP-15, parameter `headers=1`)
+diperbaiki.
+
+**Why:** Repo ini punya dua commit yang dibuat langsung di GitHub
+(`260f8b8` mengisi `SHEET_ID`, `8ceae7e` menambal beranda dengan
+hardcode) sebagai respons cepat terhadap bug kontak bendahara kosong —
+namun hanya menambal Beranda, bukan halaman Tentang (yang tetap kosong,
+sesuai tangkapan layar yang dilaporkan). Hardcode data pribadi langsung di
+kode sumber itu sendiri berbahaya: begitu bendahara berganti orang atau
+nomor, siapa pun yang mengedit `Pengaturan` di spreadsheet akan bingung
+kenapa Beranda tidak ikut berubah — dua sumber kebenaran untuk data yang
+sama. Dengan CP-15 memperbaiki akar masalahnya, seluruh halaman (termasuk
+Tentang) sekarang membaca `Pengaturan` dengan benar, jadi tambalan ini
+tidak diperlukan lagi.
+
+**Affects:** `assets/js/pages/beranda.js`.
+
+**Reversible:** ya.
+
+**Status:** confirmed

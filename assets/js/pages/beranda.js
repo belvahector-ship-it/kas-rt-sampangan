@@ -36,9 +36,9 @@ function isiAngka(stat) {
 }
 
 function isiKontak(pengaturan) {
-  const nama = pengaturan.bendahara_nama || 'Belva Fahrozi Chiangmaitri';
-  const wa = pengaturan.bendahara_wa || '085163210987';
-  const alamat = pengaturan.bendahara_alamat || 'Jalan Menoreh Timur Nomor 23B Wisma Kyra';
+  const nama = pengaturan.bendahara_nama || 'Bendahara RT';
+  const wa = pengaturan.bendahara_wa || '';
+  const alamat = pengaturan.bendahara_alamat || '—';
   const waLink = wa ? `https://wa.me/${nomorWA(wa)}` : '#';
 
   document.querySelectorAll('[data-isi-bendahara="nama"]').forEach((el) => { el.textContent = nama; });

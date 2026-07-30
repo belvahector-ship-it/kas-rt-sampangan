@@ -40,12 +40,26 @@ function renderProgres() {
     },
     {
       pos: 'lelayu', nama: 'Dana Lelayu', warna: 'var(--pos-lelayu)',
-      terkumpul: stat.setoranLelayu, target: null,
+      terkumpul: stat.setoranLelayu,
+      /* Lelayu tetap sukarela — ini BUKAN kewajiban seperti Iuran/IPAL.
+         "Target" di sini hanya ada kalau bendahara mengisi nominal standar
+         di lembar Warga; kalaupun ada, dilabeli beda supaya tidak terbaca
+         sebagai tagihan wajib. */
+      target: stat.adaPaguLelayu ? stat.targetLelayu : null,
+      sukarela: true,
     },
   ];
 
   wadah.innerHTML = kartu.map((k) => {
     const persen = k.target ? Math.min(100, Math.round((k.terkumpul / Math.max(k.target, 1)) * 100)) : null;
+    let footer;
+    if (k.target) {
+      footer = k.sukarela
+        ? `${persen}% dari nominal standar ${amankan(rupiah(k.target))} (bulan berjalan) &mdash; tetap sukarela, bukan kewajiban.`
+        : `${persen}% dari target ${amankan(rupiah(k.target))} (bulan berjalan)`;
+    } else {
+      footer = 'Sifatnya sukarela &mdash; tanpa nominal standar yang ditetapkan.';
+    }
     return `
       <div class="stat reveal">
         <div class="stat__head">
@@ -53,10 +67,8 @@ function renderProgres() {
           <span class="stat__label">${amankan(k.nama)}</span>
         </div>
         <p class="stat__value num" style="color:${k.warna}">${amankan(rupiah(k.terkumpul))}</p>
-        ${k.target ? `
-          <div class="progress mt-3"><div class="progress__bar" style="--bar-color:${k.warna};width:${persen}%"></div></div>
-          <p class="stat__foot mt-3">${persen}% dari target ${amankan(rupiah(k.target))} (bulan berjalan)</p>
-        ` : `<p class="stat__foot mt-3">Sifatnya sukarela &mdash; tanpa target pagu bulanan.</p>`}
+        ${k.target ? `<div class="progress mt-3"><div class="progress__bar" style="--bar-color:${k.warna};width:${persen}%"></div></div>` : ''}
+        <p class="stat__foot mt-3">${footer}</p>
       </div>`;
   }).join('');
 }
@@ -66,7 +78,7 @@ function renderProgres() {
 function paguUntuk(w, pos) {
   if (pos === 'iuran') return w.paguIuran;
   if (pos === 'ipal') return w.paguIpal;
-  return null; /* lelayu: sukarela, tanpa pagu */
+  return w.paguLelayu; /* null jika bendahara tidak mengisi nominal standar */
 }
 
 function renderMatrik() {

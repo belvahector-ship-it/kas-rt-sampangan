@@ -134,7 +134,19 @@ function keObjek(baris) {
 async function muatViaGviz(namaLembar) {
   const url =
     `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq` +
-    `?tqx=out:json&sheet=${encodeURIComponent(namaLembar)}`;
+    `?tqx=out:json&sheet=${encodeURIComponent(namaLembar)}&headers=1`;
+  /* `&headers=1` MEMAKSA gviz membaca tepat satu baris header.
+     Tanpa ini, gviz mencoba menebak sendiri jumlah "baris header" dengan
+     mencari titik di mana tipe data tiap kolom mulai konsisten. Itu
+     bekerja untuk lembar tabel biasa (Warga, Iuran, dst — satu kolom
+     selalu teks, kolom lain selalu angka), tapi RUSAK untuk lembar
+     Kunci/Nilai seperti Pengaturan: kolom Nilai sengaja mencampur teks
+     dan angka (nama RT, lalu nomor telepon, lalu saldo). Begitu gviz
+     menemukan beberapa baris angka berturut-turut, ia menganggap SEMUA
+     baris sebelumnya adalah header — menelan belasan baris data
+     (termasuk kontak bendahara) ke dalam satu label kolom yang tidak
+     terbaca kode ini sama sekali. Ditemukan lewat pengujian nyata: lihat
+     DECISIONS.md CP-15. */
   return keObjek(uraikanGviz(await ambilDenganBatasWaktu(url, CONFIG.TIMEOUT_MS)));
 }
 

@@ -169,6 +169,7 @@ function normalkan(lembar, meta) {
     const kNama = kunciKolom.find((k) => /^nama|warga|kepala/i.test(k)) || kunciKolom[0];
     const kIuran = kunciKolom.find((k) => /pagu.*iuran|iuran.*pagu/i.test(k));
     const kIpal = kunciKolom.find((k) => /pagu.*ipal|ipal.*pagu/i.test(k));
+    const kLelayu = kunciKolom.find((k) => /pagu.*lelayu|lelayu.*pagu/i.test(k));
 
     const nama = keTeks(r[kNama]);
     if (!nama) return;
@@ -179,6 +180,11 @@ function normalkan(lembar, meta) {
       nama,
       paguIuran: kIuran ? keAngka(r[kIuran]) : 0,
       paguIpal: kIpal ? keAngka(r[kIpal]) : 0,
+      /* Pagu Lelayu opsional — banyak RT tidak mencantumkannya sama sekali
+         karena sifatnya sukarela murni. Kolom absen ≠ 0 rupiah di sini;
+         null berarti "tidak ada nominal standar", dipakai UI untuk
+         menampilkan "Bebas" alih-alih "Rp 0". */
+      paguLelayu: kLelayu ? keAngka(r[kLelayu]) : null,
       iuran: mIuran.get(kunci)?.bulan || new Array(12).fill(0),
       ipal: mIpal.get(kunci)?.bulan || new Array(12).fill(0),
       lelayu: mLelayu.get(kunci)?.bulan || new Array(12).fill(0),
@@ -197,6 +203,7 @@ function normalkan(lembar, meta) {
         nama: v.nama,
         paguIuran: 0,
         paguIpal: 0,
+        paguLelayu: null,
         iuran: mIuran.get(kunci)?.bulan || new Array(12).fill(0),
         ipal: mIpal.get(kunci)?.bulan || new Array(12).fill(0),
         lelayu: mLelayu.get(kunci)?.bulan || new Array(12).fill(0),
@@ -348,6 +355,11 @@ export function hitungStatistik(data) {
 
   const paguIuranTotal = jml(warga.map((w) => w.paguIuran));
   const paguIpalTotal = jml(warga.map((w) => w.paguIpal));
+  /* Lelayu tetap sukarela — pagu di sini adalah NOMINAL STANDAR saat warga
+     menyumbang, bukan kewajiban. Hanya dijumlah kalau memang diisi bendahara
+     di lembar Warga (kolom Pagu Lelayu opsional). */
+  const adaPaguLelayu = warga.some((w) => w.paguLelayu != null);
+  const paguLelayuTotal = adaPaguLelayu ? jml(warga.map((w) => w.paguLelayu || 0)) : 0;
 
   /* Rekapitulasi per bulan untuk grafik tren */
   const perBulan = Array.from({ length: 12 }, (_, i) => {
@@ -407,9 +419,12 @@ export function hitungStatistik(data) {
     keluarLelayu: keluarPos.lelayu,
     paguIuranTotal,
     paguIpalTotal,
+    paguLelayuTotal,
+    adaPaguLelayu,
     komitmenBulanan: paguIuranTotal + paguIpalTotal,
     targetIuran: paguIuranTotal * bulanBerjalan,
     targetIpal: paguIpalTotal * bulanBerjalan,
+    targetLelayu: paguLelayuTotal * bulanBerjalan,
     bulanBerjalan,
     perBulan,
     perKategori: Object.values(perKategori).sort((a, b) => b.total - a.total),
