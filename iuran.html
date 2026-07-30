@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="id" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-pola="Iuran Warga — {rt}">Iuran Warga — RT 01/RW 04 Sampangan</title>
+<meta name="description" content="Cek status setoran iuran wajib, IPAL, dan dana lelayu tiap warga RT 01/RW 04 Sampangan per bulan.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%231B6B4C'/%3E%3Ctext x='12' y='16.5' font-family='Georgia,serif' font-size='13' font-weight='700' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/motion.css">
+<link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body>
+<a class="skip-link" href="#konten">Langsung ke konten</a>
+
+<div class="bg-canvas" aria-hidden="true">
+  <div class="bg-canvas__aurora bg-canvas__aurora--a"></div>
+  <div class="bg-canvas__aurora bg-canvas__aurora--b"></div>
+  <div class="bg-canvas__grid"></div>
+  <div class="bg-canvas__grain"></div>
+</div>
+
+<header class="site-header">
+  <div class="container site-header__row">
+    <a href="index.html" class="brand">
+      <span class="brand__mark" aria-hidden="true">RT</span>
+      <span class="brand__text">
+        <span class="brand__name" data-isi="nama_rt">RT 01 / RW 04 Sampangan</span>
+        <span class="brand__sub">Portal Transparansi Kas</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-utama" aria-label="Buka menu navigasi">
+      <svg class="nav-toggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <svg class="nav-toggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <nav class="nav" id="nav-utama" aria-label="Navigasi utama">
+      <a class="nav__link" href="index.html">Beranda</a>
+      <a class="nav__link" href="laporan.html">Laporan Kas</a>
+      <a class="nav__link" href="iuran.html">Iuran Warga</a>
+      <a class="nav__link" href="kegiatan.html">Kegiatan</a>
+      <a class="nav__link" href="tentang.html">Tentang</a>
+    </nav>
+  </div>
+</header>
+
+<main class="site-main" id="konten">
+
+  <div class="page-head">
+    <div class="container">
+      <p class="eyebrow eyebrow--accent reveal">Cek Status Setoran</p>
+      <h1 class="page-head__title reveal">Iuran Warga</h1>
+      <p class="lede reveal">Cari nama Anda, lalu periksa dua belas kotak bulan. Tanda centang berarti setoran bulan itu sudah tercatat oleh bendahara.</p>
+    </div>
+  </div>
+
+  <div class="container mt-5" data-sumber-data></div>
+
+  <section class="container section" style="padding-top:var(--sp-6)">
+    <div class="grid grid-3 reveal-group" id="wadah-progres"></div>
+  </section>
+
+  <section class="container section" style="padding-top:0">
+    <div class="panel reveal">
+      <div class="panel__head">
+        <div>
+          <h2 class="panel__title">Matrik Pembayaran</h2>
+          <p class="panel__desc">Pilih pos dana, lalu cari nama untuk mempersempit daftar.</p>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Pos dana">
+          <button class="tab" role="tab" data-pos="iuran" aria-selected="true">Iuran Wajib</button>
+          <button class="tab" role="tab" data-pos="ipal" aria-selected="false">IPAL Bulanan</button>
+          <button class="tab" role="tab" data-pos="lelayu" aria-selected="false">Dana Lelayu</button>
+        </div>
+      </div>
+
+      <div class="panel__body">
+        <div class="field mb-4" style="max-width:22rem">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="text" id="cari-nama" placeholder="Cari nama warga&hellip;" autocomplete="off">
+          <button class="field__clear" id="btn-bersihkan-cari" type="button" aria-label="Bersihkan pencarian" hidden>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="scroll-hint" id="isyarat-geser">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5 3 12l5 7M16 5l5 7-5 7"/><path d="M7 12h10"/></svg>
+          <span>Geser tabel ke samping untuk melihat semua bulan</span>
+        </div>
+
+        <div class="matrix-wrap" id="wadah-matrik" tabindex="0" role="region" aria-label="Tabel matrik pembayaran, dapat digeser ke samping">
+          <div style="padding:var(--sp-8)"><div class="skeleton" style="height:200px"></div></div>
+        </div>
+
+        <div class="matrix-legend">
+          <span class="matrix-legend__item"><span class="pay pay--paid" style="width:22px;height:22px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5.5 5.5L20 7"/></svg></span> Sudah tercatat</span>
+          <span class="matrix-legend__item"><span class="pay pay--unpaid" style="width:22px;height:22px">&minus;</span> Belum tercatat</span>
+          <span class="ml-auto">Arahkan kursor ke kotak hijau untuk melihat nominal.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <div>
+      <p class="site-footer__title">Portal Transparansi Kas</p>
+      <p class="fs-sm muted measure">Dikelola pengurus <span data-isi="nama_rt">RT 01/RW 04 Sampangan</span> sebagai bentuk pertanggungjawaban terbuka atas pembukuan kas warga.</p>
+    </div>
+    <div>
+      <p class="site-footer__title">Halaman</p>
+      <a class="site-footer__link" href="index.html" style="display:block">Beranda</a>
+      <a class="site-footer__link" href="laporan.html" style="display:block">Laporan Kas</a>
+      <a class="site-footer__link" href="kegiatan.html" style="display:block">Kegiatan</a>
+      <a class="site-footer__link" href="tentang.html" style="display:block">Tentang</a>
+    </div>
+    <div>
+      <p class="site-footer__title">Kontak</p>
+      <a class="site-footer__link" id="footer-wa" href="#" target="_blank" rel="noopener noreferrer" style="display:block">WhatsApp Bendahara</a>
+      <a class="site-footer__link" id="footer-email" href="#" style="display:block">Email Bendahara</a>
+    </div>
+  </div>
+  <div class="container site-footer__bottom">
+    <span>&copy; <span data-isi="tahun_sekarang">2026</span> <span data-isi="nama_rt">RT 01/RW 04 Sampangan</span></span>
+    <span>Data diperbarui otomatis dari catatan bendahara</span>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/pages/iuran.js"></script>
+</body>
+</html>

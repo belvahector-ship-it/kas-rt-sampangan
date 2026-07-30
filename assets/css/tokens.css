@@ -1,0 +1,180 @@
+/* ==========================================================================
+   TOKENS — "Editorial Ledger"
+   Sumber tunggal untuk warna, tipografi, spasi, dan gerak.
+   Ubah di sini, seluruh situs ikut. Jangan menulis hex mentah di berkas lain.
+   Rujukan keputusan: DECISIONS.md CP-05, CP-06, CP-07
+   ========================================================================== */
+
+:root {
+  /* --- Warna: mode terang -------------------------------------------------
+     Kertas hangat, bukan putih steril. Kedalaman dibawa garis rambut,
+     bukan bayangan bertumpuk. */
+  --paper:          #FAFAF8;
+  --surface:        #FFFFFF;
+  --surface-alt:    #F2F1EC;
+  --surface-sunk:   #EFEEE8;
+
+  --ink:            #14161A;
+  --ink-2:          #55585F;
+  --ink-3:          #6E7178;   /* 4.6:1 di atas --paper — masih lulus AA */
+
+  --line:           #E4E2DA;
+  --line-soft:      #EEEDE7;
+  --line-strong:    #14161A;
+
+  /* Aksen tunggal. Hijau tua = uang. Tidak ada warna merek kedua. */
+  --accent:         #1B6B4C;
+  --accent-hover:   #14543C;
+  --accent-soft:    #E8F1EC;
+  --accent-line:    #BFDACB;
+
+  --critical:       #B4423A;
+  --critical-soft:  #F7E9E7;
+  --critical-line:  #EBC9C5;
+
+  /* Tiga pos dana. Warna hanya penguat — status tidak pernah
+     disampaikan lewat warna saja (lihat komponen matrik). */
+  --pos-iuran:      #1B6B4C;
+  --pos-ipal:       #2A5F8F;
+  --pos-lelayu:     #96631F;
+  --pos-iuran-soft: #E8F1EC;
+  --pos-ipal-soft:  #E7EFF7;
+  --pos-lelayu-soft:#F6EEDF;
+
+  --focus:          #1B6B4C;
+  --focus-ring:     0 0 0 3px var(--paper), 0 0 0 5px var(--focus);
+
+  /* Latar bergerak — opasitas sengaja sangat rendah (CP-07).
+     Batas atasnya ditentukan oleh keterbacaan teks, bukan selera. */
+  --aurora-a:       #1B6B4C;
+  --aurora-b:       #96631F;
+  --aurora-opacity: 0.055;
+  --grid-opacity:   0.5;
+  --grain-opacity:  0.035;
+
+  /* --- Tipografi ---------------------------------------------------------- */
+  --font-display: 'Archivo', 'Segoe UI', system-ui, sans-serif;
+  --font-text:    'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-num:     'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  /* Basis 17px, bukan 16px — dinaikkan demi warga sepuh (CP-06).
+     Semua ukuran memakai rem, jadi satu angka ini menggeser seluruh skala. */
+  --fs-2xs:  0.71rem;
+  --fs-xs:   0.77rem;
+  --fs-sm:   0.88rem;
+  --fs-base: 1rem;
+  --fs-md:   1.18rem;
+  --fs-lg:   1.53rem;
+  --fs-xl:   clamp(1.75rem, 1.4rem + 1.6vw, 2.1rem);
+  --fs-2xl:  clamp(2.1rem, 1.5rem + 3vw, 2.9rem);
+  --fs-3xl:  clamp(2.6rem, 1.6rem + 5vw, 4.2rem);
+  --fs-hero: clamp(2.9rem, 1.4rem + 7vw, 5.6rem);
+
+  --lh-tight: 1.08;
+  --lh-snug:  1.3;
+  --lh-base:  1.6;
+  --lh-loose: 1.75;
+
+  --ls-display: -0.03em;
+  --ls-tight:   -0.015em;
+  --ls-label:    0.12em;
+
+  /* --- Spasi (kelipatan 4) ------------------------------------------------ */
+  --sp-1:  0.25rem;
+  --sp-2:  0.5rem;
+  --sp-3:  0.75rem;
+  --sp-4:  1rem;
+  --sp-5:  1.5rem;
+  --sp-6:  2rem;
+  --sp-7:  3rem;
+  --sp-8:  4rem;
+  --sp-9:  6rem;
+  --sp-10: 8rem;
+
+  --section-y: clamp(3rem, 2rem + 5vw, 6rem);
+  --gutter:    clamp(1.15rem, 0.6rem + 2.6vw, 3rem);
+  --measure:   68ch;
+  --container: 1240px;
+  --container-narrow: 860px;
+
+  /* --- Bentuk ------------------------------------------------------------- */
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   16px;
+  --r-xl:   22px;
+  --r-pill: 999px;
+
+  /* Bayangan sengaja nyaris tak terlihat. Elevasi editorial dibawa garis. */
+  --sh-1: 0 1px 2px rgba(20, 22, 26, 0.04);
+  --sh-2: 0 2px 6px rgba(20, 22, 26, 0.05), 0 1px 2px rgba(20, 22, 26, 0.04);
+  --sh-3: 0 12px 32px -12px rgba(20, 22, 26, 0.14);
+
+  /* --- Gerak -------------------------------------------------------------- */
+  --t-fast: 150ms;
+  --t-base: 240ms;
+  --t-slow: 380ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:  cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-mid: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --- Lapisan ------------------------------------------------------------ */
+  --z-bg:     0;
+  --z-base:   1;
+  --z-sticky: 20;
+  --z-header: 40;
+  --z-overlay:60;
+  --z-toast:  80;
+
+  --touch: 44px;
+
+  color-scheme: light dark;
+}
+
+/* --- Mode gelap ----------------------------------------------------------
+   Bukan hasil pembalikan. Pasangan kontras dihitung ulang: aksen dinaikkan
+   luminansinya supaya tetap ≥4.5:1 di atas permukaan gelap. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:          #101113;
+    --surface:        #17191C;
+    --surface-alt:    #1E2124;
+    --surface-sunk:   #131518;
+
+    --ink:            #F2F1EC;
+    --ink-2:          #A8ABB2;
+    --ink-3:          #878B93;
+
+    --line:           #2A2D31;
+    --line-soft:      #212428;
+    --line-strong:    #F2F1EC;
+
+    --accent:         #4FBF8B;
+    --accent-hover:   #6FD2A3;
+    --accent-soft:    #163025;
+    --accent-line:    #27503E;
+
+    --critical:       #E8776D;
+    --critical-soft:  #331C1A;
+    --critical-line:  #55302C;
+
+    --pos-iuran:      #4FBF8B;
+    --pos-ipal:       #6BA3DB;
+    --pos-lelayu:     #D4A34A;
+    --pos-iuran-soft: #163025;
+    --pos-ipal-soft:  #16232F;
+    --pos-lelayu-soft:#2E2517;
+
+    --focus:          #4FBF8B;
+    --focus-ring:     0 0 0 3px var(--paper), 0 0 0 5px var(--focus);
+
+    --aurora-a:       #1B6B4C;
+    --aurora-b:       #96631F;
+    --aurora-opacity: 0.10;
+    --grid-opacity:   0.35;
+    --grain-opacity:  0.022;
+
+    --sh-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --sh-2: 0 2px 8px rgba(0, 0, 0, 0.45);
+    --sh-3: 0 14px 36px -14px rgba(0, 0, 0, 0.7);
+  }
+}

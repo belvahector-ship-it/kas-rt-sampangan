@@ -1,0 +1,1047 @@
+{
+  "catatan": "Data contoh sekaligus cadangan. Dipakai otomatis bila Google Spreadsheet belum tersambung atau sedang tidak dapat dibaca. Lihat DECISIONS.md CP-08.",
+  "diambilPada": "2026-07-30",
+  "lembar": {
+    "Pengaturan": [
+      {
+        "Kunci": "nama_rt",
+        "Nilai": "RT 01 / RW 04 Sampangan"
+      },
+      {
+        "Kunci": "tahun_aktif",
+        "Nilai": "2026"
+      },
+      {
+        "Kunci": "alamat_rt",
+        "Nilai": "Kelurahan Sampangan, Kecamatan Gajahmungkur, Kota Semarang"
+      },
+      {
+        "Kunci": "ketua_nama",
+        "Nilai": "Sunarto"
+      },
+      {
+        "Kunci": "sekretaris_nama",
+        "Nilai": "Wahyu Nugroho"
+      },
+      {
+        "Kunci": "bendahara_nama",
+        "Nilai": "Belva Fahrozi C"
+      },
+      {
+        "Kunci": "bendahara_wa",
+        "Nilai": "085163210987"
+      },
+      {
+        "Kunci": "bendahara_alamat",
+        "Nilai": "Jl. Menoreh Timur No. 23b (Wisma Kyra 23)"
+      },
+      {
+        "Kunci": "bendahara_email",
+        "Nilai": "Belvahector@unw.ac.id"
+      },
+      {
+        "Kunci": "jadwal_setor",
+        "Nilai": "Setiap Minggu pertama, pukul 08.00-12.00 di rumah bendahara"
+      },
+      {
+        "Kunci": "rekening_bank",
+        "Nilai": ""
+      }
+    ],
+    "Warga": [
+      {
+        "Nama": "Budi Santoso",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Siti Wahyuni",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Ahmad Fauzi",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Hendra Wijaya",
+        "Pagu Iuran": 20000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Dewi Lestari",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Rian Prasetyo",
+        "Pagu Iuran": 10000,
+        "Pagu IPAL": 3000
+      },
+      {
+        "Nama": "Sri Handayani",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Joko Purnomo",
+        "Pagu Iuran": 20000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Nur Aisyah",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Bambang Setiawan",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Retno Wulandari",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Agus Salim",
+        "Pagu Iuran": 10000,
+        "Pagu IPAL": 3000
+      },
+      {
+        "Nama": "Tri Mulyani",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Slamet Riyadi",
+        "Pagu Iuran": 20000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Endang Susilowati",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      },
+      {
+        "Nama": "Wahyu Nugroho",
+        "Pagu Iuran": 15000,
+        "Pagu IPAL": 5000
+      }
+    ],
+    "Iuran": [
+      {
+        "Nama": "Budi Santoso",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": 15000,
+        "Jun": 15000,
+        "Jul": 15000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Siti Wahyuni",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": 15000,
+        "Jun": 15000,
+        "Jul": 15000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Ahmad Fauzi",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": 15000,
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Hendra Wijaya",
+        "Jan": 20000,
+        "Feb": 20000,
+        "Mar": 20000,
+        "Apr": 20000,
+        "Mei": 20000,
+        "Jun": 20000,
+        "Jul": 20000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Dewi Lestari",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": 15000,
+        "Jun": 15000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Rian Prasetyo",
+        "Jan": 10000,
+        "Feb": 10000,
+        "Mar": 10000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Sri Handayani",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": 15000,
+        "Jun": 15000,
+        "Jul": 15000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Joko Purnomo",
+        "Jan": 20000,
+        "Feb": 20000,
+        "Mar": 20000,
+        "Apr": 20000,
+        "Mei": 20000,
+        "Jun": 20000,
+        "Jul": 20000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Nur Aisyah",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": "",
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Bambang Setiawan",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": 15000,
+        "Jun": 15000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Retno Wulandari",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": 15000,
+        "Jun": 15000,
+        "Jul": 15000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Agus Salim",
+        "Jan": 10000,
+        "Feb": 10000,
+        "Mar": "",
+        "Apr": "",
+        "Mei": "",
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Tri Mulyani",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": 15000,
+        "Jun": 15000,
+        "Jul": 15000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Slamet Riyadi",
+        "Jan": 20000,
+        "Feb": 20000,
+        "Mar": 20000,
+        "Apr": 20000,
+        "Mei": 20000,
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Endang Susilowati",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": 15000,
+        "Jun": 15000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Wahyu Nugroho",
+        "Jan": 15000,
+        "Feb": 15000,
+        "Mar": 15000,
+        "Apr": 15000,
+        "Mei": 15000,
+        "Jun": 15000,
+        "Jul": 15000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      }
+    ],
+    "IPAL": [
+      {
+        "Nama": "Budi Santoso",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": 5000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Siti Wahyuni",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": 5000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Ahmad Fauzi",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Hendra Wijaya",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": 5000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Dewi Lestari",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Rian Prasetyo",
+        "Jan": 3000,
+        "Feb": 3000,
+        "Mar": 3000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Sri Handayani",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": 5000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Joko Purnomo",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": 5000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Nur Aisyah",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": "",
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Bambang Setiawan",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Retno Wulandari",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": 5000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Agus Salim",
+        "Jan": 3000,
+        "Feb": 3000,
+        "Mar": "",
+        "Apr": "",
+        "Mei": "",
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Tri Mulyani",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": 5000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Slamet Riyadi",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Endang Susilowati",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Wahyu Nugroho",
+        "Jan": 5000,
+        "Feb": 5000,
+        "Mar": 5000,
+        "Apr": 5000,
+        "Mei": 5000,
+        "Jun": 5000,
+        "Jul": 5000,
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      }
+    ],
+    "Lelayu": [
+      {
+        "Nama": "Budi Santoso",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 20000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 20000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Siti Wahyuni",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 50000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 50000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Ahmad Fauzi",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 50000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 50000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Hendra Wijaya",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 20000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 50000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Dewi Lestari",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 20000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Rian Prasetyo",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 25000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 20000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Sri Handayani",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 10000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 25000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Joko Purnomo",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 25000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 25000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Nur Aisyah",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 25000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 20000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Bambang Setiawan",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 10000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": "",
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Retno Wulandari",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 20000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 25000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Agus Salim",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 20000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 50000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Tri Mulyani",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 10000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 25000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Slamet Riyadi",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 20000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 25000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Endang Susilowati",
+        "Jan": "",
+        "Feb": "",
+        "Mar": "",
+        "Apr": "",
+        "Mei": "",
+        "Jun": 50000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      },
+      {
+        "Nama": "Wahyu Nugroho",
+        "Jan": "",
+        "Feb": "",
+        "Mar": 25000,
+        "Apr": "",
+        "Mei": "",
+        "Jun": 50000,
+        "Jul": "",
+        "Agt": "",
+        "Sep": "",
+        "Okt": "",
+        "Nov": "",
+        "Des": ""
+      }
+    ],
+    "Transaksi": [
+      {
+        "Tanggal": "2026-01-12",
+        "Jenis": "Keluar",
+        "Kategori": "Alat Kebersihan",
+        "Jumlah": 110000,
+        "Keterangan": "Sapu lidi, cikrak, dan kantong sampah untuk pos ronda"
+      },
+      {
+        "Tanggal": "2026-01-26",
+        "Jenis": "Keluar",
+        "Kategori": "Operasional",
+        "Jumlah": 75000,
+        "Keterangan": "Konsumsi rapat pengurus RT bulan Januari"
+      },
+      {
+        "Tanggal": "2026-02-08",
+        "Jenis": "Masuk",
+        "Kategori": "Donasi Warga",
+        "Jumlah": 500000,
+        "Keterangan": "Sumbangan sukarela Bapak Hendra untuk kas RT"
+      },
+      {
+        "Tanggal": "2026-02-15",
+        "Jenis": "Keluar",
+        "Kategori": "Pemeliharaan IPAL",
+        "Jumlah": 225000,
+        "Keterangan": "Sedot dan pembersihan bak kontrol IPAL blok A"
+      },
+      {
+        "Tanggal": "2026-02-22",
+        "Jenis": "Keluar",
+        "Kategori": "Acara Warga",
+        "Jumlah": 145000,
+        "Keterangan": "Konsumsi kerja bakti pembersihan saluran"
+      },
+      {
+        "Tanggal": "2026-03-05",
+        "Jenis": "Keluar",
+        "Kategori": "Sosial/Lelayu",
+        "Jumlah": 350000,
+        "Keterangan": "Santunan lelayu keluarga Alm. Bapak Suparman"
+      },
+      {
+        "Tanggal": "2026-03-18",
+        "Jenis": "Keluar",
+        "Kategori": "Operasional",
+        "Jumlah": 75000,
+        "Keterangan": "Fotokopi undangan dan ATK sekretariat"
+      },
+      {
+        "Tanggal": "2026-03-29",
+        "Jenis": "Masuk",
+        "Kategori": "Sewa Inventaris",
+        "Jumlah": 250000,
+        "Keterangan": "Sewa tenda dan kursi RT untuk hajatan warga"
+      },
+      {
+        "Tanggal": "2026-04-11",
+        "Jenis": "Keluar",
+        "Kategori": "Alat Kebersihan",
+        "Jumlah": 130000,
+        "Keterangan": "Penggantian lampu penerangan jalan gang 3"
+      },
+      {
+        "Tanggal": "2026-04-25",
+        "Jenis": "Keluar",
+        "Kategori": "Acara Warga",
+        "Jumlah": 275000,
+        "Keterangan": "Konsumsi dan perlengkapan buka bersama warga RT"
+      },
+      {
+        "Tanggal": "2026-05-09",
+        "Jenis": "Keluar",
+        "Kategori": "Pemeliharaan IPAL",
+        "Jumlah": 190000,
+        "Keterangan": "Perbaikan pipa IPAL bocor depan rumah nomor 14"
+      },
+      {
+        "Tanggal": "2026-05-20",
+        "Jenis": "Masuk",
+        "Kategori": "Donasi Warga",
+        "Jumlah": 300000,
+        "Keterangan": "Sumbangan Ibu Retno untuk kegiatan 17 Agustus"
+      },
+      {
+        "Tanggal": "2026-06-07",
+        "Jenis": "Keluar",
+        "Kategori": "Sosial/Lelayu",
+        "Jumlah": 350000,
+        "Keterangan": "Santunan lelayu keluarga Almh. Ibu Kartini"
+      },
+      {
+        "Tanggal": "2026-06-21",
+        "Jenis": "Keluar",
+        "Kategori": "Operasional",
+        "Jumlah": 85000,
+        "Keterangan": "Konsumsi rapat persiapan HUT RI"
+      },
+      {
+        "Tanggal": "2026-07-04",
+        "Jenis": "Keluar",
+        "Kategori": "Alat Kebersihan",
+        "Jumlah": 110000,
+        "Keterangan": "Cat dan kuas untuk pengecatan pos kamling"
+      },
+      {
+        "Tanggal": "2026-07-13",
+        "Jenis": "Masuk",
+        "Kategori": "Donasi Warga",
+        "Jumlah": 400000,
+        "Keterangan": "Sumbangan Bapak Joko untuk perbaikan pos ronda"
+      },
+      {
+        "Tanggal": "2026-07-19",
+        "Jenis": "Keluar",
+        "Kategori": "Acara Warga",
+        "Jumlah": 150000,
+        "Keterangan": "Uang muka sewa sound system HUT RI ke-81"
+      }
+    ],
+    "Kegiatan": [
+      {
+        "Tanggal": "2026-08-17",
+        "Judul": "Peringatan HUT RI ke-81",
+        "Ringkasan": "Upacara bendera pukul 07.00 di lapangan RT, dilanjutkan lomba anak dan tumpengan bersama. Pendaftaran lomba dibuka di pos ronda.",
+        "Kategori": "Acara",
+        "Gambar": "",
+        "Status": "Mendatang"
+      },
+      {
+        "Tanggal": "2026-08-03",
+        "Judul": "Kerja Bakti Bulanan",
+        "Ringkasan": "Pembersihan saluran air dan pemangkasan pohon di sepanjang gang 1 sampai gang 4. Warga diharap membawa alat sendiri.",
+        "Kategori": "Kerja Bakti",
+        "Gambar": "",
+        "Status": "Mendatang"
+      },
+      {
+        "Tanggal": "2026-07-27",
+        "Judul": "Rapat Pengurus RT",
+        "Ringkasan": "Pembahasan anggaran HUT RI, laporan kas semester pertama, dan usulan perbaikan pos kamling.",
+        "Kategori": "Rapat",
+        "Gambar": "",
+        "Status": "Selesai"
+      },
+      {
+        "Tanggal": "2026-07-06",
+        "Judul": "Penyemprotan Fogging DBD",
+        "Ringkasan": "Fogging serentak bekerja sama dengan Puskesmas Sampangan menyusul dua kasus demam berdarah di RW 04.",
+        "Kategori": "Kesehatan",
+        "Gambar": "",
+        "Status": "Selesai"
+      },
+      {
+        "Tanggal": "2026-06-07",
+        "Judul": "Takziah dan Santunan Lelayu",
+        "Ringkasan": "Penyerahan santunan dana lelayu kepada keluarga Almh. Ibu Kartini dari dana sosial warga RT 01.",
+        "Kategori": "Sosial",
+        "Gambar": "",
+        "Status": "Selesai"
+      },
+      {
+        "Tanggal": "2026-05-10",
+        "Judul": "Pemeliharaan Saluran IPAL",
+        "Ringkasan": "Perbaikan pipa IPAL yang bocor di depan rumah nomor 14, dikerjakan bersama teknisi dari kelurahan.",
+        "Kategori": "Kerja Bakti",
+        "Gambar": "",
+        "Status": "Selesai"
+      },
+      {
+        "Tanggal": "2026-04-25",
+        "Judul": "Buka Bersama Warga RT 01",
+        "Ringkasan": "Buka puasa bersama seluruh warga di halaman rumah Bapak Ketua RT, dihadiri sekitar 60 orang.",
+        "Kategori": "Acara",
+        "Gambar": "",
+        "Status": "Selesai"
+      },
+      {
+        "Tanggal": "2026-03-05",
+        "Judul": "Takziah Alm. Bapak Suparman",
+        "Ringkasan": "Warga RT 01 menyampaikan belasungkawa dan menyerahkan santunan dari dana lelayu.",
+        "Kategori": "Sosial",
+        "Gambar": "",
+        "Status": "Selesai"
+      }
+    ]
+  }
+}

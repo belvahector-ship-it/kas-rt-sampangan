@@ -1,0 +1,152 @@
+/* ==========================================================================
+   HALAMAN: Laporan Kas
+   ========================================================================== */
+
+import { BULAN_PANJANG } from '../config.js';
+import { ambilData } from '../store.js';
+import {
+  rupiah, tanggalPendek, amankan, nomorWA,
+  pasangHeader, pasangIdentitas, pitaSumberData, keadaanKosong, selesaiRender,
+} from '../ui.js';
+import { gambarTrenChart } from '../chart.js';
+
+pasangHeader();
+
+function isiKontakFooter(pengaturan) {
+  const wa = pengaturan.bendahara_wa || '';
+  const el = document.getElementById('footer-wa');
+  if (el) { if (wa) el.href = `https://wa.me/${nomorWA(wa)}`; else el.style.display = 'none'; }
+  const email = document.getElementById('footer-email');
+  if (email) { if (pengaturan.bendahara_email) email.href = `mailto:${pengaturan.bendahara_email}`; else email.style.display = 'none'; }
+}
+
+function baseKategori(kategori) {
+  const k = String(kategori || '').toLowerCase();
+  if (k.includes('ipal') || k.includes('sanitasi')) return 'Pemeliharaan IPAL';
+  if (k.includes('lelayu') || k.includes('sosial') || k.includes('duka')) return 'Sosial / Lelayu';
+  return kategori || 'Lain-lain';
+}
+
+function renderEntri(daftar, wadah, jenis) {
+  if (!daftar.length) {
+    wadah.innerHTML = keadaanKosong(
+      jenis === 'masuk' ? 'Belum ada kas masuk' : 'Belum ada kas keluar',
+      'Tidak ada transaksi manual tercatat pada bulan ini.',
+      jenis === 'masuk' ? 'naik' : 'turun'
+    );
+    return;
+  }
+
+  wadah.innerHTML = daftar.map((t) => `
+    <div class="entry">
+      <div class="entry__main">
+        <div class="entry__meta">
+          <span class="entry__date num">${amankan(tanggalPendek(t.tanggal))}</span>
+          <span class="badge badge--${t.pos}">${amankan(baseKategori(t.kategori))}</span>
+        </div>
+        <p class="entry__desc">${amankan(t.keterangan || (jenis === 'masuk' ? 'Setoran kas RT' : 'Pengeluaran RT'))}</p>
+      </div>
+      <span class="entry__amount ${jenis === 'masuk' ? 'text-pos' : 'text-neg'}">
+        ${jenis === 'masuk' ? '+' : '−'}${amankan(rupiah(t.jumlah))}
+      </span>
+    </div>`).join('');
+}
+
+function renderKategori(wadah, perKategori) {
+  if (!perKategori.length) {
+    wadah.innerHTML = keadaanKosong('Belum ada rincian kategori', 'Transaksi manual akan tampil di sini setelah bendahara mencatatnya.');
+    return;
+  }
+
+  wadah.innerHTML = `
+    <div style="overflow-x:auto">
+    <table style="min-width:480px">
+      <thead>
+        <tr style="border-bottom:1px solid var(--line)">
+          <th class="eyebrow" style="text-align:left;padding:var(--sp-3) var(--sp-5)">Kategori</th>
+          <th class="eyebrow" style="text-align:left;padding:var(--sp-3) var(--sp-2)">Jenis</th>
+          <th class="eyebrow" style="text-align:right;padding:var(--sp-3) var(--sp-5)">Jumlah Entri</th>
+          <th class="eyebrow" style="text-align:right;padding:var(--sp-3) var(--sp-5)">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${perKategori.map((k) => `
+          <tr style="border-bottom:1px solid var(--line-soft)">
+            <td style="padding:var(--sp-3) var(--sp-5);font-weight:600">${amankan(k.kategori)}</td>
+            <td style="padding:var(--sp-3) var(--sp-2)">
+              <span class="badge ${k.jenis === 'masuk' ? 'badge--pos' : 'badge--neg'}">${k.jenis === 'masuk' ? 'Masuk' : 'Keluar'}</span>
+            </td>
+            <td class="num" style="padding:var(--sp-3) var(--sp-5);text-align:right;color:var(--ink-3)">${k.jumlahEntri}</td>
+            <td class="num" style="padding:var(--sp-3) var(--sp-5);text-align:right;font-weight:700" >${amankan(rupiah(k.total))}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    </div>`;
+}
+
+function render(data, bulanTerpilih) {
+  const { transaksi, stat } = data;
+
+  const terfilter = bulanTerpilih === 0
+    ? transaksi
+    : transaksi.filter((t) => t.tanggal && parseInt(t.tanggal.slice(5, 7), 10) === bulanTerpilih);
+
+  const masuk = terfilter.filter((t) => t.jenis === 'masuk');
+  const keluar = terfilter.filter((t) => t.jenis === 'keluar');
+  const sumMasuk = masuk.reduce((a, t) => a + t.jumlah, 0);
+  const sumKeluar = keluar.reduce((a, t) => a + t.jumlah, 0);
+  const selisih = sumMasuk - sumKeluar;
+
+  const labelBulan = bulanTerpilih === 0 ? 'Semua Bulan' : BULAN_PANJANG[bulanTerpilih - 1];
+  document.getElementById('lbl-masuk').textContent = `Kas Masuk (${labelBulan})`;
+  document.getElementById('lbl-keluar').textContent = `Kas Keluar (${labelBulan})`;
+
+  document.querySelectorAll('[data-target="masuk"]').forEach((el) => {
+    el.dataset.nilai = String(sumMasuk); el.dataset.dihitung = ''; el.textContent = rupiah(0);
+  });
+  document.querySelectorAll('[data-target="keluar"]').forEach((el) => {
+    el.dataset.nilai = String(sumKeluar); el.dataset.dihitung = ''; el.textContent = rupiah(0);
+  });
+
+  const elSelisih = document.getElementById('nilai-selisih');
+  elSelisih.textContent = `${selisih >= 0 ? '+' : '−'}${rupiah(Math.abs(selisih))}`;
+  elSelisih.classList.toggle('text-pos', selisih >= 0);
+  elSelisih.classList.toggle('text-neg', selisih < 0);
+
+  document.getElementById('total-masuk-list').textContent = rupiah(sumMasuk);
+  document.getElementById('total-keluar-list').textContent = rupiah(sumKeluar);
+
+  renderEntri(masuk, document.getElementById('daftar-masuk'), 'masuk');
+  renderEntri(keluar, document.getElementById('daftar-keluar'), 'keluar');
+  renderKategori(document.getElementById('wadah-kategori'), stat.perKategori);
+
+  gambarTrenChart(document.getElementById('wadah-grafik'), stat.perBulan, bulanTerpilih === 0 ? -1 : bulanTerpilih - 1);
+
+  selesaiRender();
+}
+
+function isiPemilihBulan() {
+  const sel = document.getElementById('pilih-bulan');
+  const opsi = ['<option value="0">Semua Bulan</option>']
+    .concat(BULAN_PANJANG.map((b, i) => `<option value="${i + 1}">${b}</option>`));
+  sel.innerHTML = opsi.join('');
+
+  const bulanIni = new Date().getMonth() + 1;
+  sel.value = String(bulanIni);
+  return sel;
+}
+
+async function mulai() {
+  const data = await ambilData();
+
+  pasangIdentitas(data);
+  pitaSumberData(data);
+  isiKontakFooter(data.pengaturan || {});
+
+  const sel = isiPemilihBulan();
+  render(data, parseInt(sel.value, 10));
+
+  sel.addEventListener('change', () => render(data, parseInt(sel.value, 10)));
+}
+
+mulai();

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="id" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-pola="Kegiatan — {rt}">Kegiatan — RT 01/RW 04 Sampangan</title>
+<meta name="description" content="Agenda kerja bakti, rapat, dan pengumuman terbaru dari pengurus RT 01/RW 04 Sampangan.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%231B6B4C'/%3E%3Ctext x='12' y='16.5' font-family='Georgia,serif' font-size='13' font-weight='700' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/motion.css">
+<link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body>
+<a class="skip-link" href="#konten">Langsung ke konten</a>
+
+<div class="bg-canvas" aria-hidden="true">
+  <div class="bg-canvas__aurora bg-canvas__aurora--a"></div>
+  <div class="bg-canvas__aurora bg-canvas__aurora--b"></div>
+  <div class="bg-canvas__grid"></div>
+  <div class="bg-canvas__grain"></div>
+</div>
+
+<header class="site-header">
+  <div class="container site-header__row">
+    <a href="index.html" class="brand">
+      <span class="brand__mark" aria-hidden="true">RT</span>
+      <span class="brand__text">
+        <span class="brand__name" data-isi="nama_rt">RT 01 / RW 04 Sampangan</span>
+        <span class="brand__sub">Portal Transparansi Kas</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-utama" aria-label="Buka menu navigasi">
+      <svg class="nav-toggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <svg class="nav-toggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <nav class="nav" id="nav-utama" aria-label="Navigasi utama">
+      <a class="nav__link" href="index.html">Beranda</a>
+      <a class="nav__link" href="laporan.html">Laporan Kas</a>
+      <a class="nav__link" href="iuran.html">Iuran Warga</a>
+      <a class="nav__link" href="kegiatan.html">Kegiatan</a>
+      <a class="nav__link" href="tentang.html">Tentang</a>
+    </nav>
+  </div>
+</header>
+
+<main class="site-main" id="konten">
+
+  <div class="page-head">
+    <div class="container">
+      <p class="eyebrow eyebrow--accent reveal">Agenda &amp; Pengumuman</p>
+      <h1 class="page-head__title reveal">Kegiatan</h1>
+      <div class="page-head__row reveal">
+        <p class="lede">Kerja bakti, rapat, dan agenda sosial warga RT.</p>
+        <div class="tabs" role="tablist" aria-label="Saring kegiatan">
+          <button class="tab" role="tab" data-status="semua" aria-selected="true">Semua</button>
+          <button class="tab" role="tab" data-status="mendatang" aria-selected="false">Mendatang</button>
+          <button class="tab" role="tab" data-status="selesai" aria-selected="false">Selesai</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mt-5" data-sumber-data></div>
+
+  <section class="container section" style="padding-top:var(--sp-6)">
+    <div class="grid grid-3 reveal-group" id="wadah-kegiatan"></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <div>
+      <p class="site-footer__title">Portal Transparansi Kas</p>
+      <p class="fs-sm muted measure">Dikelola pengurus <span data-isi="nama_rt">RT 01/RW 04 Sampangan</span> sebagai bentuk pertanggungjawaban terbuka atas pembukuan kas warga.</p>
+    </div>
+    <div>
+      <p class="site-footer__title">Halaman</p>
+      <a class="site-footer__link" href="index.html" style="display:block">Beranda</a>
+      <a class="site-footer__link" href="laporan.html" style="display:block">Laporan Kas</a>
+      <a class="site-footer__link" href="iuran.html" style="display:block">Iuran Warga</a>
+      <a class="site-footer__link" href="tentang.html" style="display:block">Tentang</a>
+    </div>
+    <div>
+      <p class="site-footer__title">Kontak</p>
+      <a class="site-footer__link" id="footer-wa" href="#" target="_blank" rel="noopener noreferrer" style="display:block">WhatsApp Bendahara</a>
+      <a class="site-footer__link" id="footer-email" href="#" style="display:block">Email Bendahara</a>
+    </div>
+  </div>
+  <div class="container site-footer__bottom">
+    <span>&copy; <span data-isi="tahun_sekarang">2026</span> <span data-isi="nama_rt">RT 01/RW 04 Sampangan</span></span>
+    <span>Data diperbarui otomatis dari catatan bendahara</span>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/pages/kegiatan.js"></script>
+</body>
+</html>

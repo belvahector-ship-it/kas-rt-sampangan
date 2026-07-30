@@ -1,0 +1,196 @@
+/* ==========================================================================
+   MOTION
+   Aturan yang dipegang di seluruh berkas ini:
+   1. Hanya transform dan opacity. Tidak pernah width/height/top/left.
+   2. Gerak menjelaskan sebab-akibat, tidak menghias.
+   3. Maksimal dua elemen bergerak per layar.
+   4. Semuanya berhenti pada prefers-reduced-motion.
+   Rujukan: DECISIONS.md CP-07
+   ========================================================================== */
+
+/* --- Latar bergerak -------------------------------------------------------
+   Siklus 45–70 detik. Cukup lambat sehingga mata tidak menangkapnya sebagai
+   gerakan, hanya sebagai "halaman ini hidup". Amplitudo kecil supaya gumpalan
+   tidak pernah melintas di belakang blok teks dengan kontras yang berubah. */
+
+@keyframes aurora-drift-a {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  33%  { transform: translate3d(6vw, 4vh, 0) scale(1.09); }
+  66%  { transform: translate3d(-3vw, 7vh, 0) scale(0.96); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes aurora-drift-b {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  40%  { transform: translate3d(-7vw, -5vh, 0) scale(1.12); }
+  75%  { transform: translate3d(4vw, -2vh, 0) scale(0.94); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+.bg-canvas__aurora--a { animation: aurora-drift-a 62s var(--ease-mid) infinite; }
+.bg-canvas__aurora--b { animation: aurora-drift-b 74s var(--ease-mid) infinite; }
+
+/* --- Reveal saat gulir ----------------------------------------------------
+   Kelas .reveal dipasang di HTML; JS menambahkan .is-visible lewat
+   IntersectionObserver. Kalau JS mati, aturan .no-js di bawah menampilkan
+   semuanya — konten tidak boleh sandera pada JavaScript. */
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity var(--t-slow) var(--ease-out),
+    transform var(--t-slow) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Setelah selesai, lepas will-change supaya tidak menahan layer GPU */
+.reveal.is-settled { will-change: auto; }
+
+/* Stagger 60ms — cukup untuk terbaca sebagai urutan, belum terasa lambat */
+.reveal-group > *:nth-child(1) { --reveal-delay: 0ms; }
+.reveal-group > *:nth-child(2) { --reveal-delay: 60ms; }
+.reveal-group > *:nth-child(3) { --reveal-delay: 120ms; }
+.reveal-group > *:nth-child(4) { --reveal-delay: 180ms; }
+.reveal-group > *:nth-child(5) { --reveal-delay: 240ms; }
+.reveal-group > *:nth-child(6) { --reveal-delay: 300ms; }
+.reveal-group > *:nth-child(n+7) { --reveal-delay: 340ms; }
+
+/* --- Garis bawah editorial yang tertarik saat hover ----------------------- */
+
+.link-draw {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+}
+
+.link-draw::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%; height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--t-base) var(--ease-out);
+}
+
+.link-draw:hover::after,
+.link-draw:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* --- Kilau garis pada pita/pemisah tertentu ------------------------------- */
+
+@keyframes sheen {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* --- Denyut halus untuk penanda "data langsung" --------------------------- */
+
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.86); }
+}
+
+.live-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: soft-pulse 2.6s var(--ease-mid) infinite;
+  flex: none;
+}
+
+.live-dot--stale { background: var(--pos-lelayu); animation: none; }
+
+/* --- Skeleton saat memuat -------------------------------------------------
+   Dipakai alih-alih spinner: bentuknya sudah menyerupai konten akhir,
+   jadi tata letak tidak melompat saat data tiba. */
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-alt);
+  border-radius: var(--r-sm);
+  color: transparent !important;
+  user-select: none;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(127, 127, 127, 0.13), transparent);
+  animation: shimmer 1.5s var(--ease-mid) infinite;
+}
+
+.skeleton-line { height: 1em; display: block; }
+.skeleton-line + .skeleton-line { margin-top: var(--sp-2); }
+
+/* --- Masuknya pita peringatan --------------------------------------------- */
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translate3d(0, -10px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.animate-slide-down { animation: slide-down var(--t-base) var(--ease-out) both; }
+
+/* --- Transisi antar halaman ----------------------------------------------
+   Peningkatan progresif. Peramban yang mendukung mendapat silang-pudar halus
+   saat berpindah halaman; yang tidak, tidak kehilangan apa pun. */
+
+@view-transition { navigation: auto; }
+
+::view-transition-old(root) {
+  animation: vt-out 180ms var(--ease-in) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 300ms var(--ease-out) both;
+}
+
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in  { from { opacity: 0; transform: translate3d(0, 8px, 0); } }
+
+/* ==========================================================================
+   HORMATI PREFERENSI GERAK
+   Bukan sekadar memperpendek durasi — latar benar-benar berhenti, angka
+   langsung menampilkan nilai akhir, dan tidak ada yang bergeser.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .bg-canvas__aurora--a,
+  .bg-canvas__aurora--b { animation: none !important; transform: none !important; }
+
+  .reveal { opacity: 1 !important; transform: none !important; }
+
+  .skeleton::after { animation: none !important; }
+
+  .live-dot { animation: none !important; }
+
+  @view-transition { navigation: none; }
+}
+
+/* Tanpa JavaScript, konten tetap terlihat penuh */
+.no-js .reveal { opacity: 1; transform: none; }

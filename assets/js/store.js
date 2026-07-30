@@ -1,0 +1,389 @@
+/* ==========================================================================
+   STORE — normalisasi lembar mentah menjadi satu bentuk data,
+   lalu menurunkan seluruh statistik yang dipakai halaman.
+
+   Semua halaman membaca dari sini. Tidak ada halaman yang boleh menghitung
+   ulang saldo sendiri — kalau dua halaman menghitung dengan cara berbeda,
+   warga akan melihat dua angka berbeda dan berhenti percaya pada keduanya.
+   ========================================================================== */
+
+import { CONFIG, BULAN_PENDEK } from './config.js';
+import { muatSemuaData } from './sheets.js';
+
+/* --- Pembersih nilai ------------------------------------------------------ */
+
+/**
+ * Mengubah apa pun dari spreadsheet menjadi angka.
+ * Menangani: 15000 · "15000" · "15.000" · "Rp 15.000" · "15.000,50" · "" · null
+ */
+export function keAngka(nilai) {
+  if (typeof nilai === 'number') return Number.isFinite(nilai) ? nilai : 0;
+  if (nilai == null) return 0;
+
+  const teks = String(nilai).trim();
+  if (!teks) return 0;
+
+  /* Buang semua kecuali angka, minus, titik, dan koma */
+  let bersih = teks.replace(/[^\d,.-]/g, '');
+  if (!bersih || bersih === '-') return 0;
+
+  const titikTerakhir = bersih.lastIndexOf('.');
+  const komaTerakhir = bersih.lastIndexOf(',');
+
+  if (titikTerakhir > -1 && komaTerakhir > -1) {
+    /* Keduanya ada — yang muncul terakhir adalah pemisah desimal */
+    if (komaTerakhir > titikTerakhir) bersih = bersih.replace(/\./g, '').replace(',', '.');
+    else bersih = bersih.replace(/,/g, '');
+  } else if (komaTerakhir > -1) {
+    /* Hanya koma. "15.000,50" sudah tertangani di atas; di sini "1500,50"
+       vs "15,000". Tiga digit setelah koma hampir pasti pemisah ribuan. */
+    const setelah = bersih.length - komaTerakhir - 1;
+    bersih = setelah === 3 ? bersih.replace(/,/g, '') : bersih.replace(',', '.');
+  } else if (titikTerakhir > -1) {
+    const setelah = bersih.length - titikTerakhir - 1;
+    if (setelah === 3) bersih = bersih.replace(/\./g, '');
+  }
+
+  const angka = parseFloat(bersih);
+  return Number.isFinite(angka) ? angka : 0;
+}
+
+/** Normalkan tanggal apa pun ke YYYY-MM-DD, atau '' bila tidak terbaca. */
+export function keTanggal(nilai) {
+  if (!nilai) return '';
+  const teks = String(nilai).trim();
+
+  if (/^\d{4}-\d{2}-\d{2}/.test(teks)) return teks.slice(0, 10);
+
+  /* DD/MM/YYYY atau D-M-YYYY. Konvensi Indonesia: hari lebih dulu. */
+  const p = teks.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})/);
+  if (p) {
+    return `${p[3]}-${String(p[2]).padStart(2, '0')}-${String(p[1]).padStart(2, '0')}`;
+  }
+
+  /* YYYY/MM/DD */
+  const q = teks.match(/^(\d{4})[/\-.](\d{1,2})[/\-.](\d{1,2})/);
+  if (q) {
+    return `${q[1]}-${String(q[2]).padStart(2, '0')}-${String(q[3]).padStart(2, '0')}`;
+  }
+
+  return '';
+}
+
+export function keTeks(nilai) {
+  return nilai == null ? '' : String(nilai).trim();
+}
+
+/* --- Pencocokan kolom bulan ----------------------------------------------
+   Bendahara mungkin menulis "Agt", "Agu", "Ags", "Agustus", atau "8".
+   Semuanya harus mengarah ke indeks yang sama. */
+
+const AWALAN_BULAN = [
+  ['jan'], ['feb', 'peb'], ['mar'], ['apr'], ['mei', 'may'], ['jun'],
+  ['jul'], ['agt', 'agu', 'ags', 'aug'], ['sep'], ['okt', 'oct'],
+  ['nov', 'nop'], ['des', 'dec'],
+];
+
+function indeksBulanDariJudul(judul) {
+  const j = keTeks(judul).toLowerCase();
+  if (!j) return -1;
+
+  const angka = parseInt(j, 10);
+  if (!Number.isNaN(angka) && angka >= 1 && angka <= 12 && /^\d+$/.test(j)) return angka - 1;
+
+  for (let i = 0; i < AWALAN_BULAN.length; i++) {
+    if (AWALAN_BULAN[i].some((a) => j.startsWith(a))) return i;
+  }
+  return -1;
+}
+
+/**
+ * Ubah lembar matrik (Nama | Jan..Des) menjadi peta nama → 12 angka.
+ * Nama dijadikan kunci dalam huruf kecil supaya "Budi Santoso" dan
+ * "budi santoso" tidak menjadi dua warga berbeda.
+ */
+function bacaMatrik(baris) {
+  const peta = new Map();
+  if (!Array.isArray(baris) || !baris.length) return peta;
+
+  const kunciKolom = Object.keys(baris[0]);
+  const kolomNama = kunciKolom.find((k) => /nama|warga|kk/i.test(k)) || kunciKolom[0];
+
+  const petaBulan = [];
+  kunciKolom.forEach((k) => {
+    const idx = indeksBulanDariJudul(k);
+    if (idx > -1) petaBulan.push({ kunci: k, idx });
+  });
+
+  baris.forEach((r) => {
+    const nama = keTeks(r[kolomNama]);
+    if (!nama) return;
+    const bulan = new Array(12).fill(0);
+    petaBulan.forEach(({ kunci, idx }) => { bulan[idx] = keAngka(r[kunci]); });
+    peta.set(nama.toLowerCase(), { nama, bulan });
+  });
+
+  return peta;
+}
+
+/* --- Pemetaan kategori ke pos dana ---------------------------------------
+   Dipertahankan persis seperti aplikasi lama supaya angka lama dan baru
+   bisa dibandingkan. */
+
+export function posDariKategori(kategori) {
+  const k = keTeks(kategori).toLowerCase();
+  if (k.includes('ipal') || k.includes('sanitasi') || k.includes('saluran')) return 'ipal';
+  if (k.includes('lelayu') || k.includes('kematian') || k.includes('sosial') || k.includes('duka')) return 'lelayu';
+  return 'iuran';
+}
+
+/* --- Normalisasi ---------------------------------------------------------- */
+
+function normalkan(lembar, meta) {
+  const S = CONFIG.SHEETS;
+  const peringatan = [];
+
+  /* Pengaturan: daftar pasangan kunci/nilai */
+  const pengaturan = {};
+  (lembar[S.pengaturan] || []).forEach((r) => {
+    const kunciKolom = Object.keys(r);
+    const kK = kunciKolom.find((k) => /kunci|key|nama|param/i.test(k)) || kunciKolom[0];
+    const kN = kunciKolom.find((k) => /nilai|value|isi/i.test(k)) || kunciKolom[1];
+    const kunci = keTeks(r[kK]).toLowerCase().replace(/\s+/g, '_');
+    if (kunci) pengaturan[kunci] = keTeks(r[kN]);
+  });
+
+  const tahun = parseInt(pengaturan.tahun_aktif, 10) || CONFIG.TAHUN_DEFAULT;
+
+  /* Tiga matrik pembayaran */
+  const mIuran = bacaMatrik(lembar[S.iuran]);
+  const mIpal = bacaMatrik(lembar[S.ipal]);
+  const mLelayu = bacaMatrik(lembar[S.lelayu]);
+
+  /* Daftar warga — sumber urutan tampil dan sumber pagu */
+  const warga = [];
+  const sudahDipakai = new Set();
+
+  (lembar[S.warga] || []).forEach((r) => {
+    const kunciKolom = Object.keys(r);
+    const kNama = kunciKolom.find((k) => /^nama|warga|kepala/i.test(k)) || kunciKolom[0];
+    const kIuran = kunciKolom.find((k) => /pagu.*iuran|iuran.*pagu/i.test(k));
+    const kIpal = kunciKolom.find((k) => /pagu.*ipal|ipal.*pagu/i.test(k));
+
+    const nama = keTeks(r[kNama]);
+    if (!nama) return;
+    const kunci = nama.toLowerCase();
+    sudahDipakai.add(kunci);
+
+    warga.push({
+      nama,
+      paguIuran: kIuran ? keAngka(r[kIuran]) : 0,
+      paguIpal: kIpal ? keAngka(r[kIpal]) : 0,
+      iuran: mIuran.get(kunci)?.bulan || new Array(12).fill(0),
+      ipal: mIpal.get(kunci)?.bulan || new Array(12).fill(0),
+      lelayu: mLelayu.get(kunci)?.bulan || new Array(12).fill(0),
+    });
+  });
+
+  /* Nama yang ada di matrik tapi tidak ada di lembar Warga tetap
+     ditampilkan. Uang yang sudah disetor tidak boleh hilang dari laporan
+     hanya karena bendahara salah ketik nama di satu lembar. */
+  [mIuran, mIpal, mLelayu].forEach((m) => {
+    m.forEach((v, kunci) => {
+      if (sudahDipakai.has(kunci)) return;
+      sudahDipakai.add(kunci);
+      peringatan.push(`"${v.nama}" ada di lembar matrik tapi tidak terdaftar di lembar Warga — pagu dianggap 0.`);
+      warga.push({
+        nama: v.nama,
+        paguIuran: 0,
+        paguIpal: 0,
+        iuran: mIuran.get(kunci)?.bulan || new Array(12).fill(0),
+        ipal: mIpal.get(kunci)?.bulan || new Array(12).fill(0),
+        lelayu: mLelayu.get(kunci)?.bulan || new Array(12).fill(0),
+      });
+    });
+  });
+
+  /* Transaksi kas manual */
+  const transaksi = (lembar[S.transaksi] || []).map((r) => {
+    const kunciKolom = Object.keys(r);
+    const cari = (re) => kunciKolom.find((k) => re.test(k));
+    const kTgl = cari(/tanggal|date/i) || kunciKolom[0];
+    const kJenis = cari(/jenis|tipe|type/i);
+    const kKat = cari(/kategori|category|pos/i);
+    const kJml = cari(/jumlah|nominal|amount|nilai/i);
+    const kKet = cari(/keterangan|deskripsi|catatan|uraian/i);
+
+    const jenisMentah = keTeks(kJenis ? r[kJenis] : '').toLowerCase();
+    const jenis = /keluar|expense|out|debet|debit|biaya/.test(jenisMentah) ? 'keluar' : 'masuk';
+    const kategori = keTeks(kKat ? r[kKat] : '') || 'Lain-lain';
+
+    return {
+      tanggal: keTanggal(r[kTgl]),
+      jenis,
+      kategori,
+      pos: posDariKategori(kategori),
+      jumlah: Math.abs(keAngka(kJml ? r[kJml] : 0)),
+      keterangan: keTeks(kKet ? r[kKet] : ''),
+    };
+  }).filter((t) => t.jumlah > 0 || t.keterangan);
+
+  transaksi.sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
+
+  /* Kegiatan */
+  const hariIni = new Date().toISOString().slice(0, 10);
+  const kegiatan = (lembar[S.kegiatan] || []).map((r) => {
+    const kunciKolom = Object.keys(r);
+    const cari = (re) => kunciKolom.find((k) => re.test(k));
+    const kTgl = cari(/tanggal|date/i) || kunciKolom[0];
+    const kJdl = cari(/judul|title|nama/i);
+    const kRng = cari(/ringkasan|deskripsi|summary|isi|keterangan/i);
+    const kKat = cari(/kategori|category|jenis/i);
+    const kImg = cari(/gambar|image|foto|url/i);
+    const kSts = cari(/status/i);
+
+    const tanggal = keTanggal(r[kTgl]);
+    const statusTertulis = keTeks(kSts ? r[kSts] : '').toLowerCase();
+    const status = statusTertulis
+      ? (/datang|akan|rencana|upcoming/.test(statusTertulis) ? 'mendatang' : 'selesai')
+      : (tanggal && tanggal >= hariIni ? 'mendatang' : 'selesai');
+
+    return {
+      tanggal,
+      judul: keTeks(kJdl ? r[kJdl] : '') || 'Tanpa judul',
+      ringkasan: keTeks(kRng ? r[kRng] : ''),
+      kategori: keTeks(kKat ? r[kKat] : '') || 'Pengumuman',
+      gambar: keTeks(kImg ? r[kImg] : ''),
+      status,
+    };
+  }).filter((k) => k.judul !== 'Tanpa judul' || k.ringkasan);
+
+  kegiatan.sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
+
+  return { pengaturan, tahun, warga, transaksi, kegiatan, meta: { ...meta, peringatan } };
+}
+
+/* --- Statistik turunan ----------------------------------------------------
+   PERINGATAN AKUNTANSI (DECISIONS.md CP-10)
+   Kas Iuran dihitung sebagai sisa: Saldo Total − Kas IPAL − Kas Lelayu.
+   Artinya pos Iuran menyerap SELURUH pengeluaran, dari pos mana pun asalnya.
+   Itu keliru secara akuntansi, tapi menjamin ketiga pos selalu berjumlah
+   persis sama dengan uang fisik di tangan bendahara. Rumus ini sengaja
+   diwarisi dari aplikasi lama supaya angka di situs tidak pernah berbeda
+   dari catatan bendahara. Jangan "diperbaiki" tanpa membaca CP-10 dulu. */
+
+export function hitungStatistik(data) {
+  const { warga, transaksi } = data;
+
+  const jml = (arr) => arr.reduce((a, b) => a + b, 0);
+
+  const setoranIuran = jml(warga.map((w) => jml(w.iuran)));
+  const setoranIpal = jml(warga.map((w) => jml(w.ipal)));
+  const setoranLelayu = jml(warga.map((w) => jml(w.lelayu)));
+
+  let manualMasuk = 0;
+  let totalKeluar = 0;
+  const manualMasukPos = { iuran: 0, ipal: 0, lelayu: 0 };
+  const keluarPos = { iuran: 0, ipal: 0, lelayu: 0 };
+
+  transaksi.forEach((t) => {
+    if (t.jenis === 'masuk') {
+      manualMasuk += t.jumlah;
+      manualMasukPos[t.pos] += t.jumlah;
+    } else {
+      totalKeluar += t.jumlah;
+      keluarPos[t.pos] += t.jumlah;
+    }
+  });
+
+  const totalMasuk = setoranIuran + setoranIpal + setoranLelayu + manualMasuk;
+  const saldo = totalMasuk - totalKeluar;
+
+  const kasIpal = setoranIpal;
+  const kasLelayu = setoranLelayu;
+  const kasIuran = saldo - kasIpal - kasLelayu; /* lihat CP-10 */
+
+  const paguIuranTotal = jml(warga.map((w) => w.paguIuran));
+  const paguIpalTotal = jml(warga.map((w) => w.paguIpal));
+
+  /* Rekapitulasi per bulan untuk grafik tren */
+  const perBulan = Array.from({ length: 12 }, (_, i) => {
+    const iuran = jml(warga.map((w) => w.iuran[i]));
+    const ipal = jml(warga.map((w) => w.ipal[i]));
+    const lelayu = jml(warga.map((w) => w.lelayu[i]));
+
+    let manual = 0;
+    let keluar = 0;
+    transaksi.forEach((t) => {
+      if (!t.tanggal) return;
+      if (parseInt(t.tanggal.slice(5, 7), 10) - 1 !== i) return;
+      if (t.jenis === 'masuk') manual += t.jumlah;
+      else keluar += t.jumlah;
+    });
+
+    return {
+      bulan: i,
+      label: BULAN_PENDEK[i],
+      iuran, ipal, lelayu,
+      masuk: iuran + ipal + lelayu + manual,
+      keluar,
+      selisih: iuran + ipal + lelayu + manual - keluar,
+    };
+  });
+
+  /* Rekapitulasi per kategori untuk rincian di halaman laporan */
+  const perKategori = {};
+  transaksi.forEach((t) => {
+    const kunci = `${t.kategori}::${t.jenis}`;
+    if (!perKategori[kunci]) {
+      perKategori[kunci] = { kategori: t.kategori, jenis: t.jenis, total: 0, jumlahEntri: 0 };
+    }
+    perKategori[kunci].total += t.jumlah;
+    perKategori[kunci].jumlahEntri += 1;
+  });
+
+  /* Berapa bulan yang sudah lewat di tahun aktif — dipakai menghitung
+     target realistis, bukan target 12 bulan penuh sejak Januari. */
+  const sekarang = new Date();
+  const bulanBerjalan = sekarang.getFullYear() === data.tahun
+    ? sekarang.getMonth() + 1
+    : (sekarang.getFullYear() > data.tahun ? 12 : 0);
+
+  return {
+    jumlahKK: warga.length,
+    totalMasuk,
+    totalKeluar,
+    saldo,
+    kasIuran, kasIpal, kasLelayu,
+    setoranIuran, setoranIpal, setoranLelayu,
+    masukIuran: setoranIuran + manualMasukPos.iuran,
+    masukIpal: setoranIpal + manualMasukPos.ipal,
+    masukLelayu: setoranLelayu + manualMasukPos.lelayu,
+    keluarIuran: keluarPos.iuran,
+    keluarIpal: keluarPos.ipal,
+    keluarLelayu: keluarPos.lelayu,
+    paguIuranTotal,
+    paguIpalTotal,
+    komitmenBulanan: paguIuranTotal + paguIpalTotal,
+    targetIuran: paguIuranTotal * bulanBerjalan,
+    targetIpal: paguIpalTotal * bulanBerjalan,
+    bulanBerjalan,
+    perBulan,
+    perKategori: Object.values(perKategori).sort((a, b) => b.total - a.total),
+  };
+}
+
+/* --- Titik masuk tunggal -------------------------------------------------- */
+
+let janji = null;
+
+/** Memuat sekali per halaman, lalu membagikan hasil yang sama ke semua pemanggil. */
+export function ambilData() {
+  if (!janji) {
+    janji = muatSemuaData().then(({ lembar, meta }) => {
+      const data = normalkan(lembar, meta);
+      return { ...data, stat: hitungStatistik(data) };
+    });
+  }
+  return janji;
+}
