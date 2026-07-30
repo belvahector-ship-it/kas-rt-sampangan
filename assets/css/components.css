@@ -690,7 +690,7 @@
   border-right: 1px solid var(--line);
 }
 
-.matrix th.col-pagu { width: 96px; min-width: 96px; border-right: 1px solid var(--line); }
+.matrix th.col-pagu { width: 68px; min-width: 68px; border-right: 1px solid var(--line); }
 .matrix th.col-month { width: 52px; min-width: 52px; }
 
 .matrix tbody td {
@@ -723,41 +723,59 @@
 
 .matrix td.cell-pagu {
   font-family: var(--font-num);
-  font-size: var(--fs-2xs);
+  font-size: 9.5px;
+  line-height: 1.7;
   color: var(--ink-3);
   border-right: 1px solid var(--line);
   background: var(--surface-sunk);
   white-space: nowrap;
+  text-align: left !important;
+  padding-left: var(--sp-2) !important;
 }
 
-/* Sel status: ikon + warna + teks tersembunyi untuk pembaca layar.
-   Tidak pernah warna saja. */
-.pay {
-  display: inline-grid;
-  place-items: center;
-  width: 30px; height: 30px;
+.cell-pagu__baris { display: flex; align-items: center; gap: 3px; }
+
+.cell-pagu__titik {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.cell-pagu__titik--iuran { background: var(--pos-iuran); }
+.cell-pagu__titik--ipal { background: var(--pos-ipal); }
+.cell-pagu__titik--lelayu { background: var(--pos-lelayu); }
+
+/* Sel status: TIGA titik kecil dalam satu sel — satu tabel gabungan untuk
+   Iuran/IPAL/Lelayu sekaligus (bukan tab terpisah). Warna hanya penguat;
+   makna penuh selalu ada di atribut title + teks sr-only, tidak pernah
+   warna saja. */
+.dot-tri {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 5px 4px;
   border-radius: var(--r-sm);
-  font-family: var(--font-num);
-  font-size: var(--fs-2xs);
-  font-weight: 700;
-  border: 1px solid transparent;
+  transition: background var(--t-fast) var(--ease-out);
+}
+
+.dot-tri:hover { background: var(--surface-alt); }
+
+.dot-tri__dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+  flex: none;
   transition: transform var(--t-fast) var(--ease-out);
 }
 
-.pay:hover { transform: scale(1.12); }
+.dot-tri:hover .dot-tri__dot { transform: scale(1.15); }
 
-.pay--paid {
-  background: var(--accent-soft);
-  border-color: var(--accent-line);
-  color: var(--accent);
-}
-
-.pay--unpaid {
-  background: var(--surface-sunk);
-  color: var(--ink-3);
-}
-
-.pay svg { width: 15px; height: 15px; }
+.dot-tri__dot--iuran.is-terisi { background: var(--pos-iuran); border-color: var(--pos-iuran); }
+.dot-tri__dot--ipal.is-terisi { background: var(--pos-ipal); border-color: var(--pos-ipal); }
+.dot-tri__dot--lelayu.is-terisi { background: var(--pos-lelayu); border-color: var(--pos-lelayu); }
 
 .matrix-legend {
   display: flex;
@@ -789,9 +807,9 @@
 @media (max-width: 720px) {
   .matrix { min-width: 660px; }
   .matrix th.col-name { width: 130px; min-width: 130px; }
-  .matrix th.col-pagu { width: 74px; min-width: 74px; }
+  .matrix th.col-pagu { width: 60px; min-width: 60px; }
   .matrix th.col-month { width: 42px; min-width: 42px; }
-  .pay { width: 26px; height: 26px; }
+  .dot-tri__dot { width: 6px; height: 6px; }
 }
 
 /* --------------------------------------------------------------------------
@@ -1292,12 +1310,21 @@
   counter-increment: step;
   display: grid;
   grid-template-columns: 40px 1fr;
-  gap: var(--sp-4);
+  grid-template-rows: auto auto;
+  gap: var(--sp-1) var(--sp-4);
   align-items: start;
 }
 
+/* Ketiga anak .step (::before, __title, __desc) SEBELUMNYA dibiarkan
+   auto-flow di grid 2 kolom — ::before mengambil (kol1,baris1),
+   __title (kol2,baris1), lalu __desc auto-lanjut ke (kol1,baris2) yang
+   cuma lebar 40px, membuat tiap kata teksnya patah baris sendiri-sendiri.
+   Ditempatkan eksplisit di sini supaya __title dan __desc SELALU di
+   kolom 2 (lebar penuh), dengan lencana nomor merentang kedua baris. */
 .step::before {
   content: counter(step, decimal-leading-zero);
+  grid-column: 1;
+  grid-row: 1 / span 2;
   display: grid;
   place-items: center;
   width: 40px; height: 40px;
@@ -1310,8 +1337,8 @@
   color: var(--accent);
 }
 
-.step__title { font-weight: 600; margin-bottom: var(--sp-1); }
-.step__desc { font-size: var(--fs-sm); color: var(--ink-2); }
+.step__title { grid-column: 2; grid-row: 1; font-weight: 600; }
+.step__desc { grid-column: 2; grid-row: 2; font-size: var(--fs-sm); color: var(--ink-2); }
 
 /* --------------------------------------------------------------------------
    KARTU PENGURUS

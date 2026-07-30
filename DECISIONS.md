@@ -476,3 +476,42 @@ tidak diperlukan lagi.
 **Reversible:** ya.
 
 **Status:** confirmed
+
+---
+
+## CP-18 · Build · 2026-07-31
+
+**Decision:** Tiga perubahan atas permintaan langsung: (1) footer semua
+halaman mencantumkan kredit pembuat situs, (2) diperbaiki bug tata letak
+di bagian "Cara membayar iuran" pada halaman Tentang, (3) matrik Iuran
+Warga digabung dari tiga tab terpisah (Iuran/IPAL/Lelayu) menjadi **satu
+tabel** — tiap sel bulan menampilkan tiga titik status sekaligus.
+
+**Detail (2) — bug grid `.step`:** `.step` adalah `display:grid` dengan
+`grid-template-columns: 40px 1fr`, tapi tiga anaknya (`::before` si
+lencana nomor, `.step__title`, `.step__desc`) dibiarkan auto-flow. Urutan
+penempatan otomatis CSS Grid mengisi baris demi baris: lencana di
+(kol1,baris1), judul di (kol2,baris1), lalu **deskripsi ikut auto-lanjut
+ke (kol1,baris2)** — kolom yang cuma lebar 40px, dirancang untuk lencana
+bernomor, bukan paragraf. Setiap kata jadi patah baris sendiri-sendiri.
+Diperbaiki dengan menempatkan ketiga elemen secara eksplisit
+(`grid-column`/`grid-row`) sehingga judul dan deskripsi SELALU di kolom
+kedua (lebar penuh).
+
+**Detail (3) — matrik gabungan:** Kolom Pagu yang tadinya satu angka
+sekarang tiga baris ringkas berlabel titik warna (mis. "●25rb / ●4rb /
+●5rb"), dan tiap sel bulan berisi tiga titik kecil (hijau=Iuran,
+biru=IPAL, emas=Lelayu; terisi=tercatat, kosong=belum) alih-alih satu
+tanda centang. Info lengkap tetap ada lewat atribut `title` (hover) dan
+teks tersembunyi untuk pembaca layar — warna tidak pernah jadi
+satu-satunya penyampai makna. Perubahan ini menghapus komponen `.pay`
+(diganti `.dot-tri`) dan seluruh kontrol tab di halaman ini.
+
+**Affects:** footer di 7 berkas HTML; `assets/css/components.css`
+(`.step`, `.dot-tri`, `.cell-pagu`, kolom `.col-pagu`); `iuran.html`
+(hapus markup tab); `assets/js/pages/iuran.js` (hapus `posAktif`/
+`pasangTab`/`paguUntuk`, tulis ulang `renderMatrik`); `SPEC.md` §6.
+
+**Reversible:** ya.
+
+**Status:** confirmed

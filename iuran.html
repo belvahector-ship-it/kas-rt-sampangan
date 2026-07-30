@@ -71,12 +71,7 @@
       <div class="panel__head">
         <div>
           <h2 class="panel__title">Matrik Pembayaran</h2>
-          <p class="panel__desc">Pilih pos dana, lalu cari nama untuk mempersempit daftar.</p>
-        </div>
-        <div class="tabs" role="tablist" aria-label="Pos dana">
-          <button class="tab" role="tab" data-pos="iuran" aria-selected="true">Iuran Wajib</button>
-          <button class="tab" role="tab" data-pos="ipal" aria-selected="false">IPAL Bulanan</button>
-          <button class="tab" role="tab" data-pos="lelayu" aria-selected="false">Dana Lelayu</button>
+          <p class="panel__desc">Satu tabel untuk ketiga pos dana. Tiap bulan menampilkan status Iuran, IPAL, dan Lelayu sekaligus.</p>
         </div>
       </div>
 
@@ -99,9 +94,11 @@
         </div>
 
         <div class="matrix-legend">
-          <span class="matrix-legend__item"><span class="pay pay--paid" style="width:22px;height:22px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5.5 5.5L20 7"/></svg></span> Sudah tercatat</span>
-          <span class="matrix-legend__item"><span class="pay pay--unpaid" style="width:22px;height:22px">&minus;</span> Belum tercatat</span>
-          <span class="ml-auto">Arahkan kursor ke kotak hijau untuk melihat nominal.</span>
+          <span class="matrix-legend__item"><span class="dot-tri__dot dot-tri__dot--iuran is-terisi"></span> Iuran Wajib</span>
+          <span class="matrix-legend__item"><span class="dot-tri__dot dot-tri__dot--ipal is-terisi"></span> IPAL Bulanan</span>
+          <span class="matrix-legend__item"><span class="dot-tri__dot dot-tri__dot--lelayu is-terisi"></span> Dana Lelayu</span>
+          <span class="matrix-legend__item"><span class="dot-tri__dot"></span> Belum tercatat</span>
+          <span class="ml-auto">Arahkan kursor ke titik untuk melihat rincian nominal.</span>
         </div>
       </div>
     </div>
@@ -132,7 +129,7 @@
   </div>
   <div class="container site-footer__bottom">
     <span>&copy; <span data-isi="tahun_sekarang">2026</span> <span data-isi="nama_rt">RT 01/RW 04 Sampangan</span></span>
-    <span>Data diperbarui otomatis dari catatan bendahara</span>
+    <span>Dibuat &amp; dikembangkan oleh Belva Fahrozi Chiangmaitri, M.Kom</span>
   </div>
 </footer>
 

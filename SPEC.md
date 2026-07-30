@@ -133,7 +133,8 @@ hover. Tidak ada yang menggeser tata letak.
 [header]
 [judul halaman + penjelas + pemilih tahun]
 [3 kartu progres: Iuran · IPAL · Lelayu — terkumpul / target, bilah progres]
-[bar kontrol: tab 3 pos (kiri) + kotak cari nama (kanan) — menumpuk di 720]
+[kotak cari nama — satu tabel gabungan, tiap sel bulan menampilkan
+       3 titik status (Iuran/IPAL/Lelayu sekaligus), bukan tab terpisah — CP-18]
 [matrik: kolom Nama beku di kiri, kolom Pagu, 12 kolom bulan
        gulir horizontal HANYA di dalam pembungkus tabel, tidak pernah di body
        di bawah 720: kolom bulan menyempit, isyarat gulir muncul]

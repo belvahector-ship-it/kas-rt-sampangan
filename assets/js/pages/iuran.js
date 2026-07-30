@@ -5,15 +5,23 @@
 import { BULAN_PENDEK } from '../config.js';
 import { ambilData } from '../store.js';
 import {
-  rupiah, angkaID, amankan, ikon, nomorWA,
+  rupiah, angkaID, amankan, nomorWA,
   pasangHeader, pasangIdentitas, pitaSumberData, keadaanKosong, selesaiRender,
 } from '../ui.js';
 
 pasangHeader();
 
 let DATA = null;
-let posAktif = 'iuran';
 let queryCari = '';
+
+/** "25000" → "25rb". Dipakai di kolom Pagu yang sekarang harus memuat
+    tiga angka sekaligus (Iuran/IPAL/Lelayu) dalam satu sel sempit. */
+function formatRb(n) {
+  if (n == null) return '—';
+  if (n === 0) return '0';
+  if (n % 1000 === 0) return `${Math.round(n / 1000)}rb`;
+  return angkaID(n);
+}
 
 function isiKontakFooter(pengaturan) {
   const wa = pengaturan.bendahara_wa || '';
@@ -73,13 +81,10 @@ function renderProgres() {
   }).join('');
 }
 
-/* --- Matrik ------------------------------------------------------------------ */
-
-function paguUntuk(w, pos) {
-  if (pos === 'iuran') return w.paguIuran;
-  if (pos === 'ipal') return w.paguIpal;
-  return w.paguLelayu; /* null jika bendahara tidak mengisi nominal standar */
-}
+/* --- Matrik ------------------------------------------------------------------
+   Satu tabel gabungan untuk ketiga pos (bukan tab terpisah lagi). Tiap sel
+   bulan menampilkan tiga titik kecil — satu per pos — supaya warga bisa
+   membandingkan status Iuran/IPAL/Lelayu tanpa berpindah tab. */
 
 function renderMatrik() {
   const wadah = document.getElementById('wadah-matrik');
@@ -99,16 +104,24 @@ function renderMatrik() {
   }
 
   const baris = tersaring.map((w) => {
-    const pagu = paguUntuk(w, posAktif);
-    const bulanArr = w[posAktif];
+    const selBulan = BULAN_PENDEK.map((label, i) => {
+      const iuranPaid = w.iuran[i] > 0;
+      const ipalPaid = w.ipal[i] > 0;
+      const lelayuPaid = w.lelayu[i] > 0;
 
-    const selBulan = bulanArr.map((nominal, i) => {
-      const lunas = nominal > 0;
-      const label = `${w.nama} — ${BULAN_PENDEK[i]}: ${lunas ? `Lunas, ${rupiah(nominal)}` : 'Belum tercatat'}`;
+      const rincian = [
+        `Iuran: ${iuranPaid ? `lunas ${rupiah(w.iuran[i])}` : 'belum tercatat'}`,
+        `IPAL: ${ipalPaid ? `lunas ${rupiah(w.ipal[i])}` : 'belum tercatat'}`,
+        `Lelayu: ${lelayuPaid ? `menyumbang ${rupiah(w.lelayu[i])}` : 'tidak menyumbang'}`,
+      ].join(' · ');
+      const judul = `${w.nama} — ${label}: ${rincian}`;
+
       return `<td>
-        <span class="pay ${lunas ? 'pay--paid' : 'pay--unpaid'}" title="${amankan(label)}">
-          ${lunas ? ikon('centang') : ikon('minus')}
-          <span class="sr-only">${amankan(label)}</span>
+        <span class="dot-tri" title="${amankan(judul)}">
+          <span class="dot-tri__dot dot-tri__dot--iuran${iuranPaid ? ' is-terisi' : ''}"></span>
+          <span class="dot-tri__dot dot-tri__dot--ipal${ipalPaid ? ' is-terisi' : ''}"></span>
+          <span class="dot-tri__dot dot-tri__dot--lelayu${lelayuPaid ? ' is-terisi' : ''}"></span>
+          <span class="sr-only">${amankan(judul)}</span>
         </span>
       </td>`;
     }).join('');
@@ -116,7 +129,11 @@ function renderMatrik() {
     return `
       <tr>
         <td class="cell-name">${amankan(w.nama)}</td>
-        <td class="cell-pagu num">${pagu === null ? 'Bebas' : angkaID(pagu)}</td>
+        <td class="cell-pagu">
+          <span class="cell-pagu__baris"><span class="cell-pagu__titik cell-pagu__titik--iuran"></span>${formatRb(w.paguIuran)}</span>
+          <span class="cell-pagu__baris"><span class="cell-pagu__titik cell-pagu__titik--ipal"></span>${formatRb(w.paguIpal)}</span>
+          <span class="cell-pagu__baris"><span class="cell-pagu__titik cell-pagu__titik--lelayu"></span>${formatRb(w.paguLelayu)}</span>
+        </td>
         ${selBulan}
       </tr>`;
   }).join('');
@@ -147,16 +164,6 @@ function perbaruiIsyaratGeser() {
 }
 
 /* --- Kontrol ------------------------------------------------------------------ */
-
-function pasangTab() {
-  document.querySelectorAll('.tab[data-pos]').forEach((tab) => {
-    tab.addEventListener('click', () => {
-      posAktif = tab.dataset.pos;
-      document.querySelectorAll('.tab[data-pos]').forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
-      renderMatrik();
-    });
-  });
-}
 
 function pasangPencarian() {
   const input = document.getElementById('cari-nama');
@@ -194,7 +201,6 @@ async function mulai() {
 
   renderProgres();
   renderMatrik();
-  pasangTab();
   pasangPencarian();
 
   selesaiRender();
