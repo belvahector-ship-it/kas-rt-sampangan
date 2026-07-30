@@ -14,18 +14,14 @@
   position: sticky;
   top: 0;
   z-index: var(--z-header);
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  backdrop-filter: saturate(150%) blur(14px);
-  -webkit-backdrop-filter: saturate(150%) blur(14px);
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--t-base) var(--ease-out),
-              background var(--t-base) var(--ease-out);
+  /* Latar solid opak, tanpa blur — kaca buram bertentangan dengan bahasa
+     neo-brutalist yang datar dan tegas. */
+  background: var(--paper);
+  border-bottom: var(--bw-2) solid var(--ink);
+  transition: box-shadow var(--t-base) var(--ease-out);
 }
 
-.site-header.is-stuck {
-  border-bottom-color: var(--line);
-  background: color-mix(in srgb, var(--paper) 96%, transparent);
-}
+.site-header.is-stuck { box-shadow: var(--sh-1); }
 
 .site-header__row {
   display: flex;
@@ -126,7 +122,7 @@
   width: var(--touch); height: var(--touch);
   flex: none;
   place-items: center;
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-md);
   background: var(--surface);
   color: var(--ink);
@@ -188,33 +184,39 @@
   min-height: var(--touch);
   padding: var(--sp-3) var(--sp-5);
   border-radius: var(--r-md);
-  border: 1px solid transparent;
+  border: var(--bw-2) solid var(--ink);
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.005em;
   text-align: center;
+  box-shadow: var(--sh-1);
   transition: background var(--t-fast) var(--ease-out),
               border-color var(--t-fast) var(--ease-out),
               color var(--t-fast) var(--ease-out),
-              transform var(--t-fast) var(--ease-out);
+              transform var(--t-fast) var(--ease-out),
+              box-shadow var(--t-fast) var(--ease-out);
 }
 
-.btn:active { transform: translateY(1px); }
+/* Interaksi khas neo-brutalist: tombol "terangkat" saat hover (bayangan
+   membesar), lalu "tertekan rata" saat diklik (bayangan hilang, tombol
+   bergeser persis sejauh offset bayangannya). */
+.btn:hover { transform: translate(-1px, -1px); box-shadow: var(--sh-2); }
+.btn:active { transform: translate(2px, 2px); box-shadow: none; }
 
 .btn svg { width: 18px; height: 18px; flex: none; }
 
 .btn--primary { background: var(--ink); color: var(--paper); }
-.btn--primary:hover { background: var(--accent); }
+.btn--primary:hover { background: var(--accent); border-color: var(--ink); }
 
-.btn--accent { background: var(--accent); color: #fff; }
-.btn--accent:hover { background: var(--accent-hover); }
+.btn--accent { background: var(--highlight); color: var(--highlight-ink); border-color: var(--ink); }
+.btn--accent:hover { background: var(--accent); color: #fff; border-color: var(--ink); }
 
 .btn--outline {
-  background: transparent;
-  border-color: var(--line);
+  background: var(--surface);
+  border-color: var(--ink);
   color: var(--ink);
 }
-.btn--outline:hover { border-color: var(--ink); background: var(--surface-alt); }
+.btn--outline:hover { background: var(--surface-alt); border-color: var(--ink); }
 
 .btn--ghost { color: var(--ink-2); }
 .btn--ghost:hover { color: var(--ink); background: var(--surface-alt); }
@@ -230,16 +232,21 @@
 
 .card {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-lg);
   padding: var(--sp-5);
+  box-shadow: var(--sh-2);
 }
 
 .panel {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-lg);
-  overflow: hidden;
+  box-shadow: var(--sh-2);
+  /* overflow:hidden DIHAPUS — sudut sekarang tajam (--r-lg: 0px), jadi
+     tidak ada lagi konten anak yang perlu dipotong mengikuti radius.
+     Ini juga sengaja: overflow:hidden pada elemen yang sama dengan
+     box-shadow akan memotong bayangannya sendiri. */
 }
 
 .panel__head {
@@ -290,10 +297,13 @@
 .balance {
   position: relative;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--bw-3) solid var(--ink);
   border-radius: var(--r-xl);
   padding: clamp(1.5rem, 1rem + 2.5vw, 2.75rem);
-  overflow: hidden;
+  box-shadow: var(--sh-3);
+  /* overflow:hidden dihapus — lihat catatan di .panel di atas. Garis
+     aksen ::before tetap di dalam batas kotak (inset top/left/right),
+     jadi tidak butuh pemotongan. */
 }
 
 /* Aksen garis atas — satu-satunya dekorasi yang dibolehkan di kartu ini */
@@ -301,7 +311,7 @@
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 3px;
+  height: 6px;
   background: linear-gradient(90deg,
     var(--pos-iuran) 0%, var(--pos-iuran) 45%,
     var(--pos-ipal) 45%, var(--pos-ipal) 78%,
@@ -353,7 +363,7 @@
 }
 
 .fund--iuran  { --fund-color: var(--pos-iuran); }
-.fund--ipal   { --fund-color: var(--pos-ipal); }
+.fund--ipal   { --fund-color: var(--pos-ipal-ink); }
 .fund--lelayu { --fund-color: var(--pos-lelayu); }
 
 .fund__name {
@@ -378,17 +388,19 @@
 
 .stat {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-lg);
   padding: var(--sp-5);
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
+  box-shadow: var(--sh-1);
   transition: border-color var(--t-base) var(--ease-out),
-              transform var(--t-base) var(--ease-out);
+              transform var(--t-base) var(--ease-out),
+              box-shadow var(--t-base) var(--ease-out);
 }
 
-.stat:hover { border-color: var(--ink-3); transform: translateY(-2px); }
+.stat:hover { transform: translate(-2px, -2px); box-shadow: var(--sh-2); }
 
 .stat__head {
   display: flex;
@@ -431,9 +443,11 @@
   min-height: 168px;
   padding: var(--sp-5);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-lg);
-  overflow: hidden;
+  /* overflow:hidden dihapus — lihat catatan di .panel. Sapuan warna
+     ::after tetap inset (bottom:0/left:0/right:0), tidak perlu potongan. */
+  box-shadow: var(--sh-1);
   transition: border-color var(--t-base) var(--ease-out),
               transform var(--t-base) var(--ease-out),
               box-shadow var(--t-base) var(--ease-out);
@@ -441,7 +455,7 @@
 
 .doorway:hover {
   border-color: var(--ink);
-  transform: translateY(-3px);
+  transform: translate(-3px, -3px);
   box-shadow: var(--sh-3);
 }
 
@@ -503,7 +517,7 @@
 }
 
 .doorway--iuran  { --door-color: var(--pos-iuran);  --door-soft: var(--pos-iuran-soft); }
-.doorway--ipal   { --door-color: var(--pos-ipal);   --door-soft: var(--pos-ipal-soft); }
+.doorway--ipal   { --door-color: var(--pos-ipal-ink); --door-soft: var(--pos-ipal-soft); }
 .doorway--lelayu { --door-color: var(--pos-lelayu); --door-soft: var(--pos-lelayu-soft); }
 
 /* --------------------------------------------------------------------------
@@ -516,7 +530,7 @@
   gap: var(--sp-1);
   padding: 3px var(--sp-2);
   border-radius: var(--r-sm);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   background: var(--surface-alt);
   font-size: var(--fs-2xs);
   font-weight: 600;
@@ -528,7 +542,7 @@
 .badge--pos    { background: var(--accent-soft);     border-color: var(--accent-line);   color: var(--accent); }
 .badge--neg    { background: var(--critical-soft);   border-color: var(--critical-line); color: var(--critical); }
 .badge--iuran  { background: var(--pos-iuran-soft);  border-color: transparent; color: var(--pos-iuran); }
-.badge--ipal   { background: var(--pos-ipal-soft);   border-color: transparent; color: var(--pos-ipal); }
+.badge--ipal   { background: var(--pos-ipal-soft);   border-color: transparent; color: var(--pos-ipal-ink); }
 .badge--lelayu { background: var(--pos-lelayu-soft); border-color: transparent; color: var(--pos-lelayu); }
 
 /* --------------------------------------------------------------------------
@@ -540,7 +554,7 @@
   padding: 3px;
   gap: 2px;
   background: var(--surface-alt);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-md);
   max-width: 100%;
   overflow-x: auto;
@@ -581,7 +595,7 @@
   min-height: var(--touch);
   padding: 0 var(--sp-4);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-md);
   transition: border-color var(--t-fast) var(--ease-out);
 }
@@ -617,7 +631,7 @@
   min-height: var(--touch);
   padding: 0 var(--sp-6) 0 var(--sp-4);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-md);
   font-size: var(--fs-sm);
   font-weight: 500;
@@ -642,9 +656,10 @@
   position: relative;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-md);
   background: var(--surface);
+  box-shadow: var(--sh-2);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -736,8 +751,9 @@
 .cell-pagu__baris { display: flex; align-items: center; gap: 3px; }
 
 .cell-pagu__titik {
-  width: 5px; height: 5px;
+  width: 6px; height: 6px;
   border-radius: 50%;
+  border: 1px solid var(--ink);
   flex: none;
 }
 
@@ -745,37 +761,43 @@
 .cell-pagu__titik--ipal { background: var(--pos-ipal); }
 .cell-pagu__titik--lelayu { background: var(--pos-lelayu); }
 
-/* Sel status: TIGA titik kecil dalam satu sel — satu tabel gabungan untuk
-   Iuran/IPAL/Lelayu sekaligus (bukan tab terpisah). Warna hanya penguat;
-   makna penuh selalu ada di atribut title + teks sr-only, tidak pernah
-   warna saja. */
+/* Sel status: TIGA lencana huruf (I/P/L) per bulan dalam satu sel — satu
+   tabel gabungan untuk Iuran/IPAL/Lelayu sekaligus (bukan tab terpisah,
+   bukan titik polos). Meniru pola aplikasi referensi: huruf di dalam
+   lencana bulat, bukan warna saja, supaya statusnya langsung terbaca
+   tanpa perlu menghafal kode warna atau mengarahkan kursor. Warna tetap
+   jadi penguat kedua; makna penuh selalu ada di atribut title + sr-only. */
 .dot-tri {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 5px 4px;
-  border-radius: var(--r-sm);
-  transition: background var(--t-fast) var(--ease-out);
+  gap: 2px;
+  padding: 4px 2px;
 }
 
-.dot-tri:hover { background: var(--surface-alt); }
-
 .dot-tri__dot {
-  display: inline-block;
-  width: 7px; height: 7px;
+  display: inline-grid;
+  place-items: center;
+  width: 17px; height: 17px;
   border-radius: 50%;
-  background: var(--surface-sunk);
-  border: 1px solid var(--line);
+  border: var(--bw-1) solid var(--ink);
+  background: var(--surface);
+  color: var(--ink-3);
+  font-family: var(--font-display);
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
   flex: none;
   transition: transform var(--t-fast) var(--ease-out);
 }
 
-.dot-tri:hover .dot-tri__dot { transform: scale(1.15); }
+.dot-tri:hover .dot-tri__dot { transform: scale(1.2); }
 
-.dot-tri__dot--iuran.is-terisi { background: var(--pos-iuran); border-color: var(--pos-iuran); }
-.dot-tri__dot--ipal.is-terisi { background: var(--pos-ipal); border-color: var(--pos-ipal); }
-.dot-tri__dot--lelayu.is-terisi { background: var(--pos-lelayu); border-color: var(--pos-lelayu); }
+/* Lunas/terisi: lencana penuh warna pos, huruf tetap kontras — kuning
+   (IPAL) pakai huruf tinta gelap, biru & merah pakai huruf putih. */
+.dot-tri__dot--iuran.is-terisi  { background: var(--pos-iuran);  border-color: var(--ink); color: #fff; }
+.dot-tri__dot--ipal.is-terisi   { background: var(--pos-ipal);   border-color: var(--ink); color: var(--highlight-ink); }
+.dot-tri__dot--lelayu.is-terisi { background: var(--pos-lelayu); border-color: var(--ink); color: #fff; }
 
 .matrix-legend {
   display: flex;
@@ -808,8 +830,9 @@
   .matrix { min-width: 660px; }
   .matrix th.col-name { width: 130px; min-width: 130px; }
   .matrix th.col-pagu { width: 60px; min-width: 60px; }
-  .matrix th.col-month { width: 42px; min-width: 42px; }
-  .dot-tri__dot { width: 6px; height: 6px; }
+  .matrix th.col-month { width: 48px; min-width: 48px; }
+  .dot-tri { gap: 1px; padding: 3px 1px; }
+  .dot-tri__dot { width: 14px; height: 14px; font-size: 6.5px; }
 }
 
 /* --------------------------------------------------------------------------
@@ -860,7 +883,7 @@
 
 .ledger__list {
   margin-top: var(--sp-3);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-md);
   background: var(--surface);
   max-height: 420px;
@@ -954,17 +977,21 @@
   display: flex;
   flex-direction: column;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-lg);
-  overflow: hidden;
+  /* overflow:hidden dihapus dari SINI — .event__media di bawah masih
+     punya overflow:hidden sendiri untuk memotong gambar yang membesar
+     saat hover, jadi tidak ada regresi. Ini supaya box-shadow di elemen
+     ini sendiri tidak ikut terpotong. */
+  box-shadow: var(--sh-1);
   transition: border-color var(--t-base) var(--ease-out),
               transform var(--t-base) var(--ease-out),
               box-shadow var(--t-base) var(--ease-out);
 }
 
 .event:hover {
-  border-color: var(--ink-3);
-  transform: translateY(-3px);
+  border-color: var(--ink);
+  transform: translate(-3px, -3px);
   box-shadow: var(--sh-3);
 }
 
@@ -1045,8 +1072,9 @@
   align-items: center;
   padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-xl);
+  box-shadow: var(--sh-2);
 }
 
 @media (max-width: 860px) {
@@ -1058,7 +1086,7 @@
   gap: var(--sp-3);
   padding: var(--sp-4);
   background: var(--surface-sunk);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-md);
   min-width: min(100%, 340px);
 }
@@ -1108,7 +1136,7 @@
   gap: var(--sp-3);
   padding: var(--sp-4);
   border-radius: var(--r-md);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   background: var(--surface-alt);
   font-size: var(--fs-sm);
   color: var(--ink-2);
@@ -1124,7 +1152,7 @@
 
 .notice--warn strong { color: var(--pos-lelayu); }
 
-.notice--info { background: var(--pos-ipal-soft); border-color: transparent; color: var(--pos-ipal); }
+.notice--info { background: var(--pos-ipal-soft); border-color: transparent; color: var(--pos-ipal-ink); }
 
 /* --------------------------------------------------------------------------
    HERO
@@ -1162,7 +1190,7 @@
   align-items: center;
   gap: var(--sp-2);
   padding: var(--sp-2) var(--sp-3);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-pill);
   font-family: var(--font-num);
   font-size: var(--fs-2xs);
@@ -1330,7 +1358,7 @@
   width: 40px; height: 40px;
   border-radius: var(--r-md);
   background: var(--surface-alt);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   font-family: var(--font-num);
   font-size: var(--fs-xs);
   font-weight: 700;
@@ -1350,8 +1378,9 @@
   gap: var(--sp-4);
   padding: var(--sp-4);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-lg);
+  box-shadow: var(--sh-1);
 }
 
 .person__avatar {
@@ -1425,7 +1454,7 @@
   gap: var(--sp-3);
   padding: var(--sp-4) var(--sp-5);
   background: var(--surface-alt);
-  border: 1px solid var(--line);
+  border: var(--bw-2) solid var(--line);
   border-radius: var(--r-md);
   font-size: var(--fs-sm);
   color: var(--ink-2);

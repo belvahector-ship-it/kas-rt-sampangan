@@ -1,56 +1,77 @@
 /* ==========================================================================
-   TOKENS — "Editorial Ledger"
+   TOKENS — "Neo-Brutalist RT"
    Sumber tunggal untuk warna, tipografi, spasi, dan gerak.
    Ubah di sini, seluruh situs ikut. Jangan menulis hex mentah di berkas lain.
-   Rujukan keputusan: DECISIONS.md CP-05, CP-06, CP-07
+
+   Palet diambil dari aplikasi referensi (keuangan-rt-clone): kuning #FFD400,
+   biru #2148F5, merah #E8353A, tinta hampir hitam, sudut tajam, border tebal,
+   bayangan keras offset. Struktur berkas/komponen TIDAK diubah — hanya nilai
+   token di sini, supaya seluruh situs ikut berubah tema tanpa menyentuh HTML.
+   Rujukan keputusan: DECISIONS.md CP-19 (menggantikan CP-05 "Editorial Ledger").
    ========================================================================== */
 
 :root {
-  /* --- Warna: mode terang -------------------------------------------------
-     Kertas hangat, bukan putih steril. Kedalaman dibawa garis rambut,
-     bukan bayangan bertumpuk. */
-  --paper:          #FAFAF8;
+  /* --- Warna: mode terang --------------------------------------------------
+     Putih bersih, bukan kertas hangat. Kedalaman dibawa BORDER TEBAL dan
+     bayangan keras offset, bukan garis rambut tipis seperti tema lama. */
+  --paper:          #FFFFFF;
   --surface:        #FFFFFF;
-  --surface-alt:    #F2F1EC;
-  --surface-sunk:   #EFEEE8;
+  --surface-alt:    #F5F5F0;
+  --surface-sunk:   #ECECE5;
 
-  --ink:            #14161A;
-  --ink-2:          #55585F;
-  --ink-3:          #6E7178;   /* 4.6:1 di atas --paper — masih lulus AA */
+  --ink:            #0A0A0A;
+  --ink-2:          #38383A;
+  --ink-3:          #5C5C5E;   /* ≥4.5:1 di atas --paper */
 
-  --line:           #E4E2DA;
-  --line-soft:      #EEEDE7;
-  --line-strong:    #14161A;
+  --line:           #0A0A0A;   /* border struktural sekarang TINTA PENUH, bukan abu tipis */
+  --line-soft:      #D6D6CE;   /* untuk pemisah internal yang sengaja diredam (mis. baris tabel) */
+  --line-strong:    #0A0A0A;
 
-  /* Aksen tunggal. Hijau tua = uang. Tidak ada warna merek kedua. */
-  --accent:         #1B6B4C;
-  --accent-hover:   #14543C;
-  --accent-soft:    #E8F1EC;
-  --accent-line:    #BFDACB;
+  /* Aksen utama: biru. Dipakai untuk tautan, tombol utama, fokus, dan
+     pos "Iuran" — mencerminkan konvensi aplikasi referensi (I = biru). */
+  --accent:         #2148F5;
+  --accent-hover:   #1636C2;
+  --accent-soft:    #E7ECFE;
+  --accent-line:    #2148F5;
 
-  --critical:       #B4423A;
-  --critical-soft:  #F7E9E7;
-  --critical-line:  #EBC9C5;
+  /* Kuning brand — dipakai untuk sorotan/penekanan (bukan teks di atas
+     putih; hanya sebagai isian dengan teks tinta di atasnya). */
+  --highlight:      #FFD400;
+  --highlight-ink:  #0A0A0A;
 
-  /* Tiga pos dana. Warna hanya penguat — status tidak pernah
-     disampaikan lewat warna saja (lihat komponen matrik). */
-  --pos-iuran:      #1B6B4C;
-  --pos-ipal:       #2A5F8F;
-  --pos-lelayu:     #96631F;
-  --pos-iuran-soft: #E8F1EC;
-  --pos-ipal-soft:  #E7EFF7;
-  --pos-lelayu-soft:#F6EEDF;
+  --critical:       #E8353A;
+  --critical-soft:  #FCE7E7;
+  --critical-line:  #E8353A;
 
-  --focus:          #1B6B4C;
-  --focus-ring:     0 0 0 3px var(--paper), 0 0 0 5px var(--focus);
+  /* Tiga pos dana — warna hanya penguat, tidak pernah satu-satunya
+     penyampai makna (selalu didampingi huruf I/P/L, lihat komponen matrik).
+     Iuran = biru, IPAL = kuning, Lelayu = merah, meniru badge aplikasi
+     referensi. */
+  --pos-iuran:      #2148F5;
+  --pos-ipal:       #FFD400;
+  --pos-lelayu:     #E8353A;
+  --pos-iuran-soft: #E7ECFE;
+  --pos-ipal-soft:  #FFF6D1;
+  --pos-lelayu-soft:#FCE7E7;
 
-  /* Latar bergerak — opasitas sengaja sangat rendah (CP-07).
-     Batas atasnya ditentukan oleh keterbacaan teks, bukan selera. */
-  --aurora-a:       #1B6B4C;
-  --aurora-b:       #96631F;
-  --aurora-opacity: 0.055;
-  --grid-opacity:   0.5;
-  --grain-opacity:  0.035;
+  /* Kuning murni terlalu terang untuk jadi warna TEKS di atas putih (gagal
+     kontras AA). Dipakai khusus di tempat pos-ipal muncul sebagai warna
+     teks/ikon, bukan sebagai isian lencana — nilai ini sudah diverifikasi
+     Bootstrap sebagai teks amber yang aman di atas putih (≥4.5:1). */
+  --pos-ipal-ink:   #664D03;
+
+  --focus:          #2148F5;
+  --focus-ring:     0 0 0 2px var(--paper), 0 0 0 4px var(--focus);
+
+  /* Latar bergerak lama (aurora blur + butiran kertas) DIMATIKAN — blur
+     lembut bertentangan dengan bahasa neo-brutalist yang tegas dan datar.
+     Elemen DOM-nya tetap ada (struktur tidak diubah), hanya opasitasnya
+     dinolkan lewat token di sini. Kisi garis tetap ada, diredam halus. */
+  --aurora-a:       #2148F5;
+  --aurora-b:       #E8353A;
+  --aurora-opacity: 0;
+  --grid-opacity:   0.35;
+  --grain-opacity:  0;
 
   /* --- Tipografi ---------------------------------------------------------- */
   --font-display: 'Archivo', 'Segoe UI', system-ui, sans-serif;
@@ -75,9 +96,9 @@
   --lh-base:  1.6;
   --lh-loose: 1.75;
 
-  --ls-display: -0.03em;
-  --ls-tight:   -0.015em;
-  --ls-label:    0.12em;
+  --ls-display: -0.01em;   /* brutalist: tracking netral, bukan ketat editorial */
+  --ls-tight:    0em;
+  --ls-label:    0.1em;
 
   /* --- Spasi (kelipatan 4) ------------------------------------------------ */
   --sp-1:  0.25rem;
@@ -97,22 +118,32 @@
   --container: 1240px;
   --container-narrow: 860px;
 
-  /* --- Bentuk ------------------------------------------------------------- */
-  --r-sm:   6px;
-  --r-md:   10px;
-  --r-lg:   16px;
-  --r-xl:   22px;
-  --r-pill: 999px;
+  /* --- Bentuk --------------------------------------------------------------
+     Sudut tajam di mana-mana — ciri utama neo-brutalist. Karena hampir
+     semua komponen memakai variabel --r-*, mengubahnya di sini saja sudah
+     menajamkan seluruh situs tanpa menyentuh components.css. */
+  --r-sm:   0px;
+  --r-md:   0px;
+  --r-lg:   0px;
+  --r-xl:   0px;
+  --r-pill: 999px;   /* pil/lencana bulat tetap bulat — itu bahasa visual sendiri */
 
-  /* Bayangan sengaja nyaris tak terlihat. Elevasi editorial dibawa garis. */
-  --sh-1: 0 1px 2px rgba(20, 22, 26, 0.04);
-  --sh-2: 0 2px 6px rgba(20, 22, 26, 0.05), 0 1px 2px rgba(20, 22, 26, 0.04);
-  --sh-3: 0 12px 32px -12px rgba(20, 22, 26, 0.14);
+  /* Ketebalan border struktural (kartu, tombol, panel, tabel). */
+  --bw-1: 1.5px;   /* pemisah internal ringan */
+  --bw-2: 2px;      /* standar: kartu, tombol, input */
+  --bw-3: 3px;      /* elemen hero/penekanan tinggi */
+
+  /* Bayangan keras offset, bukan blur lembut. Memakai var(--ink) supaya
+     otomatis menyesuaikan saat mode gelap (ink jadi terang → bayangan
+     ikut terang) tanpa perlu didefinisikan ulang di blok dark mode. */
+  --sh-1: 2px 2px 0 0 var(--ink);
+  --sh-2: 3px 3px 0 0 var(--ink);
+  --sh-3: 6px 6px 0 0 var(--ink);
 
   /* --- Gerak -------------------------------------------------------------- */
   --t-fast: 150ms;
-  --t-base: 240ms;
-  --t-slow: 380ms;
+  --t-base: 200ms;   /* sedikit lebih cepat — brutalist terasa tegas, bukan mengalun */
+  --t-slow: 320ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in:  cubic-bezier(0.7, 0, 0.84, 0);
   --ease-mid: cubic-bezier(0.4, 0, 0.2, 1);
@@ -131,50 +162,55 @@
 }
 
 /* --- Mode gelap ----------------------------------------------------------
-   Bukan hasil pembalikan. Pasangan kontras dihitung ulang: aksen dinaikkan
-   luminansinya supaya tetap ≥4.5:1 di atas permukaan gelap. */
+   Bukan hasil pembalikan. Latar jadi tinta pekat, border jadi terang,
+   bayangan keras memakai var(--ink) yang sudah terang di sini — otomatis
+   ikut tanpa didefinisikan ulang. Kuning tetap kuning (kontras bagus di
+   atas gelap); merah/biru dinaikkan sedikit luminansinya. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper:          #101113;
-    --surface:        #17191C;
-    --surface-alt:    #1E2124;
-    --surface-sunk:   #131518;
+    --paper:          #0B0B0C;
+    --surface:        #141415;
+    --surface-alt:    #1C1C1D;
+    --surface-sunk:   #101011;
 
-    --ink:            #F2F1EC;
-    --ink-2:          #A8ABB2;
-    --ink-3:          #878B93;
+    --ink:            #F5F5F0;
+    --ink-2:          #C7C7C2;
+    --ink-3:          #94948E;
 
-    --line:           #2A2D31;
-    --line-soft:      #212428;
-    --line-strong:    #F2F1EC;
+    --line:           #F5F5F0;
+    --line-soft:      #2C2C2C;
+    --line-strong:    #F5F5F0;
 
-    --accent:         #4FBF8B;
-    --accent-hover:   #6FD2A3;
-    --accent-soft:    #163025;
-    --accent-line:    #27503E;
+    --accent:         #5C7CFF;
+    --accent-hover:   #7C97FF;
+    --accent-soft:    #16203D;
+    --accent-line:    #5C7CFF;
 
-    --critical:       #E8776D;
-    --critical-soft:  #331C1A;
-    --critical-line:  #55302C;
+    --highlight:      #FFD400;
+    --highlight-ink:  #0A0A0A;
 
-    --pos-iuran:      #4FBF8B;
-    --pos-ipal:       #6BA3DB;
-    --pos-lelayu:     #D4A34A;
-    --pos-iuran-soft: #163025;
-    --pos-ipal-soft:  #16232F;
-    --pos-lelayu-soft:#2E2517;
+    --critical:       #FF6B6F;
+    --critical-soft:  #3A1416;
+    --critical-line:  #FF6B6F;
 
-    --focus:          #4FBF8B;
-    --focus-ring:     0 0 0 3px var(--paper), 0 0 0 5px var(--focus);
+    --pos-iuran:      #5C7CFF;
+    --pos-ipal:       #FFD400;
+    --pos-lelayu:     #FF6B6F;
+    --pos-iuran-soft: #16203D;
+    --pos-ipal-soft:  #332B00;
+    --pos-lelayu-soft:#3A1416;
 
-    --aurora-a:       #1B6B4C;
-    --aurora-b:       #96631F;
-    --aurora-opacity: 0.10;
-    --grid-opacity:   0.35;
-    --grain-opacity:  0.022;
+    /* Di atas gelap, kuning murni punya kontras bagus sebagai teks —
+       tidak perlu varian gelap terpisah seperti di mode terang. */
+    --pos-ipal-ink:   #FFD400;
 
-    --sh-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --sh-2: 0 2px 8px rgba(0, 0, 0, 0.45);
-    --sh-3: 0 14px 36px -14px rgba(0, 0, 0, 0.7);
+    --focus:          #5C7CFF;
+    --focus-ring:     0 0 0 2px var(--paper), 0 0 0 4px var(--focus);
+
+    --aurora-a:       #2148F5;
+    --aurora-b:       #E8353A;
+    --aurora-opacity: 0;
+    --grid-opacity:   0.25;
+    --grain-opacity:  0;
   }
 }

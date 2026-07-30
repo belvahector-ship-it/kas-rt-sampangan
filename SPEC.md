@@ -73,39 +73,53 @@ Enam langkah, dan langkah 4–5 adalah inti produknya. Bila pencarian nama teras
 atau matriknya perlu digulir ke samping untuk menemukan bulan yang dicari, alur ini
 gagal meskipun setiap halaman tampak bagus.
 
-## 5. Design tokens — "Editorial Ledger"
+## 5. Design tokens — "Neo-Brutalist RT" (CP-19, menggantikan "Editorial Ledger")
 
 ```
-Kertas (bg)      #FAFAF8   surface #FFFFFF   surface-alt #F2F1EC
-Tinta            #14161A   sekunder #55585F   redup #8A8D94
-Garis            #E4E2DA   garis-tegas #14161A
-Aksen (uang)     #1B6B4C   hover #14543C   lembut #E8F1EC
-Kritis (keluar)  #B4423A   lembut #F7E9E7
-Netral pos       Iuran #1B6B4C · IPAL #2A5F8F · Lelayu #96631F
+Kertas (bg)      #FFFFFF   surface #FFFFFF   surface-alt #F5F5F0
+Tinta            #0A0A0A   sekunder #38383A   redup #5C5C5E
+Garis            #0A0A0A   (border struktural = tinta penuh, bukan abu tipis)
+Aksen (biru)     #2148F5   hover #1636C2   lembut #E7ECFE
+Sorot (kuning)   #FFD400   teks di atasnya SELALU tinta gelap, bukan putih
+Kritis (merah)   #E8353A   lembut #FCE7E7
+Pos dana         Iuran #2148F5 (biru) · IPAL #FFD400 (kuning) · Lelayu #E8353A (merah)
+                 — meniru lencana huruf I/P/L aplikasi referensi
+Pos-ipal-ink     #664D03   varian gelap KHUSUS untuk teks (kuning murni gagal
+                 kontras AA di atas putih); di mode gelap sama dengan --pos-ipal
 
-Display          Archivo        600 / 700
+Display          Archivo        700 (tebal, netral — bukan tracking ketat editorial)
 Teks             Inter          400 / 500 / 600
 Angka            JetBrains Mono 500 / 700, tabular
 
 Basis            17px, line-height 1.6            <- dinaikkan untuk warga sepuh (CP-06)
 Skala tipe       12 13 15 17 20 26 34 46 62 (rem, clamp untuk display)
 Spasi            4 8 12 16 24 32 48 64 96 128
-Radius           sm 6px · md 10px · lg 16px · pill 999px
-Bayangan         sangat tipis; kedalaman dibawa garis rambut, bukan blur
-Gerak            cepat 150ms · dasar 240ms · lambat 380ms · masuk cubic-bezier(.16,1,.3,1)
+Radius           0px di semua kartu/tombol/input — sudut tajam ciri utama gaya ini.
+                 Pil/lencana bulat (999px) tetap bulat.
+Border            standar 2px, elemen hero 3px, semua warna --line (tinta penuh)
+Bayangan         KERAS, offset, tanpa blur: 2px/3px/6px, memakai var(--ink) supaya
+                 otomatis menyesuaikan mode gelap
+Gerak            cepat 150ms · dasar 200ms · lambat 320ms · masuk cubic-bezier(.16,1,.3,1)
 Breakpoint       480 · 720 · 960 · 1200 · 1440
 Target sentuh    minimal 44×44px, jarak antar target minimal 8px
 ```
 
-**Arah:** editorial / annual-report, bukan dashboard SaaS. Kedalaman dibentuk oleh
-garis rambut dan ruang kosong, bukan oleh bayangan bertumpuk.
+**Arah:** neo-brutalist tegas — border tebal, sudut tajam, bayangan keras offset,
+palet kuning/biru/merah/tinta. Diadaptasi dari aplikasi referensi
+`keuangan-rt-clone`, tapi tetap rapi dan mudah dibaca: hanya kartu/tombol/panel
+utama yang dapat border tebal + bayangan; pemisah internal (baris tabel, daftar)
+tetap tipis supaya tidak berisik. Interaksi tombol memakai pola "terangkat saat
+hover, tertekan rata saat diklik" (bayangan hilang, elemen bergeser sejauh
+offsetnya) — ciri khas gaya ini.
 
 **Mode gelap:** ya, mengikuti `prefers-color-scheme`, dengan pasangan kontras yang
-diverifikasi terpisah — bukan hasil pembalikan warna.
+diverifikasi terpisah — bukan hasil pembalikan warna. Bayangan keras otomatis ikut
+berubah warna karena memakai `var(--ink)` yang sudah terang di mode gelap.
 
-**Latar bergerak (CP-07):** tiga lapisan di belakang konten — butiran kertas, dua
-gumpalan aurora (opasitas 4–7%, siklus 45–70 detik), dan kisi garis rambut. Hanya
-`transform` dan `opacity`. Berhenti total pada `prefers-reduced-motion: reduce`.
+**Latar bergerak (CP-07, dinonaktifkan oleh CP-19):** elemen DOM aurora/butiran
+kertas tetap ada di setiap halaman (struktur tidak diubah), tapi opasitasnya
+dinolkan lewat token — blur lembut bertentangan dengan bahasa neo-brutalist yang
+datar dan tegas. Kisi garis rambut tetap ada, diredam halus.
 
 **Anggaran animasi:** maksimal dua elemen bergerak per layar. Reveal saat gulir
 (stagger 60ms), angka menghitung naik saat pertama terlihat, garis bawah tertarik saat

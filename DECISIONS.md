@@ -515,3 +515,89 @@ satu-satunya penyampai makna. Perubahan ini menghapus komponen `.pay`
 **Reversible:** ya.
 
 **Status:** confirmed
+
+---
+
+## CP-19 · Build · 2026-07-31
+
+**Decision:** Seluruh tema visual diganti dari "Editorial Ledger" (kertas
+hangat, garis rambut, bayangan nyaris tak terlihat) menjadi
+**"Neo-Brutalist RT"** — palet kuning `#FFD400` / biru `#2148F5` / merah
+`#E8353A` / tinta `#0A0A0A`, sudut tajam (radius 0), border tebal 2–3px,
+bayangan keras offset tanpa blur. Diadaptasi dari palet
+`keuangan-rt-clone/public/css/tokens.css` dan pola visual aplikasi
+referensi langsung (bukan hanya kode, juga diamati lewat browser).
+
+**Options considered:** (a) hanya mengambil warnanya, tetap dalam bahasa
+visual Editorial Ledger yang lebih tenang; (b) menerapkan penuh neo-
+brutalist (border tebal, bayangan keras, sudut tajam) sekaligus menjaga
+keterbacaan lewat disiplin — hanya elemen struktural (kartu/tombol/panel)
+yang dapat perlakuan tebal, pemisah internal tetap tipis.
+
+**Why:** User eksplisit meminta opsi (b) setelah ditawari opsi (a) di
+turn sebelumnya — "terapkan full neo-brutalist namun tetap dengan konsep
+rapi dan mudah terbaca". Instruksi tegas: jangan ubah struktur apa pun
+yang sudah ada, hanya terapkan tema. Ini dicapai HAMPIR SELURUHNYA lewat
+`tokens.css` saja — karena setiap komponen sudah memakai variabel
+`--r-*` (radius) dan `--sh-*` (bayangan) alih-alih nilai mentah, mengubah
+definisi token itu di satu tempat otomatis menajamkan sudut dan mengeraskan
+bayangan di SELURUH situs tanpa menyentuh `components.css`. Hanya lebar
+border (yang sebelumnya di-hardcode `1px`, bukan variabel) dan penambahan
+`box-shadow` pada kartu yang butuh sentuhan langsung di `components.css` —
+persis "merapikan jika dibutuhkan" yang diizinkan.
+
+**Temuan penting saat eksekusi — kuning sebagai warna teks:** `--pos-ipal`
+asli aplikasi referensi (`#FFD400`) gagal kontras AA sebagai warna TEKS di
+atas latar putih (~1.9:1), meski sebagai warna ISIAN lencana bulat (dengan
+teks tinta gelap di atasnya) kontrasnya bagus. Aplikasi referensi sendiri
+tampaknya hanya memakai kuning sebagai isian, tidak pernah sebagai teks
+polos. Ditambahkan token terpisah `--pos-ipal-ink` (`#664D03`, warna amber
+gelap yang sudah divalidasi Bootstrap sebagai aman di atas putih) khusus
+untuk tempat pos-ipal dipakai sebagai `color:` teks (kartu progres IPAL,
+badge, notice) — bukan `background:` (dot terisi, gradien, bar). Di mode
+gelap kedua token disamakan karena kuning-di-atas-gelap justru kontras
+bagus. Tanpa perbaikan ini, permintaan eksplisit "mudah terbaca" akan
+gagal tepat di satu tempat yang paling sering dilihat warga.
+
+**Temuan kedua — `overflow: hidden` memotong `box-shadow` sendiri:**
+`.panel`, `.balance`, `.doorway`, `.event` semula memakai
+`overflow: hidden` untuk memotong sudut membulat anak elemen mengikuti
+radius kartu. Karena radius sekarang 0 di semua kartu, alasan itu hilang
+— dan `overflow: hidden` pada elemen yang sama dengan `box-shadow` justru
+memotong bayangannya sendiri (perilaku standar CSS). Dihapus dari keempat
+selector itu; elemen dekoratif anak yang sebelumnya bergantung padanya
+(garis aksen `::before`/`::after` di `.balance`/`.doorway`, gambar yang
+membesar di `.event__media`) tetap aman karena posisinya inset atau punya
+pemotong overflow sendiri di elemen anak.
+
+**Matrik (fokus utama permintaan):** `.dot-tri` diubah dari titik polos
+7px menjadi lencana bulat 17px (14px di mobile) berisi huruf **I/P/L**,
+meniru pola aplikasi referensi persis — jauh lebih terbaca daripada warna
+saja. Terisi = lencana penuh warna pos dengan huruf kontras (biru/merah
+→ putih, kuning → tinta gelap); kosong = cincin outline dengan huruf
+redup. Legenda di `iuran.html` diperbarui menampilkan huruf yang sama.
+
+**Latar bergerak (CP-07) dinonaktifkan** — blur aurora lembut bertentangan
+dengan bahasa datar-tegas neo-brutalist. Elemen DOM-nya TIDAK dihapus dari
+HTML (struktur tidak diubah); hanya opasitasnya dinolkan lewat token
+`--aurora-opacity`/`--grain-opacity` di `tokens.css`.
+
+**Header** kehilangan efek kaca buram (`backdrop-filter: blur`) — diganti
+latar solid opak dengan border bawah tinta 2px selalu tampak, sesuai
+kesederhanaan header aplikasi referensi.
+
+**Affects:** `assets/css/tokens.css` (ditulis ulang penuh — lihat juga
+CP-05, digantikan), `assets/css/components.css` (lebar border ~21 kartu/
+tombol/input dinaikkan ke `var(--bw-2)`, `box-shadow` ditambahkan ke
+`.card`/`.panel`/`.balance`/`.stat`/`.doorway`/`.event`/`.contact`/
+`.person`/`.matrix-wrap`/`.btn`, `overflow: hidden` dihapus dari 4
+selector, `.dot-tri`/`.cell-pagu` ditulis ulang, `.site-header` ditulis
+ulang), `assets/js/pages/iuran.js` (huruf I/P/L di markup lencana,
+pemisahan `warna`/`teks` di kartu progres), `iuran.html` (legenda),
+`SPEC.md` §5.
+
+**Reversible:** ya — hampir seluruhnya lewat `tokens.css`; sisanya
+(border-width, shadow, overflow, markup huruf) tercatat eksplisit di
+atas untuk memudahkan pembalikan kalau diperlukan.
+
+**Status:** confirmed

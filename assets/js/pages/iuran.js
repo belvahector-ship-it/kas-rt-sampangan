@@ -39,15 +39,18 @@ function renderProgres() {
 
   const kartu = [
     {
-      pos: 'iuran', nama: 'Iuran Wajib', warna: 'var(--pos-iuran)',
+      pos: 'iuran', nama: 'Iuran Wajib', warna: 'var(--pos-iuran)', teks: 'var(--pos-iuran)',
       terkumpul: stat.setoranIuran, target: stat.targetIuran,
     },
     {
-      pos: 'ipal', nama: 'IPAL Bulanan', warna: 'var(--pos-ipal)',
+      /* IPAL = kuning murni. Dipakai apa adanya untuk titik & bilah progres
+         (isian, bukan teks), tapi angka rupiah butuh varian --pos-ipal-ink
+         yang gelap supaya tetap terbaca di atas kartu putih. */
+      pos: 'ipal', nama: 'IPAL Bulanan', warna: 'var(--pos-ipal)', teks: 'var(--pos-ipal-ink)',
       terkumpul: stat.setoranIpal, target: stat.targetIpal,
     },
     {
-      pos: 'lelayu', nama: 'Dana Lelayu', warna: 'var(--pos-lelayu)',
+      pos: 'lelayu', nama: 'Dana Lelayu', warna: 'var(--pos-lelayu)', teks: 'var(--pos-lelayu)',
       terkumpul: stat.setoranLelayu,
       /* Lelayu tetap sukarela — ini BUKAN kewajiban seperti Iuran/IPAL.
          "Target" di sini hanya ada kalau bendahara mengisi nominal standar
@@ -74,7 +77,7 @@ function renderProgres() {
           <span style="width:10px;height:10px;border-radius:50%;background:${k.warna};flex:none"></span>
           <span class="stat__label">${amankan(k.nama)}</span>
         </div>
-        <p class="stat__value num" style="color:${k.warna}">${amankan(rupiah(k.terkumpul))}</p>
+        <p class="stat__value num" style="color:${k.teks}">${amankan(rupiah(k.terkumpul))}</p>
         ${k.target ? `<div class="progress mt-3"><div class="progress__bar" style="--bar-color:${k.warna};width:${persen}%"></div></div>` : ''}
         <p class="stat__foot mt-3">${footer}</p>
       </div>`;
@@ -118,9 +121,9 @@ function renderMatrik() {
 
       return `<td>
         <span class="dot-tri" title="${amankan(judul)}">
-          <span class="dot-tri__dot dot-tri__dot--iuran${iuranPaid ? ' is-terisi' : ''}"></span>
-          <span class="dot-tri__dot dot-tri__dot--ipal${ipalPaid ? ' is-terisi' : ''}"></span>
-          <span class="dot-tri__dot dot-tri__dot--lelayu${lelayuPaid ? ' is-terisi' : ''}"></span>
+          <span class="dot-tri__dot dot-tri__dot--iuran${iuranPaid ? ' is-terisi' : ''}" aria-hidden="true">I</span>
+          <span class="dot-tri__dot dot-tri__dot--ipal${ipalPaid ? ' is-terisi' : ''}" aria-hidden="true">P</span>
+          <span class="dot-tri__dot dot-tri__dot--lelayu${lelayuPaid ? ' is-terisi' : ''}" aria-hidden="true">L</span>
           <span class="sr-only">${amankan(judul)}</span>
         </span>
       </td>`;
