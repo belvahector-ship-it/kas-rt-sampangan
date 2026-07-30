@@ -32,6 +32,8 @@ export const CONFIG = {
     Lelayu: '',
     Transaksi: '',
     Kegiatan: '',
+    BankBPD: '',
+    DanaOperasional: '',
   },
 
   /* ------------------------------------------------------------------
@@ -46,6 +48,8 @@ export const CONFIG = {
     lelayu: 'Lelayu',
     transaksi: 'Transaksi',
     kegiatan: 'Kegiatan',
+    bankBpd: 'BankBPD',
+    danaOperasional: 'DanaOperasional',
   },
 
   /* Berkas cadangan yang ikut ter-commit di repo (CP-08). */

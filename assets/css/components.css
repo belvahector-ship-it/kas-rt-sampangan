@@ -1349,3 +1349,60 @@
 }
 
 .person__name { font-weight: 600; font-size: var(--fs-sm); }
+
+/* --------------------------------------------------------------------------
+   TABEL SEDERHANA — dipakai halaman Rekening BPD, Dana Operasional,
+   dan rincian kategori di Laporan Kas. Baca-saja, tanpa kolom Tindakan.
+   -------------------------------------------------------------------------- */
+
+.simple-table-wrap { overflow-x: auto; }
+
+.simple-table { min-width: 560px; font-size: var(--fs-sm); }
+
+.simple-table thead th {
+  padding: var(--sp-3) var(--sp-5);
+  text-align: left;
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.simple-table thead th.num-col { text-align: right; }
+
+.simple-table tbody td {
+  padding: var(--sp-3) var(--sp-5);
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
+}
+
+.simple-table tbody tr:last-child td { border-bottom: none; }
+.simple-table tbody tr:hover td { background: var(--surface-alt); }
+
+.simple-table td.num-col { text-align: right; white-space: nowrap; }
+
+.simple-table .cell-strong { font-weight: 600; }
+.simple-table .cell-dim { color: var(--ink-3); font-size: var(--fs-xs); }
+
+/* --------------------------------------------------------------------------
+   KARTU SUMBER DANA — kutipan konteks singkat di atas tabel/ledger,
+   dipakai untuk menjelaskan asal dan sifat sebuah kantong dana.
+   -------------------------------------------------------------------------- */
+
+.source-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+.source-note svg { width: 19px; height: 19px; flex: none; margin-top: 2px; color: var(--ink-3); }
+.source-note strong { color: var(--ink); }

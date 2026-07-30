@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-pola="Laporan Kas — {rt}">Laporan Kas — RT 01/RW 04 Sampangan</title>
-<meta name="description" content="Jurnal kas masuk dan keluar RT 01/RW 04 Sampangan per bulan, lengkap dengan grafik tren dan rincian kategori.">
+<title data-pola="Bantuan Dana Operasional RT/RW — {rt}">Bantuan Dana Operasional RT/RW — RT 01/RW 04 Sampangan</title>
+<meta name="description" content="Pencatatan penggunaan dana bantuan operasional dari Pemkot/Kelurahan untuk RT 01/RW 04 Sampangan.">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%231B6B4C'/%3E%3Ctext x='12' y='16.5' font-family='Georgia,serif' font-size='13' font-weight='700' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,15 +54,9 @@
 
   <div class="page-head">
     <div class="container">
-      <p class="eyebrow eyebrow--accent reveal">Pertanggungjawaban Arus Kas</p>
-      <h1 class="page-head__title reveal">Laporan Kas</h1>
-      <div class="page-head__row reveal">
-        <p class="lede">Pemasukan dan pengeluaran kas warga, tercatat apa adanya per bulan.</p>
-        <label class="cluster">
-          <span class="fs-sm dim">Tampilkan</span>
-          <select class="select" id="pilih-bulan" aria-label="Pilih bulan laporan"></select>
-        </label>
-      </div>
+      <p class="eyebrow eyebrow--accent reveal">Kantong Dana Terpisah</p>
+      <h1 class="page-head__title reveal">Bantuan Dana Operasional RT/RW</h1>
+      <p class="lede reveal">Dana hibah dari Pemkot/Kelurahan untuk kegiatan operasional RT, dicatat terpisah dari kas swadaya warga.</p>
     </div>
   </div>
 
@@ -72,74 +66,51 @@
     <div class="grid grid-3 reveal-group">
       <div class="stat reveal">
         <div class="stat__head">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17 10 10l4 4 7-7"/><path d="M15 7h6v6"/></svg>
-          <span class="stat__label" id="lbl-masuk">Kas Masuk</span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8.5" width="18" height="4" rx="1"/><path d="M5 12.5h14V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M12 8.5V21"/></svg>
+          <span class="stat__label">Saldo Awal Tahun Berjalan</span>
         </div>
-        <p class="stat__value num text-pos" data-nilai="0" data-target="masuk">&mdash;</p>
-      </div>
-      <div class="stat reveal">
-        <div class="stat__head">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7 10 14l4-4 7 7"/><path d="M15 17h6v-6"/></svg>
-          <span class="stat__label" id="lbl-keluar">Kas Keluar</span>
-        </div>
-        <p class="stat__value num text-neg" data-nilai="0" data-target="keluar">&mdash;</p>
+        <p class="stat__value num" data-nilai="0" data-target="saldoAwal">&mdash;</p>
       </div>
       <div class="stat reveal">
         <div class="stat__head">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v6c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6Z"/><path d="m9 12 2 2 4-4"/></svg>
-          <span class="stat__label">Selisih</span>
+          <span class="stat__label">Sisa Saldo Saat Ini</span>
         </div>
-        <p class="stat__value num" id="nilai-selisih">&mdash;</p>
+        <p class="stat__value num text-pos" data-nilai="0" data-target="sisa">&mdash;</p>
+      </div>
+      <div class="stat reveal">
+        <div class="stat__head">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7 10 14l4-4 7 7"/><path d="M15 17h6v-6"/></svg>
+          <span class="stat__label">Total Terpakai</span>
+        </div>
+        <p class="stat__value num text-neg" data-nilai="0" data-target="terpakai">&mdash;</p>
       </div>
     </div>
   </section>
 
-  <section class="container section" style="padding-top:0">
+  <section class="container" style="padding-top:0">
+    <div class="source-note reveal" id="wadah-sumber">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+      <div>
+        <strong>Ini bukan bagian dari Kas Utama.</strong> Dana ini bersumber dari
+        <span id="teks-sumber">Pemkot/Kelurahan</span>, bukan iuran warga, dan aturan pakainya
+        berbeda dari kas swadaya. Saldo awal berubah manual setiap kali dana baru cair.
+        Lihat juga <a class="link-draw" href="bank-bpd.html">Kas Warga di Rekening BPD</a>.
+      </div>
+    </div>
+  </section>
+
+  <section class="container section" style="padding-top:var(--sp-6)">
     <div class="panel reveal">
       <div class="panel__head">
         <div>
-          <h2 class="panel__title">Tren 12 Bulan</h2>
-          <p class="panel__desc">Perbandingan kas masuk dan keluar sepanjang tahun buku.</p>
-        </div>
-        <div class="chart-legend" style="margin-top:0">
-          <span class="chart-legend__item"><span class="chart-legend__swatch" style="background:var(--accent)"></span>Kas Masuk</span>
-          <span class="chart-legend__item"><span class="chart-legend__swatch" style="background:var(--critical)"></span>Kas Keluar</span>
+          <h2 class="panel__title">Riwayat Penggunaan Dana</h2>
+          <p class="panel__desc">Diurutkan dari yang terbaru.</p>
         </div>
       </div>
-      <div class="panel__body" id="wadah-grafik">
-        <div class="skeleton" style="height:260px;border-radius:var(--r-md)"></div>
+      <div class="panel__body panel__body--flush" id="wadah-riwayat">
+        <div style="padding:var(--sp-6)"><div class="skeleton" style="height:160px"></div></div>
       </div>
-    </div>
-  </section>
-
-  <section class="container section" style="padding-top:0">
-    <div class="ledger reveal-group">
-      <div class="reveal">
-        <div class="ledger__head ledger__head--in">
-          <span class="cluster"><span class="live-dot"></span>Kas Masuk</span>
-          <span class="ledger__total num" id="total-masuk-list">Rp 0</span>
-        </div>
-        <div class="ledger__list" id="daftar-masuk"></div>
-      </div>
-      <div class="reveal">
-        <div class="ledger__head ledger__head--out">
-          <span>Kas Keluar</span>
-          <span class="ledger__total num" id="total-keluar-list">Rp 0</span>
-        </div>
-        <div class="ledger__list" id="daftar-keluar"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="container section" style="padding-top:0">
-    <div class="panel reveal">
-      <div class="panel__head">
-        <div>
-          <h2 class="panel__title">Rincian per Kategori</h2>
-          <p class="panel__desc">Akumulasi seluruh transaksi manual sepanjang tahun buku, di luar setoran matrik.</p>
-        </div>
-      </div>
-      <div class="panel__body panel__body--flush" id="wadah-kategori"></div>
     </div>
   </section>
 
@@ -154,10 +125,10 @@
     <div>
       <p class="site-footer__title">Halaman</p>
       <a class="site-footer__link" href="index.html" style="display:block">Beranda</a>
+      <a class="site-footer__link" href="laporan.html" style="display:block">Laporan Kas</a>
       <a class="site-footer__link" href="iuran.html" style="display:block">Iuran Warga</a>
       <a class="site-footer__link" href="kegiatan.html" style="display:block">Kegiatan</a>
       <a class="site-footer__link" href="bank-bpd.html" style="display:block">Rekening BPD</a>
-      <a class="site-footer__link" href="dana-operasional.html" style="display:block">Dana Operasional</a>
       <a class="site-footer__link" href="tentang.html" style="display:block">Tentang</a>
     </div>
     <div>
@@ -172,6 +143,6 @@
   </div>
 </footer>
 
-<script type="module" src="assets/js/pages/laporan.js"></script>
+<script type="module" src="assets/js/pages/dana-operasional.js"></script>
 </body>
 </html>

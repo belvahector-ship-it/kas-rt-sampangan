@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-pola="Laporan Kas — {rt}">Laporan Kas — RT 01/RW 04 Sampangan</title>
-<meta name="description" content="Jurnal kas masuk dan keluar RT 01/RW 04 Sampangan per bulan, lengkap dengan grafik tren dan rincian kategori.">
+<title data-pola="Kas Warga di Rekening BPD — {rt}">Kas Warga di Rekening BPD — RT 01/RW 04 Sampangan</title>
+<meta name="description" content="Rincian saldo kas warga RT 01/RW 04 Sampangan yang disimpan di rekening bank BPD, per alokasi.">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%231B6B4C'/%3E%3Ctext x='12' y='16.5' font-family='Georgia,serif' font-size='13' font-weight='700' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,43 +54,40 @@
 
   <div class="page-head">
     <div class="container">
-      <p class="eyebrow eyebrow--accent reveal">Pertanggungjawaban Arus Kas</p>
-      <h1 class="page-head__title reveal">Laporan Kas</h1>
-      <div class="page-head__row reveal">
-        <p class="lede">Pemasukan dan pengeluaran kas warga, tercatat apa adanya per bulan.</p>
-        <label class="cluster">
-          <span class="fs-sm dim">Tampilkan</span>
-          <select class="select" id="pilih-bulan" aria-label="Pilih bulan laporan"></select>
-        </label>
-      </div>
+      <p class="eyebrow eyebrow--accent reveal">Kantong Dana Terpisah</p>
+      <h1 class="page-head__title reveal">Kas Warga di Rekening BPD</h1>
+      <p class="lede reveal">Sebagian kas warga disimpan di rekening bank, bukan dipegang tunai. Berikut rinciannya per alokasi.</p>
     </div>
   </div>
 
   <div class="container mt-5" data-sumber-data></div>
 
   <section class="container section" style="padding-top:var(--sp-6)">
-    <div class="grid grid-3 reveal-group">
-      <div class="stat reveal">
-        <div class="stat__head">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17 10 10l4 4 7-7"/><path d="M15 7h6v6"/></svg>
-          <span class="stat__label" id="lbl-masuk">Kas Masuk</span>
+    <div class="grid grid-2 reveal-group" style="gap:var(--sp-6);align-items:start">
+
+      <div class="reveal">
+        <div class="balance">
+          <div class="balance__label">
+            <p class="eyebrow">Total Saldo Rekening BPD</p>
+          </div>
+          <p class="balance__amount num" data-nilai="0" data-target="totalBpd">
+            <span class="skeleton skeleton-line" style="width:12ch"></span>
+          </p>
+          <p class="balance__note">Rekening bank RT01/RW04, dipecah menjadi beberapa alokasi di bawah.</p>
         </div>
-        <p class="stat__value num text-pos" data-nilai="0" data-target="masuk">&mdash;</p>
       </div>
-      <div class="stat reveal">
-        <div class="stat__head">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7 10 14l4-4 7 7"/><path d="M15 17h6v-6"/></svg>
-          <span class="stat__label" id="lbl-keluar">Kas Keluar</span>
+
+      <div class="reveal source-note">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10 12 4l9 6"/><path d="M4 10h16v9H4z"/><path d="M4 19h16"/><path d="M8 13v4M12 13v4M16 13v4"/></svg>
+        <div>
+          <strong>Ini bukan bagian dari Kas Utama.</strong> Saldo di halaman ini terpisah dari
+          "Saldo Kas Saat Ini" di Beranda. Angkanya dicocokkan manual oleh bendahara setiap kali
+          buku tabungan berubah, bukan dihitung dari jurnal transaksi. Lihat juga
+          <a class="link-draw" href="dana-operasional.html">Dana Operasional RT/RW</a>,
+          kantong dana ketiga yang juga terpisah.
         </div>
-        <p class="stat__value num text-neg" data-nilai="0" data-target="keluar">&mdash;</p>
       </div>
-      <div class="stat reveal">
-        <div class="stat__head">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v6c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6Z"/><path d="m9 12 2 2 4-4"/></svg>
-          <span class="stat__label">Selisih</span>
-        </div>
-        <p class="stat__value num" id="nilai-selisih">&mdash;</p>
-      </div>
+
     </div>
   </section>
 
@@ -98,48 +95,13 @@
     <div class="panel reveal">
       <div class="panel__head">
         <div>
-          <h2 class="panel__title">Tren 12 Bulan</h2>
-          <p class="panel__desc">Perbandingan kas masuk dan keluar sepanjang tahun buku.</p>
-        </div>
-        <div class="chart-legend" style="margin-top:0">
-          <span class="chart-legend__item"><span class="chart-legend__swatch" style="background:var(--accent)"></span>Kas Masuk</span>
-          <span class="chart-legend__item"><span class="chart-legend__swatch" style="background:var(--critical)"></span>Kas Keluar</span>
+          <h2 class="panel__title">Rincian Alokasi</h2>
+          <p class="panel__desc">Setiap alokasi punya tanggal pembaruan sendiri sesuai kapan terakhir dicocokkan ke buku tabungan fisik.</p>
         </div>
       </div>
-      <div class="panel__body" id="wadah-grafik">
-        <div class="skeleton" style="height:260px;border-radius:var(--r-md)"></div>
+      <div class="panel__body panel__body--flush" id="wadah-alokasi">
+        <div style="padding:var(--sp-6)"><div class="skeleton" style="height:160px"></div></div>
       </div>
-    </div>
-  </section>
-
-  <section class="container section" style="padding-top:0">
-    <div class="ledger reveal-group">
-      <div class="reveal">
-        <div class="ledger__head ledger__head--in">
-          <span class="cluster"><span class="live-dot"></span>Kas Masuk</span>
-          <span class="ledger__total num" id="total-masuk-list">Rp 0</span>
-        </div>
-        <div class="ledger__list" id="daftar-masuk"></div>
-      </div>
-      <div class="reveal">
-        <div class="ledger__head ledger__head--out">
-          <span>Kas Keluar</span>
-          <span class="ledger__total num" id="total-keluar-list">Rp 0</span>
-        </div>
-        <div class="ledger__list" id="daftar-keluar"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="container section" style="padding-top:0">
-    <div class="panel reveal">
-      <div class="panel__head">
-        <div>
-          <h2 class="panel__title">Rincian per Kategori</h2>
-          <p class="panel__desc">Akumulasi seluruh transaksi manual sepanjang tahun buku, di luar setoran matrik.</p>
-        </div>
-      </div>
-      <div class="panel__body panel__body--flush" id="wadah-kategori"></div>
     </div>
   </section>
 
@@ -154,9 +116,9 @@
     <div>
       <p class="site-footer__title">Halaman</p>
       <a class="site-footer__link" href="index.html" style="display:block">Beranda</a>
+      <a class="site-footer__link" href="laporan.html" style="display:block">Laporan Kas</a>
       <a class="site-footer__link" href="iuran.html" style="display:block">Iuran Warga</a>
       <a class="site-footer__link" href="kegiatan.html" style="display:block">Kegiatan</a>
-      <a class="site-footer__link" href="bank-bpd.html" style="display:block">Rekening BPD</a>
       <a class="site-footer__link" href="dana-operasional.html" style="display:block">Dana Operasional</a>
       <a class="site-footer__link" href="tentang.html" style="display:block">Tentang</a>
     </div>
@@ -172,6 +134,6 @@
   </div>
 </footer>
 
-<script type="module" src="assets/js/pages/laporan.js"></script>
+<script type="module" src="assets/js/pages/bank-bpd.js"></script>
 </body>
 </html>

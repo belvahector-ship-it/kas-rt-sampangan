@@ -46,6 +46,14 @@
       {
         "Kunci": "rekening_bank",
         "Nilai": ""
+      },
+      {
+        "Kunci": "dana_operasional_saldo_awal",
+        "Nilai": "25000000"
+      },
+      {
+        "Kunci": "dana_operasional_sumber",
+        "Nilai": "Pemkot/Kelurahan Sampangan"
       }
     ],
     "Warga": [
@@ -1042,6 +1050,33 @@
         "Gambar": "",
         "Status": "Selesai"
       }
-    ]
+    ],
+    "BankBPD": [
+      {
+        "Nama Alokasi": "Alokasi (Kas RT)",
+        "Saldo": 4199953,
+        "Diperbarui": "2025-07-12",
+        "Catatan": "Sesuai buku tabungan BPD, migrasi dari data awal"
+      },
+      {
+        "Nama Alokasi": "Alokasi (Ipal)",
+        "Saldo": 3138000,
+        "Diperbarui": "2025-07-12",
+        "Catatan": ""
+      },
+      {
+        "Nama Alokasi": "Alokasi (Sosial/Sukarela)",
+        "Saldo": 1291500,
+        "Diperbarui": "2025-07-12",
+        "Catatan": ""
+      },
+      {
+        "Nama Alokasi": "Alokasi (Pembangunan,dll)",
+        "Saldo": 0,
+        "Diperbarui": "2025-07-12",
+        "Catatan": ""
+      }
+    ],
+    "DanaOperasional": []
   }
 }

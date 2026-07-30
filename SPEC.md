@@ -49,6 +49,8 @@ dijawab, situs ini tidak ada gunanya.
 | Laporan Kas | `laporan.html` | pertanggungjawaban arus kas | pemilih bulan, ringkasan masuk/keluar/selisih, dua kolom jurnal, grafik tren 12 bulan, rincian per kategori |
 | Iuran Warga | `iuran.html` | cek status setoran pribadi | matrik 12 bulan × KK, tab Iuran/IPAL/Lelayu, pencarian nama, bilah progres per pos, legenda |
 | Kegiatan | `kegiatan.html` | pengumuman & agenda | kartu editorial bergambar, penyaring kategori, penanda mendatang/selesai |
+| Rekening BPD | `bank-bpd.html` | transparansi dana di rekening bank | total saldo rekening, rincian per alokasi, tanggal & catatan pembaruan |
+| Dana Operasional | `dana-operasional.html` | transparansi bantuan dana Pemkot/Kelurahan | saldo awal/sisa/terpakai, riwayat penggunaan dana |
 | Tentang | `tentang.html` | konteks & kontak | profil RT, susunan pengurus, cara membayar iuran, FAQ transparansi, kartu kontak bendahara |
 
 **Halaman hero (porsi desain terbesar):** Beranda. Ini satu-satunya halaman yang
@@ -150,14 +152,14 @@ hover. Tidak ada yang menggeser tata letak.
 
 ## 7. Model data (Google Spreadsheet)
 
-Tujuh lembar. Nama lembar **harus persis** seperti di bawah; nama kolom di baris 1.
+Sembilan lembar. Nama lembar **harus persis** seperti di bawah; nama kolom di baris 1.
 
 **`Pengaturan`** — pasangan kunci/nilai, supaya teks bisa diubah tanpa menyentuh kode
 
 | Kolom | Contoh |
 |---|---|
-| `Kunci` | `nama_rt`, `tahun_aktif`, `bendahara_nama`, `bendahara_wa`, `bendahara_alamat`, `bendahara_email`, `ketua_nama`, `sekretaris_nama` |
-| `Nilai` | `RT 01 / RW 04 Sampangan`, `2026`, `Belva Fahrozi C`, `085163210987`, … |
+| `Kunci` | `nama_rt`, `tahun_aktif`, `bendahara_nama`, `bendahara_wa`, `bendahara_alamat`, `bendahara_email`, `ketua_nama`, `sekretaris_nama`, `dana_operasional_saldo_awal`, `dana_operasional_sumber` |
+| `Nilai` | `RT 01 / RW 04 Sampangan`, `2026`, `Belva Fahrozi C`, `085163210987`, …, `25000000`, `Pemkot/Kelurahan Sampangan` |
 
 **`Warga`** — daftar kepala keluarga
 
@@ -196,6 +198,37 @@ bersifat sukarela sehingga tidak punya pagu.
 | `Kategori` | teks | mis. Rapat, Kerja Bakti, Sosial, Pengumuman |
 | `Gambar` | URL | opsional; kosong → kartu memakai latar tipografis |
 | `Status` | `Mendatang` \| `Selesai` | opsional; kalau kosong disimpulkan dari tanggal |
+
+**`BankBPD`** — snapshot saldo rekening bank RT, dipecah per alokasi (bukan jurnal
+transaksi — diedit manual oleh bendahara setiap kali buku tabungan berubah)
+
+| Kolom | Tipe | Catatan |
+|---|---|---|
+| `Nama Alokasi` | teks | mis. `Alokasi (Kas RT)`, `Alokasi (Ipal)`, `Alokasi (Sosial/Sukarela)` |
+| `Saldo` | angka | saldo terkini alokasi itu di rekening |
+| `Diperbarui` | `YYYY-MM-DD` | tanggal terakhir dicocokkan ke buku tabungan fisik |
+| `Catatan` | teks | opsional, mis. asal-usul saldo migrasi |
+
+**`DanaOperasional`** — jurnal penggunaan dana bantuan operasional dari
+Pemkot/Kelurahan. Saldo awal disimpan di `Pengaturan.dana_operasional_saldo_awal`;
+sisa saldo dan total terpakai **dihitung di situs**, bukan disimpan, supaya tidak
+bisa menyimpang dari saldo awal + jurnal.
+
+| Kolom | Tipe | Catatan |
+|---|---|---|
+| `Tanggal` | `YYYY-MM-DD` | |
+| `Pengguna` | teks | pihak yang memakai dana, mis. `Kelurahan Sampangan RW 4 RT 1` |
+| `Kategori` | teks | mis. `Kegiatan Sosial`, `Budaya` |
+| `Kegiatan` | teks | deskripsi keperluan |
+| `Nominal` | angka | jumlah yang terpakai |
+
+**Penting — tiga kantong dana ini terpisah, tidak dijumlah jadi satu:** Kas
+Utama (dari matrik + `Transaksi`, dipakai kartu saldo di Beranda), Rekening
+BPD, dan Dana Operasional adalah tiga pool uang yang berbeda sumber dan
+aturan pakainya. Situs referensi (`keuangan-rt`) memisahkannya secara
+eksplisit lewat halaman "Rekap Gabungan" yang menjumlah ketiganya HANYA untuk
+tampilan ringkasan — bukan menggabung datanya. Portal ini mengikuti pemisahan
+yang sama; lihat DECISIONS.md CP-14.
 
 **Relasi:** `Warga.Nama` 1—1 dengan baris di `Iuran`, `IPAL`, `Lelayu`. Nama yang ada
 di lembar matrik tapi tidak ada di `Warga` tetap ditampilkan dengan pagu 0, dan dicatat

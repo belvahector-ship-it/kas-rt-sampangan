@@ -316,3 +316,49 @@ memaksa reflow sinkron tanpa menunggu paint).
 **Reversible:** ya.
 
 **Status:** confirmed
+
+---
+
+## CP-14 · Discovery & Build · 2026-07-31
+
+**Decision:** Tambah dua halaman baru — **Rekening BPD** (`bank-bpd.html`)
+dan **Dana Operasional** (`dana-operasional.html`) — sebagai versi baca-saja
+dari dua halaman admin di aplikasi referensi (`/dashboard/bpd` dan
+`/dashboard/dana-operasional`). Kedua kantong dana ini **tidak digabung**
+ke dalam saldo Kas Utama yang sudah ada di Beranda; ditampilkan terpisah
+dan saling ditautkan.
+
+**Options considered:** (a) menjumlahkan saldo BPD dan Dana Operasional ke
+kartu saldo utama di Beranda supaya "satu angka besar"; (b) menampilkannya
+sebagai kantong terpisah dengan tautan silang, meniru struktur navigasi
+aplikasi referensi.
+
+**Why:** Saat mempelajari aplikasi referensi lewat browser, ditemukan halaman
+ketiga yang belum pernah dilihat sebelumnya — **"Rekap Gabungan"**
+(`/dashboard/rekap`) — yang secara eksplisit memperlakukan Kas Utama,
+Rekening BPD, dan Dana Operasional sebagai **tiga akun terpisah** dengan
+tipe berbeda (Kas Manual / Rekening Bank / Dana Hibah), dan hanya
+menjumlahkannya untuk satu baris ringkasan "Total Saldo Semua Akun" — bukan
+mencampur datanya. Ini mengonfirmasi bahwa memaksa ketiganya jadi satu
+angka di kartu saldo Beranda akan menyesatkan: Rekening BPD adalah uang
+fisik di bank (diedit manual per buku tabungan, bukan hasil jurnal), dan
+Dana Operasional adalah dana hibah pemerintah dengan aturan pakai berbeda
+dari kas swadaya warga. Menyamakan ketiganya membuat warga tidak bisa lagi
+membedakan "uang warga" dari "bantuan pemerintah" — justru mengaburkan
+transparansi yang jadi tujuan portal ini (SPEC.md §1).
+
+Halaman admin referensi (tombol Tambah/Sunting/Hapus/Import/Ekspor CSV)
+**tidak diadopsi** — konsisten dengan CP-02: portal ini baca-saja, tanpa
+login, tanpa operasi tulis dari sisi klien.
+
+**Affects:** `SPEC.md` §3 §7, `assets/js/config.js` (`SHEETS.bankBpd`,
+`SHEETS.danaOperasional`), `assets/js/store.js` (normalisasi + statistik
+baru, terpisah dari `hitungStatistik` yang lama), `bank-bpd.html`,
+`dana-operasional.html`, navigasi di seluruh halaman, kartu saldo Beranda
+(ditambah catatan bahwa angka itu adalah Kas Utama, bukan total seluruh
+kekayaan RT), `data/snapshot.json`, dan struktur spreadsheet `.xlsx`.
+
+**Reversible:** ya — kedua halaman berdiri sendiri, bisa dihapus tanpa
+menyentuh Kas Utama.
+
+**Status:** confirmed

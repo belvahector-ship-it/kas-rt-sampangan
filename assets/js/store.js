@@ -260,7 +260,50 @@ function normalkan(lembar, meta) {
 
   kegiatan.sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
 
-  return { pengaturan, tahun, warga, transaksi, kegiatan, meta: { ...meta, peringatan } };
+  /* Rekening BPD — snapshot saldo per alokasi, bukan jurnal transaksi.
+     Terpisah dari Kas Utama (lihat CP-14). */
+  const bankBpd = (lembar[S.bankBpd] || []).map((r) => {
+    const kunciKolom = Object.keys(r);
+    const cari = (re) => kunciKolom.find((k) => re.test(k));
+    const kNama = cari(/alokasi|nama/i) || kunciKolom[0];
+    const kSaldo = cari(/saldo|nominal/i);
+    const kUpdate = cari(/perbarui|update|tanggal/i);
+    const kCatatan = cari(/catatan|keterangan/i);
+
+    return {
+      namaAlokasi: keTeks(r[kNama]) || 'Alokasi',
+      saldo: keAngka(kSaldo ? r[kSaldo] : 0),
+      diperbarui: keTanggal(kUpdate ? r[kUpdate] : ''),
+      catatan: keTeks(kCatatan ? r[kCatatan] : ''),
+    };
+  }).filter((a) => a.namaAlokasi);
+
+  /* Dana Operasional — jurnal penggunaan. Saldo awal dari Pengaturan;
+     sisa & terpakai dihitung, tidak pernah disimpan (lihat CP-14). */
+  const danaOperasional = (lembar[S.danaOperasional] || []).map((r) => {
+    const kunciKolom = Object.keys(r);
+    const cari = (re) => kunciKolom.find((k) => re.test(k));
+    const kTgl = cari(/tanggal|date/i) || kunciKolom[0];
+    const kPengguna = cari(/pengguna|penerima|pihak/i);
+    const kKat = cari(/kategori|category/i);
+    const kKegiatan = cari(/kegiatan|deskripsi|keperluan/i);
+    const kNominal = cari(/nominal|jumlah|amount/i);
+
+    return {
+      tanggal: keTanggal(r[kTgl]),
+      pengguna: keTeks(kPengguna ? r[kPengguna] : ''),
+      kategori: keTeks(kKat ? r[kKat] : '') || 'Lain-lain',
+      kegiatan: keTeks(kKegiatan ? r[kKegiatan] : ''),
+      nominal: Math.abs(keAngka(kNominal ? r[kNominal] : 0)),
+    };
+  }).filter((d) => d.nominal > 0 || d.kegiatan);
+
+  danaOperasional.sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
+
+  return {
+    pengaturan, tahun, warga, transaksi, kegiatan, bankBpd, danaOperasional,
+    meta: { ...meta, peringatan },
+  };
 }
 
 /* --- Statistik turunan ----------------------------------------------------
@@ -373,6 +416,28 @@ export function hitungStatistik(data) {
   };
 }
 
+/* --- Statistik: Rekening BPD & Dana Operasional ---------------------------
+   Sengaja dipisah dari hitungStatistik() di atas — dua kantong dana ini
+   TIDAK dijumlahkan ke saldo Kas Utama. Lihat DECISIONS.md CP-14. */
+
+export function hitungStatistikLain(data) {
+  const { bankBpd, danaOperasional, pengaturan } = data;
+
+  const totalBpd = bankBpd.reduce((a, b) => a + b.saldo, 0);
+
+  const danaOperasionalSaldoAwal = keAngka(pengaturan.dana_operasional_saldo_awal);
+  const danaOperasionalTerpakai = danaOperasional.reduce((a, d) => a + d.nominal, 0);
+  const danaOperasionalSisa = danaOperasionalSaldoAwal - danaOperasionalTerpakai;
+
+  return {
+    totalBpd,
+    danaOperasionalSaldoAwal,
+    danaOperasionalTerpakai,
+    danaOperasionalSisa,
+    danaOperasionalSumber: keTeks(pengaturan.dana_operasional_sumber),
+  };
+}
+
 /* --- Titik masuk tunggal -------------------------------------------------- */
 
 let janji = null;
@@ -382,7 +447,7 @@ export function ambilData() {
   if (!janji) {
     janji = muatSemuaData().then(({ lembar, meta }) => {
       const data = normalkan(lembar, meta);
-      return { ...data, stat: hitungStatistik(data) };
+      return { ...data, stat: hitungStatistik(data), statLain: hitungStatistikLain(data) };
     });
   }
   return janji;
