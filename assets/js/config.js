@@ -14,7 +14,7 @@ export const CONFIG = {
      Biarkan kosong ('') kalau belum siap. Situs tetap berjalan penuh
      memakai data contoh di data/snapshot.json.
      ------------------------------------------------------------------ */
-  SHEET_ID: '',
+  SHEET_ID: '1BMVLZk7yHYCFzzg_IynYzB1jGxNwJt8_xS1AvnE5ItU',
 
   /* ------------------------------------------------------------------
      2. Cadangan CSV (opsional).
