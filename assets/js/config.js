@@ -55,6 +55,21 @@ export const CONFIG = {
   /* Berkas cadangan yang ikut ter-commit di repo (CP-08). */
   SNAPSHOT_URL: 'data/snapshot.json',
 
+  /* ------------------------------------------------------------------
+     4. Login pengurus (opsional — situs tetap jalan penuh tanpa ini).
+
+     OAUTH_CLIENT_ID aman dipublikasikan; memang dirancang terlihat di
+     JavaScript sisi klien. Yang TIDAK boleh ada di sini atau di mana pun
+     di repo: Client Secret (tidak dipakai alur ini) dan daftar email
+     pengurus (ada di Script Properties Apps Script).
+
+     APPS_SCRIPT_URL didapat setelah men-deploy apps-script/Code.gs
+     sebagai Web App. Selama masih kosong, tombol "Pengurus" tidak
+     muncul dan situs berperilaku persis seperti sebelumnya: baca-saja.
+     ------------------------------------------------------------------ */
+  OAUTH_CLIENT_ID: '274152936634-k5hivklb0gdf413sgf6m73v6k9rthtfn.apps.googleusercontent.com',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzK0wzhgZyn84zWKZ4T8LXkoRiJUAV1tkdjMgPFdrwtlvKNLDBMaAJUxmipY3Mr9mYT2w/exec',
+
   /* Batas waktu per permintaan. Di atas ini dianggap gagal dan langsung
      mundur ke lapisan berikutnya — lebih baik menampilkan data lama
      dengan jujur daripada membiarkan warga menatap layar memuat. */

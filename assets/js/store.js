@@ -226,6 +226,12 @@ function normalkan(lembar, meta) {
     const kategori = keTeks(kKat ? r[kKat] : '') || 'Lain-lain';
 
     return {
+      /* Kolom ID dipakai admin untuk mengedit/menghapus baris ini.
+         Sengaja merujuk ID, bukan nomor baris: nomor baris bergeser setiap
+         ada penghapusan, dan salah baris pada catatan keuangan berarti
+         menghapus transaksi orang lain. Kosong untuk baris lama yang
+         belum sempat diberi ID — UI menyembunyikan tombol edit/hapusnya. */
+      id: keTeks(r.ID || r.id || ''),
       tanggal: keTanggal(r[kTgl]),
       jenis,
       kategori,
@@ -297,6 +303,7 @@ function normalkan(lembar, meta) {
     const kNominal = cari(/nominal|jumlah|amount/i);
 
     return {
+      id: keTeks(r.ID || r.id || ''),   /* lihat catatan di transaksi di atas */
       tanggal: keTanggal(r[kTgl]),
       pengguna: keTeks(kPengguna ? r[kPengguna] : ''),
       kategori: keTeks(kKat ? r[kKat] : '') || 'Lain-lain',

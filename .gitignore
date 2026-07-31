@@ -2,3 +2,15 @@
 Thumbs.db
 *.log
 .claude/
+
+# Kredensial OAuth — JANGAN PERNAH di-commit.
+# Repo ini publik. Berkas client_secret_*.json ikut ter-download otomatis saat
+# membuat OAuth Client ID di Google Cloud Console, dan mudah sekali ikut
+# ter-commit tanpa disadari.
+#
+# Catatan: alur login situs ini (ID token dari Google Identity Services) TIDAK
+# memakai client secret sama sekali — hanya Client ID, yang memang dirancang
+# publik dan sudah ada di assets/js/config.js. Jadi berkas ini bukan cuma
+# berbahaya, tapi juga tidak diperlukan.
+client_secret_*.json
+*.credentials.json
