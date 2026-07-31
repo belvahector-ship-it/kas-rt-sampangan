@@ -158,59 +158,10 @@
 
   --touch: 44px;
 
-  color-scheme: light dark;
-}
-
-/* --- Mode gelap ----------------------------------------------------------
-   Bukan hasil pembalikan. Latar jadi tinta pekat, border jadi terang,
-   bayangan keras memakai var(--ink) yang sudah terang di sini — otomatis
-   ikut tanpa didefinisikan ulang. Kuning tetap kuning (kontras bagus di
-   atas gelap); merah/biru dinaikkan sedikit luminansinya. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper:          #0B0B0C;
-    --surface:        #141415;
-    --surface-alt:    #1C1C1D;
-    --surface-sunk:   #101011;
-
-    --ink:            #F5F5F0;
-    --ink-2:          #C7C7C2;
-    --ink-3:          #94948E;
-
-    --line:           #F5F5F0;
-    --line-soft:      #2C2C2C;
-    --line-strong:    #F5F5F0;
-
-    --accent:         #5C7CFF;
-    --accent-hover:   #7C97FF;
-    --accent-soft:    #16203D;
-    --accent-line:    #5C7CFF;
-
-    --highlight:      #FFD400;
-    --highlight-ink:  #0A0A0A;
-
-    --critical:       #FF6B6F;
-    --critical-soft:  #3A1416;
-    --critical-line:  #FF6B6F;
-
-    --pos-iuran:      #5C7CFF;
-    --pos-ipal:       #FFD400;
-    --pos-lelayu:     #FF6B6F;
-    --pos-iuran-soft: #16203D;
-    --pos-ipal-soft:  #332B00;
-    --pos-lelayu-soft:#3A1416;
-
-    /* Di atas gelap, kuning murni punya kontras bagus sebagai teks —
-       tidak perlu varian gelap terpisah seperti di mode terang. */
-    --pos-ipal-ink:   #FFD400;
-
-    --focus:          #5C7CFF;
-    --focus-ring:     0 0 0 2px var(--paper), 0 0 0 4px var(--focus);
-
-    --aurora-a:       #2148F5;
-    --aurora-b:       #E8353A;
-    --aurora-opacity: 0;
-    --grid-opacity:   0.25;
-    --grain-opacity:  0;
-  }
+  /* Mode gelap otomatis DIMATIKAN (CP-20) — situs sekarang selalu terang,
+     berapa pun preferensi sistem/peramban pengunjung. `color-scheme: light`
+     (bukan `light dark`) juga memberi tahu peramban supaya kontrol bawaan
+     (scrollbar, kalender tanggal bawaan, dsb.) ikut dirender terang, tidak
+     cuma variabel kita saja. */
+  color-scheme: light;
 }

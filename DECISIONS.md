@@ -601,3 +601,31 @@ pemisahan `warna`/`teks` di kartu progres), `iuran.html` (legenda),
 atas untuk memudahkan pembalikan kalau diperlukan.
 
 **Status:** confirmed
+
+---
+
+## CP-20 · Build · 2026-07-31
+
+**Decision:** Blok `@media (prefers-color-scheme: dark)` di `tokens.css`
+dihapus total. Situs sekarang **selalu terang**, berapa pun preferensi
+sistem/peramban pengunjung. `color-scheme: light dark` diganti jadi
+`color-scheme: light` supaya kontrol bawaan peramban (scrollbar, dsb.)
+ikut dipaksa terang, bukan cuma variabel warna kita.
+
+**Why:** User melaporkan (disertai tangkapan layar) melihat tampilan yang
+tidak diinginkan dan menegaskan dengan tegas tidak mau ada mode gelap
+sama sekali — permintaan eksplisit, bukan bug untuk didiagnosis lebih
+jauh. Auto-switching berdasarkan preferensi sistem (CP-05, dipertahankan
+lewat semua tema berikutnya) selama ini menyulitkan verifikasi visual
+karena lingkungan pengujian saya sendiri memakai preferensi gelap secara
+default, tapi voice pengguna produk sesungguhnya adalah yang menentukan:
+lebih baik satu tampilan yang konsisten dan dikenal daripada dua varian
+yang bisa membingungkan.
+
+**Affects:** `assets/css/tokens.css` (blok dark mode dihapus, ~50 baris).
+
+**Reversible:** ya — blok itu ada lengkap di riwayat git (commit CP-19)
+kalau suatu saat mode gelap ingin dihidupkan kembali (mis. lewat toggle
+manual, bukan auto-deteksi sistem).
+
+**Status:** confirmed
