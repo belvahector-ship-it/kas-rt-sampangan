@@ -234,10 +234,40 @@ export function pasangHitungNaik(akar = document) {
 /* --- Kerangka halaman ----------------------------------------------------- */
 
 /** Header menyusut saat digulir + menu mobile. */
+/**
+ * Bilah tebal di puncak viewport yang memanjang mengikuti seberapa jauh
+ * halaman sudah digulir — CSS-nya di motion.css (.scroll-progress).
+ * Dibaca lewat custom property, bukan menulis transform langsung dari JS,
+ * supaya nilai akhirnya tetap terlihat jelas di satu tempat (motion.css).
+ *
+ * Sengaja TIDAK memakai requestAnimationFrame untuk throttle. Pelajaran
+ * dari CP-13: rAF tidak pernah dipanggil sama sekali pada tab yang tidak
+ * ter-composite (mis. WebView tertentu saat tautan dibuka dari WhatsApp —
+ * jalur yang sama persis dipakai warga membuka portal ini). Untuk elemen
+ * hiasan seperti ini, menulis langsung di setiap event scroll jauh lebih
+ * murah daripada risiko bilahnya diam total di perangkat tertentu.
+ */
+function pasangProgresGulir() {
+  const bar = document.querySelector('.scroll-progress__bar');
+  if (!bar) return;
+
+  const tulis = () => {
+    const tinggiBisaGulir = document.documentElement.scrollHeight - window.innerHeight;
+    const rasio = tinggiBisaGulir > 0 ? window.scrollY / tinggiBisaGulir : 0;
+    bar.style.setProperty('--progres-gulir', String(Math.min(1, Math.max(0, rasio))));
+  };
+
+  tulis();
+  window.addEventListener('scroll', tulis, { passive: true });
+  window.addEventListener('resize', tulis, { passive: true });
+}
+
 export function pasangHeader() {
   const header = document.querySelector('.site-header');
   const tombol = document.querySelector('.nav-toggle');
   const nav = document.querySelector('.nav');
+
+  pasangProgresGulir();
 
   if (header) {
     const perbarui = () => header.classList.toggle('is-stuck', window.scrollY > 8);

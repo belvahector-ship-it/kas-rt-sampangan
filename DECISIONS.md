@@ -629,3 +629,48 @@ kalau suatu saat mode gelap ingin dihidupkan kembali (mis. lewat toggle
 manual, bukan auto-deteksi sistem).
 
 **Status:** confirmed
+
+---
+
+## CP-21 · Build · 2026-07-31
+
+**Decision:** Dua animasi gulir baru diterapkan ke seluruh 7 halaman: (1)
+`.reveal` diubah dari fade+geser polos menjadi gaya "pantul masuk" —
+elemen naik dari bawah lalu mental balik pas di tempatnya, memakai
+`--ease-overshoot` (token baru, `cubic-bezier(0.34, 1.56, 0.64, 1)`,
+diambil dari konvensi motion aplikasi referensi); (2) bilah progres gulir
+tebal (4px, kuning-hitam) di puncak viewport yang memanjang mengikuti
+seberapa jauh halaman sudah digulir.
+
+**Why:** Permintaan langsung: "animasi scrolling keren, terapkan ke
+entire page". Overshoot dipilih karena paling cocok dengan bahasa neo-
+brutalist (CP-19) yang tegas — kartu "mengklik" ke posisinya, bukan
+melayang lembut ala tema lama. Opacity sengaja TETAP pakai ease-out biasa
+(dipisah dari transform), karena opacity yang dianimasikan dengan
+overshoot menghasilkan kedipan aneh (nilai overshoot bisa >1 atau <0,
+tidak valid untuk opacity).
+
+**Temuan saat eksekusi — jangan ulangi kesalahan CP-13:** Rencana awal
+memakai `requestAnimationFrame` untuk throttle penulisan bilah progres di
+tiap event scroll. Diuji lewat automation browser dan terkonfirmasi
+ulang: pada tab yang tidak ter-composite, `requestAnimationFrame` sama
+sekali tidak pernah dipanggil — bukan diperlambat, berhenti total. Karena
+pelajaran ini SUDAH tercatat di CP-13 untuk kasus lain (angka hitung-naik,
+reveal), seharusnya saya terapkan sejak awal, bukan menemukan ulang lewat
+percobaan-gagal. Diperbaiki: `pasangProgresGulir()` menulis langsung di
+setiap event `scroll`/`resize` tanpa rAF sama sekali — untuk elemen
+hiasan seperti bilah progres, biaya menulis satu custom property per
+event jauh lebih murah daripada risiko bilahnya diam total di WebView
+tertentu (jalur yang sama dipakai warga: tautan dibagikan lewat WhatsApp).
+
+**Affects:** `assets/css/tokens.css` (`--ease-overshoot`),
+`assets/css/motion.css` (`.reveal` ditulis ulang, `.scroll-progress`/
+`.scroll-progress__bar` baru), `assets/js/ui.js` (`pasangProgresGulir`,
+dipanggil dari `pasangHeader()` — jadi otomatis aktif di semua halaman
+tanpa mengubah tiap skrip halaman satu-satu), markup
+`<div class="scroll-progress">` ditambahkan setelah `<body>` di 7 berkas
+HTML.
+
+**Reversible:** ya.
+
+**Status:** confirmed

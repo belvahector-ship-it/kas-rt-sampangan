@@ -33,21 +33,27 @@
 /* --- Reveal saat gulir ----------------------------------------------------
    Kelas .reveal dipasang di HTML; JS menambahkan .is-visible lewat
    IntersectionObserver. Kalau JS mati, aturan .no-js di bawah menampilkan
-   semuanya — konten tidak boleh sandera pada JavaScript. */
+   semuanya — konten tidak boleh sandera pada JavaScript.
+
+   Gaya "pantul masuk": elemen naik dari bawah sedikit membesar lewat posisi
+   akhirnya lalu mental balik pas di tempat — seperti kartu yang "klik"
+   terkunci ke posisinya. Opacity tetap pakai ease-out biasa (opacity tidak
+   enak dianimasikan dengan overshoot, hasilnya berkedip), hanya transform
+   yang memakai --ease-overshoot. */
 
 .reveal {
   opacity: 0;
-  transform: translate3d(0, 18px, 0);
+  transform: translate3d(0, 26px, 0) scale(0.96);
   transition:
-    opacity var(--t-slow) var(--ease-out),
-    transform var(--t-slow) var(--ease-out);
+    opacity var(--t-base) var(--ease-out),
+    transform var(--t-slow) var(--ease-overshoot);
   transition-delay: var(--reveal-delay, 0ms);
   will-change: transform, opacity;
 }
 
 .reveal.is-visible {
   opacity: 1;
-  transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 /* Setelah selesai, lepas will-change supaya tidak menahan layer GPU */
@@ -61,6 +67,37 @@
 .reveal-group > *:nth-child(5) { --reveal-delay: 240ms; }
 .reveal-group > *:nth-child(6) { --reveal-delay: 300ms; }
 .reveal-group > *:nth-child(n+7) { --reveal-delay: 340ms; }
+
+/* --- Bilah progres gulir ---------------------------------------------------
+   Garis tebal di puncak viewport yang memanjang mengikuti seberapa jauh
+   halaman sudah digulir. JS (ui.js: pasangProgresGulir) mengatur
+   --progres-gulir (0–1); di sinilah nilainya dipakai sebagai scaleX,
+   supaya JS tidak pernah menulis style transform langsung. */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: var(--z-toast);
+  height: 4px;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--line);
+  pointer-events: none;
+}
+
+.scroll-progress__bar {
+  height: 100%;
+  width: 100%;
+  background: var(--highlight);
+  border-right: var(--bw-2) solid var(--ink);
+  transform: scaleX(var(--progres-gulir, 0));
+  transform-origin: left center;
+  /* Sengaja TANPA transition — bilah ini harus mengikuti posisi gulir
+     persis 1:1 pada setiap frame. Transisi di sini akan membuatnya
+     "mengekor" dan terasa lamban, bukan responsif. */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress__bar { background: var(--ink); }
+}
 
 /* --- Garis bawah editorial yang tertarik saat hover ----------------------- */
 
