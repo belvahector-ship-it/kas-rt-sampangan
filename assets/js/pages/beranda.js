@@ -7,6 +7,7 @@ import {
   rupiah, nomorWA, amankan, pasangHeader, pasangIdentitas,
   pitaSumberData, selesaiRender,
 } from '../ui.js';
+import { pasangHalamanAdmin } from '../admin.js';
 
 pasangHeader();
 
@@ -68,6 +69,13 @@ async function mulai() {
   isiKontak(data.pengaturan || {});
 
   selesaiRender();
+
+  /* Halaman ini tidak punya operasi tulis. pasangHalamanAdmin tetap
+     dipanggil supaya tombol "Pengurus" dan pemulihan sesi tersedia dari
+     Beranda juga — bendahara yang mendarat di sini (halaman paling sering
+     dibuka) tidak boleh harus pindah ke Laporan Kas dulu hanya untuk
+     login. */
+  pasangHalamanAdmin();
 }
 
 mulai();

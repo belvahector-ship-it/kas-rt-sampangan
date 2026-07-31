@@ -1462,3 +1462,291 @@
 
 .source-note svg { width: 19px; height: 19px; flex: none; margin-top: 2px; color: var(--ink-3); }
 .source-note strong { color: var(--ink); }
+
+/* ==========================================================================
+   MODE PENGURUS (admin)
+   Semua kontrol tulis DEFAULT TERSEMBUNYI. Baru muncul setelah auth.js
+   memasang kelas `is-admin` di <html> — dan itu hanya terjadi setelah
+   SERVER mengonfirmasi email pengurus, bukan hasil tebakan klien.
+
+   Catatan: menyembunyikan lewat CSS bukan penjaga keamanan. Siapa pun bisa
+   menyalakan kelas ini lewat DevTools dan memunculkan tombolnya. Yang
+   membuat itu sia-sia adalah Apps Script — setiap tulisan tetap diverifikasi
+   di sana. CSS di sini murni supaya warga biasa tidak melihat kontrol yang
+   tidak bisa mereka pakai.
+   Rujukan: DECISIONS.md CP-22.
+   -------------------------------------------------------------------------- */
+
+/* Aturan HANYA menyembunyikan, tidak pernah menampilkan. Saat .is-admin
+   aktif, selektor ini berhenti cocok dan tiap elemen kembali memakai
+   display bawaannya sendiri — flex untuk .notice dan .admin-bar,
+   inline-flex untuk .btn, dan seterusnya.
+
+   Versi pertama memakai `.is-admin [data-admin-only] { display: revert }`
+   untuk menampilkan kembali. Itu KELIRU: `revert` mengembalikan nilai ke
+   tingkat user-agent, jadi <div class="notice"> yang seharusnya flex
+   berubah jadi block dan ikonnya tidak lagi sejajar dengan teks. Ketahuan
+   saat pengujian; dicatat di sini supaya tidak diulang. */
+:root:not(.is-admin) [data-admin-only] { display: none !important; }
+
+/* --- Tombol kecil di header untuk membuka login --------------------------- */
+
+.btn-pengurus {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 38px;
+  padding: 0 var(--sp-3);
+  border: var(--bw-2) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--ink-2);
+  box-shadow: var(--sh-1);
+  transition: transform var(--t-fast) var(--ease-out),
+              box-shadow var(--t-fast) var(--ease-out),
+              color var(--t-fast) var(--ease-out);
+}
+
+.btn-pengurus:hover {
+  color: var(--ink);
+  transform: translate(-1px, -1px);
+  box-shadow: var(--sh-2);
+}
+
+.btn-pengurus svg { width: 15px; height: 15px; flex: none; }
+
+/* --- Bilah status admin --------------------------------------------------- */
+
+.admin-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-5);
+  background: var(--highlight);
+  color: var(--highlight-ink);
+  border: var(--bw-2) solid var(--ink);
+  box-shadow: var(--sh-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.admin-bar svg { width: 18px; height: 18px; flex: none; }
+.admin-bar__email { font-family: var(--font-num); font-size: var(--fs-xs); }
+
+.admin-bar__keluar {
+  margin-left: auto;
+  min-height: 34px;
+  padding: 0 var(--sp-3);
+  border: var(--bw-2) solid var(--ink);
+  background: var(--surface);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.admin-bar__keluar:hover { background: var(--critical); color: #fff; }
+
+/* --- Sel matrik yang bisa diklik saat mode admin --------------------------- */
+
+.is-admin .dot-tri { cursor: pointer; }
+.is-admin .dot-tri:hover { outline: var(--bw-2) solid var(--accent); outline-offset: 1px; }
+
+.dot-tri.is-menyimpan { opacity: 0.4; pointer-events: none; }
+
+/* --- Modal (login & form) -------------------------------------------------
+   Satu bahasa visual untuk semua dialog. Kotaknya dibatasi tinggi viewport
+   supaya form panjang tetap bisa digulir di layar HP. */
+
+.auth-modal,
+.form-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+}
+
+.auth-modal[hidden],
+.form-modal[hidden] { display: none; }
+
+.auth-modal__tirai,
+.form-modal__tirai {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.55);
+}
+
+.auth-modal__kotak,
+.form-modal__kotak {
+  position: relative;
+  width: min(100%, 480px);
+  max-height: calc(100dvh - 2 * var(--gutter));
+  overflow-y: auto;
+  padding: var(--sp-5);
+  background: var(--surface);
+  border: var(--bw-3) solid var(--ink);
+  box-shadow: var(--sh-3);
+}
+
+.auth-modal__kepala,
+.form-modal__kepala {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.auth-modal__judul,
+.form-modal__judul {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  letter-spacing: var(--ls-tight);
+}
+
+.auth-modal__tutup,
+.form-modal__tutup {
+  display: grid;
+  place-items: center;
+  width: 34px; height: 34px;
+  flex: none;
+  border: var(--bw-2) solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.auth-modal__tutup:hover,
+.form-modal__tutup:hover { background: var(--critical); color: #fff; border-color: var(--ink); }
+
+.auth-modal__tutup svg,
+.form-modal__tutup svg { width: 17px; height: 17px; }
+
+.auth-modal__teks {
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  margin-bottom: var(--sp-5);
+}
+
+.auth-modal__tombol { display: grid; place-items: center; min-height: 44px; }
+
+.auth-modal__galat,
+.form-modal__galat {
+  margin-top: var(--sp-4);
+  padding: var(--sp-3);
+  background: var(--critical-soft);
+  border: var(--bw-2) solid var(--critical);
+  color: var(--critical);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.auth-modal__galat[hidden],
+.form-modal__galat[hidden] { display: none; }
+
+/* --- Isian form ----------------------------------------------------------- */
+
+.form-baris { display: grid; gap: var(--sp-2); margin-bottom: var(--sp-4); }
+
+.form-baris__label {
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.form-baris input,
+.form-baris select,
+.form-baris textarea {
+  width: 100%;
+  min-height: var(--touch);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--bw-2) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink);
+  /* 16px cegah iOS otomatis memperbesar saat kolom difokus */
+  font-size: 16px;
+  font-family: var(--font-text);
+}
+
+.form-baris textarea { min-height: 76px; resize: vertical; }
+.form-baris input:focus-visible,
+.form-baris select:focus-visible,
+.form-baris textarea:focus-visible { border-color: var(--accent); }
+
+.form-baris__bantuan { font-size: var(--fs-xs); color: var(--ink-3); }
+
+.form-aksi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: var(--bw-2) solid var(--line);
+}
+
+.form-aksi .btn { flex: 1; min-width: 120px; }
+.form-aksi__hapus { margin-right: auto; }
+
+/* --- Tombol aksi baris di tabel ------------------------------------------- */
+
+.baris-aksi { display: inline-flex; gap: var(--sp-1); }
+
+.baris-aksi button {
+  display: grid;
+  place-items: center;
+  width: 30px; height: 30px;
+  border: var(--bw-1) solid var(--line);
+  background: var(--surface);
+  color: var(--ink-2);
+  transition: background var(--t-fast) var(--ease-out),
+              color var(--t-fast) var(--ease-out);
+}
+
+.baris-aksi button svg { width: 15px; height: 15px; }
+.baris-aksi button:hover { background: var(--accent); color: #fff; border-color: var(--ink); }
+.baris-aksi button.hapus:hover { background: var(--critical); color: #fff; }
+
+/* --- Pemberitahuan hasil operasi ------------------------------------------
+   Muncul di pojok bawah, hilang sendiri. Dipakai untuk mengonfirmasi bahwa
+   tulisan benar-benar tersimpan di spreadsheet — tanpa ini bendahara tidak
+   punya cara tahu apakah kliknya berhasil. */
+
+.toast-wadah {
+  position: fixed;
+  left: var(--gutter);
+  bottom: var(--gutter);
+  z-index: var(--z-toast);
+  display: grid;
+  gap: var(--sp-2);
+  max-width: min(100%, 380px);
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: var(--bw-2) solid var(--ink);
+  box-shadow: var(--sh-2);
+  background: var(--surface);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  animation: slide-down var(--t-base) var(--ease-out) both;
+}
+
+.toast svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+.toast--ok { background: var(--accent); color: #fff; }
+.toast--galat { background: var(--critical); color: #fff; }
+.toast--sibuk { background: var(--highlight); color: var(--highlight-ink); }

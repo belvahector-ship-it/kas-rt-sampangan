@@ -7,6 +7,7 @@ import {
   tanggalPanjang, amankan, inisial, nomorWA,
   pasangHeader, pasangIdentitas, pitaSumberData, keadaanKosong, selesaiRender,
 } from '../ui.js';
+import { pasangHalamanAdmin } from '../admin.js';
 
 pasangHeader();
 
@@ -88,6 +89,12 @@ async function mulai() {
   DAFTAR = data.kegiatan;
   pasangTab();
   render();
+
+  /* Halaman ini tidak punya operasi tulis. pasangHalamanAdmin tetap
+     dipanggil supaya tombol "Pengurus" dan pemulihan sesi tersedia dari
+     sini juga — login tidak boleh cuma bisa dimulai dari halaman yang
+     kebetulan punya tombol simpan. */
+  pasangHalamanAdmin();
 }
 
 mulai();

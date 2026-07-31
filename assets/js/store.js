@@ -474,3 +474,21 @@ export function ambilData() {
   }
   return janji;
 }
+
+/**
+ * Buang hasil yang sudah dimuat DAN cache di localStorage, lalu muat ulang.
+ *
+ * Wajib dipanggil setelah operasi tulis berhasil. Tanpa ini, bendahara yang
+ * baru saja menandai iuran lunas akan melihat tampilan lama sampai cache
+ * 30 menit (CONFIG.CACHE_TTL_MS) kedaluwarsa — dan hampir pasti menyimpulkan
+ * bahwa kliknya gagal, lalu mengklik lagi.
+ */
+export function segarkanData() {
+  janji = null;
+  try {
+    localStorage.removeItem(CONFIG.CACHE_KEY);
+  } catch {
+    /* mode privat / kuota penuh — cache memang cuma optimasi */
+  }
+  return ambilData();
+}

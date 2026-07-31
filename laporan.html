@@ -59,10 +59,16 @@
       <h1 class="page-head__title reveal">Laporan Kas</h1>
       <div class="page-head__row reveal">
         <p class="lede">Pemasukan dan pengeluaran kas warga, tercatat apa adanya per bulan.</p>
-        <label class="cluster">
-          <span class="fs-sm dim">Tampilkan</span>
-          <select class="select" id="pilih-bulan" aria-label="Pilih bulan laporan"></select>
-        </label>
+        <div class="cluster">
+          <button type="button" class="btn btn--accent" data-tambah-transaksi data-admin-only>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Catat Transaksi
+          </button>
+          <label class="cluster">
+            <span class="fs-sm dim">Tampilkan</span>
+            <select class="select" id="pilih-bulan" aria-label="Pilih bulan laporan"></select>
+          </label>
+        </div>
       </div>
     </div>
   </div>

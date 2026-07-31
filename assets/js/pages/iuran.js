@@ -2,12 +2,14 @@
    HALAMAN: Iuran Warga — tabel tersulit di proyek ini (SPEC.md §3)
    ========================================================================== */
 
-import { BULAN_PENDEK } from '../config.js';
-import { ambilData } from '../store.js';
+import { BULAN_PENDEK, BULAN_PANJANG } from '../config.js';
+import { ambilData, segarkanData } from '../store.js';
 import {
   rupiah, angkaID, amankan, nomorWA,
   pasangHeader, pasangIdentitas, pitaSumberData, keadaanKosong, selesaiRender,
 } from '../ui.js';
+import { pasangHalamanAdmin, bukaForm, jalankanTulis } from '../admin.js';
+import { kirimAksi } from '../auth.js';
 
 pasangHeader();
 
@@ -120,7 +122,8 @@ function renderMatrik() {
       const judul = `${w.nama} — ${label}: ${rincian}`;
 
       return `<td>
-        <span class="dot-tri" title="${amankan(judul)}">
+        <span class="dot-tri" title="${amankan(judul)}"
+              data-nama="${amankan(w.nama)}" data-bulan="${i}">
           <span class="dot-tri__dot dot-tri__dot--iuran${iuranPaid ? ' is-terisi' : ''}" aria-hidden="true">I</span>
           <span class="dot-tri__dot dot-tri__dot--ipal${ipalPaid ? ' is-terisi' : ''}" aria-hidden="true">P</span>
           <span class="dot-tri__dot dot-tri__dot--lelayu${lelayuPaid ? ' is-terisi' : ''}" aria-hidden="true">L</span>
@@ -166,6 +169,85 @@ function perbaruiIsyaratGeser() {
   isyarat.classList.toggle('is-shown', wadah.scrollWidth > wadah.clientWidth + 4);
 }
 
+/* --- Mode pengurus: sunting satu sel matrik --------------------------------
+   Sengaja membuka form konfirmasi alih-alih toggle seketika saat diklik.
+   Dua alasan: (1) sel matrik hanya ~25px tinggi, jauh di bawah target sentuh
+   44px — salah sentuh di HP akan langsung mengubah catatan keuangan tanpa
+   sempat disadari; (2) satu sel memuat tiga pos sekaligus, jadi toggle
+   instan tetap butuh cara memilih pos yang mana. Form menyelesaikan
+   keduanya, dan menampilkan nominal sehingga bendahara bisa mencatat
+   pembayaran sebagian. */
+
+const POS_LEMBAR = { iuran: 'Iuran', ipal: 'IPAL', lelayu: 'Lelayu' };
+
+function bukaSuntingSel(nama, bulan) {
+  const w = DATA.warga.find((x) => x.nama === nama);
+  if (!w) return;
+
+  const awal = {
+    Iuran: w.iuran[bulan] || '',
+    IPAL: w.ipal[bulan] || '',
+    Lelayu: w.lelayu[bulan] || '',
+  };
+
+  bukaForm({
+    judul: `${nama} — ${BULAN_PANJANG[bulan]}`,
+    labelSimpan: 'Simpan setoran',
+    nilai: awal,
+    kolom: [
+      { nama: 'Iuran', label: 'Iuran Wajib', tipe: 'number',
+        bantuan: `Pagu ${rupiah(w.paguIuran)}. Kosongkan atau isi 0 bila belum bayar.` },
+      { nama: 'IPAL', label: 'IPAL', tipe: 'number',
+        bantuan: `Pagu ${rupiah(w.paguIpal)}.` },
+      { nama: 'Lelayu', label: 'Dana Lelayu', tipe: 'number',
+        bantuan: w.paguLelayu != null
+          ? `Nominal standar ${rupiah(w.paguLelayu)} — sukarela, bukan kewajiban.`
+          : 'Sukarela, nominal bebas.' },
+    ],
+    onSimpan: async (nilai) => {
+      /* Kirim HANYA pos yang berubah. Selain hemat panggilan, ini membuat
+         AuditLog tidak penuh baris "diubah dari 0 ke 0". */
+      const perubahan = Object.keys(POS_LEMBAR)
+        .map((pos) => {
+          const lembar = POS_LEMBAR[pos];
+          const baru = Number(nilai[lembar] || 0);
+          const lama = Number(w[pos][bulan] || 0);
+          return baru === lama ? null : { pos: lembar, nominal: baru };
+        })
+        .filter(Boolean);
+
+      if (!perubahan.length) return; /* tidak ada yang berubah — tutup saja */
+
+      await jalankanTulis(
+        `Menyimpan ${perubahan.length} perubahan…`,
+        async () => {
+          for (const p of perubahan) {
+            await kirimAksi('setMatrik', { pos: p.pos, nama, bulan, nominal: p.nominal });
+          }
+        },
+        async () => {
+          DATA = await segarkanData();
+          renderProgres();
+          renderMatrik();
+          selesaiRender();
+        }
+      );
+    },
+  });
+}
+
+function pasangSuntingMatrik() {
+  const wadah = document.getElementById('wadah-matrik');
+  /* Delegasi di wadah, bukan per sel: tabel digambar ulang tiap pencarian
+     atau penyimpanan, jadi listener per sel akan hilang terus. */
+  wadah.addEventListener('click', (e) => {
+    if (!document.documentElement.classList.contains('is-admin')) return;
+    const sel = e.target.closest('.dot-tri');
+    if (!sel || !wadah.contains(sel)) return;
+    bukaSuntingSel(sel.dataset.nama, Number(sel.dataset.bulan));
+  });
+}
+
 /* --- Kontrol ------------------------------------------------------------------ */
 
 function pasangPencarian() {
@@ -205,10 +287,21 @@ async function mulai() {
   renderProgres();
   renderMatrik();
   pasangPencarian();
+  pasangSuntingMatrik();
 
   selesaiRender();
 
   window.addEventListener('resize', perbaruiIsyaratGeser);
+
+  /* Dipanggil terakhir: kalau ada sesi pengurus tersimpan, ini yang
+     memunculkan kontrol tulis. Tidak menunggu hasilnya — halaman sudah
+     bisa dipakai warga biasa sejak baris-baris di atas selesai. */
+  pasangHalamanAdmin(() => {
+    const catatan = document.getElementById('catatan-admin-matrik');
+    if (catatan) {
+      catatan.hidden = !document.documentElement.classList.contains('is-admin');
+    }
+  });
 }
 
 mulai();

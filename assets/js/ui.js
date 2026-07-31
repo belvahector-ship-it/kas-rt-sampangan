@@ -110,6 +110,10 @@ const JALUR = {
   perisai: '<path d="M12 3 4.5 6v6c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6Z"/><path d="m9 12 2 2 4-4"/>',
   jam: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 1.9"/>',
   bank: '<path d="M3 10 12 4l9 6"/><path d="M4 10h16v9H4z"/><path d="M4 19h16"/><path d="M8 13v4M12 13v4M16 13v4"/>',
+  pena: '<path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z"/><path d="m14.5 6.5 3 3"/>',
+  sampah: '<path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/><path d="M10 11v6M14 11v6"/>',
+  gembok: '<rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/>',
+  keluar: '<path d="M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/><path d="M10 16 6 12l4-4"/><path d="M6 12h9"/>',
   hibah: '<rect x="3" y="8.5" width="18" height="4" rx="1"/><path d="M5 12.5h14V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M12 8.5V21"/><path d="M12 8.5c-1.2 0-3.5-.6-3.5-2.7A2.05 2.05 0 0 1 10.5 3.7c1.7 0 2.5 2.3 2.5 4.8Z"/><path d="M12 8.5c1.2 0 3.5-.6 3.5-2.7a2.05 2.05 0 0 0-2-2.1c-1.7 0-2.5 2.3-2.5 4.8Z"/>',
 };
 

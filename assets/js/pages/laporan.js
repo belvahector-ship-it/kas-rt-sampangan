@@ -3,14 +3,21 @@
    ========================================================================== */
 
 import { BULAN_PANJANG } from '../config.js';
-import { ambilData } from '../store.js';
+import { ambilData, segarkanData } from '../store.js';
 import {
-  rupiah, tanggalPendek, amankan, nomorWA,
+  rupiah, tanggalPendek, amankan, ikon, nomorWA,
   pasangHeader, pasangIdentitas, pitaSumberData, keadaanKosong, selesaiRender,
 } from '../ui.js';
 import { gambarTrenChart } from '../chart.js';
+import { pasangHalamanAdmin, bukaForm, jalankanTulis } from '../admin.js';
+import { kirimAksi } from '../auth.js';
 
 pasangHeader();
+
+/** Dipegang di modul supaya handler admin bisa menggambar ulang tanpa
+    menerima data lewat rantai argumen yang panjang. */
+let DATA = null;
+let bulanAktif = 0;
 
 function isiKontakFooter(pengaturan) {
   const wa = pengaturan.bendahara_wa || '';
@@ -49,7 +56,70 @@ function renderEntri(daftar, wadah, jenis) {
       <span class="entry__amount ${jenis === 'masuk' ? 'text-pos' : 'text-neg'}">
         ${jenis === 'masuk' ? '+' : '−'}${amankan(rupiah(t.jumlah))}
       </span>
+      ${t.id ? `
+        <span class="baris-aksi" data-admin-only>
+          <button type="button" title="Sunting" aria-label="Sunting catatan ini" data-sunting="${amankan(t.id)}">${ikon('pena')}</button>
+        </span>` : ''}
     </div>`).join('');
+}
+
+/* --- Mode pengurus: form transaksi ---------------------------------------- */
+
+const KOLOM_TRANSAKSI = [
+  { nama: 'Tanggal', label: 'Tanggal', tipe: 'date', wajib: true },
+  { nama: 'Jenis', label: 'Jenis', tipe: 'select', opsi: ['Masuk', 'Keluar'], wajib: true },
+  { nama: 'Kategori', label: 'Kategori', tipe: 'text', wajib: true,
+    bantuan: 'Mengandung "IPAL" → masuk pos IPAL. Mengandung "Lelayu"/"Sosial" → pos Lelayu. Selain itu → pos Iuran.' },
+  { nama: 'Jumlah', label: 'Jumlah (Rp)', tipe: 'number', wajib: true },
+  { nama: 'Keterangan', label: 'Keterangan', tipe: 'textarea' },
+];
+
+async function muatUlangDanGambar() {
+  DATA = await segarkanData();
+  render(DATA, bulanAktif);
+}
+
+function formTransaksiBaru() {
+  const hariIni = new Date().toISOString().slice(0, 10);
+  bukaForm({
+    judul: 'Catat Transaksi Kas',
+    labelSimpan: 'Simpan',
+    nilai: { Tanggal: hariIni, Jenis: 'Keluar' },
+    kolom: KOLOM_TRANSAKSI,
+    onSimpan: (nilai) => jalankanTulis(
+      'Menyimpan transaksi…',
+      () => kirimAksi('tambahTransaksi', { nilai }),
+      muatUlangDanGambar
+    ),
+  });
+}
+
+function formTransaksiSunting(id) {
+  const t = DATA.transaksi.find((x) => x.id === id);
+  if (!t) return;
+
+  bukaForm({
+    judul: 'Sunting Transaksi',
+    labelSimpan: 'Simpan perubahan',
+    nilai: {
+      Tanggal: t.tanggal,
+      Jenis: t.jenis === 'masuk' ? 'Masuk' : 'Keluar',
+      Kategori: t.kategori,
+      Jumlah: t.jumlah,
+      Keterangan: t.keterangan,
+    },
+    kolom: KOLOM_TRANSAKSI,
+    onSimpan: (nilai) => jalankanTulis(
+      'Menyimpan perubahan…',
+      () => kirimAksi('ubahTransaksi', { id, nilai }),
+      muatUlangDanGambar
+    ),
+    onHapus: () => jalankanTulis(
+      'Menghapus…',
+      () => kirimAksi('hapusTransaksi', { id }),
+      muatUlangDanGambar
+    ),
+  });
 }
 
 function renderKategori(wadah, perKategori) {
@@ -137,16 +207,30 @@ function isiPemilihBulan() {
 }
 
 async function mulai() {
-  const data = await ambilData();
+  DATA = await ambilData();
 
-  pasangIdentitas(data);
-  pitaSumberData(data);
-  isiKontakFooter(data.pengaturan || {});
+  pasangIdentitas(DATA);
+  pitaSumberData(DATA);
+  isiKontakFooter(DATA.pengaturan || {});
 
   const sel = isiPemilihBulan();
-  render(data, parseInt(sel.value, 10));
+  bulanAktif = parseInt(sel.value, 10);
+  render(DATA, bulanAktif);
 
-  sel.addEventListener('change', () => render(data, parseInt(sel.value, 10)));
+  sel.addEventListener('change', () => {
+    bulanAktif = parseInt(sel.value, 10);
+    render(DATA, bulanAktif);
+  });
+
+  /* Delegasi di document: daftar jurnal digambar ulang tiap ganti bulan
+     dan tiap penyimpanan, jadi listener per tombol akan hilang terus. */
+  document.addEventListener('click', (e) => {
+    const sunting = e.target.closest('[data-sunting]');
+    if (sunting) { formTransaksiSunting(sunting.dataset.sunting); return; }
+    if (e.target.closest('[data-tambah-transaksi]')) formTransaksiBaru();
+  });
+
+  pasangHalamanAdmin();
 }
 
 mulai();

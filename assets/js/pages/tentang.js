@@ -7,6 +7,7 @@ import {
   amankan, ikon, inisial, nomorWA,
   pasangHeader, pasangIdentitas, pitaSumberData, selesaiRender,
 } from '../ui.js';
+import { pasangHalamanAdmin } from '../admin.js';
 
 pasangHeader();
 
@@ -124,6 +125,12 @@ async function mulai() {
   renderFAQ();
 
   selesaiRender();
+
+  /* Halaman ini tidak punya operasi tulis. pasangHalamanAdmin tetap
+     dipanggil supaya tombol "Pengurus" dan pemulihan sesi tersedia dari
+     sini juga — login tidak boleh cuma bisa dimulai dari halaman yang
+     kebetulan punya tombol simpan. */
+  pasangHalamanAdmin();
 }
 
 mulai();
