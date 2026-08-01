@@ -66,7 +66,17 @@ function render() {
   }
 
   wadah.innerHTML = tersaring.map(kartuKegiatan).join('');
-  selesaiRender(wadah);
+  /* Dokumen penuh, BUKAN cuma `wadah` — beda dari yang terlihat masuk akal.
+     Eyebrow/judul/lede di .page-head juga bertanda .reveal tapi hidup di
+     LUAR #wadah-kegiatan, jadi kalau di sini cuma diberi `wadah`,
+     pasangReveal() tidak pernah melihatnya sama sekali: tidak lewat
+     IntersectionObserver, tidak lewat jaring pengaman 2.5 detiknya —
+     opacity:0 selamanya, terlihat kosong tapi tetap bisa diklik karena
+     elemennya memang ada, cuma transparan. Aman dipanggil berulang tiap
+     ganti tab: pasangReveal()/pasangHitungNaik() menyaring pakai
+     :not([data-diamati]) / :not([data-dihitung="1"]), jadi elemen yang
+     sudah pernah ditangani tidak diproses ulang. */
+  selesaiRender();
 }
 
 function pasangTab() {
