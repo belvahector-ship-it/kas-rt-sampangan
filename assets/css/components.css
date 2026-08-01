@@ -1519,6 +1519,20 @@
 
 .btn-pengurus svg { width: 15px; height: 15px; flex: none; }
 
+/* Wujud kedua tombol yang sama, dipasang lewat JS setelah login (auth.js).
+   Bukan tombol terpisah — CSS-nya harus menang atas .btn-pengurus dasar,
+   jadi ditulis sebagai selector gabungan, bukan berdiri sendiri. */
+.btn-pengurus.btn-pengurus--keluar {
+  background: var(--highlight);
+  color: var(--highlight-ink);
+  border-color: var(--ink);
+}
+
+.btn-pengurus.btn-pengurus--keluar:hover {
+  background: var(--critical);
+  color: #fff;
+}
+
 /* --- Bilah status admin --------------------------------------------------- */
 
 .admin-bar {
@@ -1538,21 +1552,6 @@
 
 .admin-bar svg { width: 18px; height: 18px; flex: none; }
 .admin-bar__email { font-family: var(--font-num); font-size: var(--fs-xs); }
-
-.admin-bar__keluar {
-  margin-left: auto;
-  min-height: 34px;
-  padding: 0 var(--sp-3);
-  border: var(--bw-2) solid var(--ink);
-  background: var(--surface);
-  font-size: var(--fs-2xs);
-  font-weight: 700;
-  letter-spacing: var(--ls-label);
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-.admin-bar__keluar:hover { background: var(--critical); color: #fff; }
 
 /* --- Sel matrik yang bisa diklik saat mode admin --------------------------- */
 

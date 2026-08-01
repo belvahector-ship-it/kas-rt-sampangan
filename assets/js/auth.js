@@ -242,8 +242,22 @@ function terapkanStatus() {
     if (nama) nama.textContent = status.email;
   }
 
+  /* Satu tombol yang GANTI WUJUD, bukan disembunyikan.
+     Sebelumnya dipakai `tombol.hidden = status.admin` — tidak pernah
+     benar-benar menyembunyikannya, karena `.btn-pengurus` mendefinisikan
+     `display` sendiri di components.css, dan itu mengalahkan aturan
+     bawaan browser `[hidden] { display: none }` (author style menang atas
+     UA style pada spesifisitas yang sama). Hasilnya tombol "Pengurus"
+     tetap terlihat setelah login. Diganti: tombol yang sama berubah jadi
+     tombol kuning "Logout", tidak pernah disembunyikan sama sekali. */
   const tombol = document.querySelector('[data-tombol-login]');
-  if (tombol) tombol.hidden = status.admin;
+  if (tombol) {
+    tombol.classList.toggle('btn-pengurus--keluar', status.admin);
+    tombol.setAttribute('aria-label', status.admin ? 'Keluar dari mode pengurus' : 'Masuk sebagai pengurus');
+    tombol.innerHTML = status.admin
+      ? `${ikon('keluar')}<span>Logout</span>`
+      : `${ikon('gembok')}<span>Pengurus</span>`;
+  }
 
   /* Halaman mendengarkan ini untuk menggambar ulang kontrol tulisnya. */
   document.dispatchEvent(new CustomEvent('kasrt:auth', { detail: statusAuth() }));
@@ -258,11 +272,16 @@ function terapkanStatus() {
  * kedaluwarsa, atau email dicabut dari whitelist sejak login tadi.
  */
 export async function pasangAuth() {
+  /* Satu tombol, satu listener — perilakunya dicek saat DIKLIK (bukan saat
+     dipasang), supaya berfungsi benar baik sebelum maupun sesudah login
+     tanpa perlu memasang ulang listener setiap kali status berubah. */
   const tombol = document.querySelector('[data-tombol-login]');
-  if (tombol) tombol.addEventListener('click', mulaiLogin);
-
-  const tombolKeluar = document.querySelector('[data-tombol-keluar]');
-  if (tombolKeluar) tombolKeluar.addEventListener('click', keluar);
+  if (tombol) {
+    tombol.addEventListener('click', () => {
+      if (status.admin) keluar();
+      else mulaiLogin();
+    });
+  }
 
   const tersimpan = tokenSaatIni();
   if (tersimpan && CONFIG.APPS_SCRIPT_URL) {

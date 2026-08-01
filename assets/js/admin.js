@@ -224,11 +224,13 @@ function sisipkanKontrolUmum() {
     bar.setAttribute('data-admin-bar', '');
     bar.setAttribute('data-admin-only', '');
     bar.hidden = true;
+    /* Tanpa tombol Keluar sendiri — tombol "Pengurus" di header berubah
+       jadi tombol kuning "Logout" begitu login (lihat auth.js), jadi
+       satu bilah ini murni informasi, tidak perlu aksi duplikat. */
     bar.innerHTML = `
       ${ikon('gembok')}
       <span>Mode pengurus aktif</span>
-      <span class="admin-bar__email" data-admin-email></span>
-      <button type="button" class="admin-bar__keluar" data-tombol-keluar>Keluar</button>`;
+      <span class="admin-bar__email" data-admin-email></span>`;
     utama.insertBefore(bar, utama.firstChild);
   }
 }

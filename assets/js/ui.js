@@ -181,7 +181,16 @@ export function pasangReveal(akar = document) {
  * langsung ditulis tanpa animasi.
  */
 export function pasangHitungNaik(akar = document) {
-  const target = akar.querySelectorAll('[data-nilai]:not([data-dihitung])');
+  /* :not([data-dihitung="1"]), BUKAN :not([data-dihitung]) — selector attribute
+     CSS mencocokkan berdasarkan KEBERADAAN atribut, bukan nilainya. Beberapa
+     halaman menulis `el.dataset.dihitung = ''` untuk "reset" sebelum
+     menggambar ulang (mis. setelah ganti bulan atau menyimpan transaksi
+     baru). Itu tetap MENCIPTAKAN atribut data-dihitung="" — kalau selector
+     di sini hanya mengecek keberadaan atribut, elemen itu langsung
+     terkecualikan dan angkanya macet di "Rp 0" selamanya. Dicocokkan
+     dengan nilai persis "1" (satu-satunya nilai yang jalankan() tulis
+     setelah selesai menghitung) supaya reset ke '' benar-benar berfungsi. */
+  const target = akar.querySelectorAll('[data-nilai]:not([data-dihitung="1"])');
   if (!target.length) return;
 
   const tulis = (el, n) => {
