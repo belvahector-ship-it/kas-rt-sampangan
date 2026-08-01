@@ -1281,11 +1281,11 @@ a.entry.entry--ringkasan:hover { background: var(--accent-soft); filter: brightn
   align-items: center;
   min-height: 34px;
   font-size: var(--fs-sm);
-  color: var(--ink-2);
+  color: var(--accent);
   transition: color var(--t-fast) var(--ease-out);
 }
 
-.site-footer__link:hover { color: var(--accent); }
+.site-footer__link:hover { color: var(--accent-hover); }
 
 .site-footer__bottom {
   display: flex;
