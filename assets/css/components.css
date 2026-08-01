@@ -1253,7 +1253,8 @@ a.entry.entry--ringkasan:hover { background: var(--accent-soft); filter: brightn
 .site-footer {
   margin-top: var(--sp-9);
   border-top: 1px solid var(--line);
-  background: var(--surface);
+  background: var(--accent);
+  color: var(--paper);
 }
 
 .site-footer__grid {
@@ -1267,12 +1268,19 @@ a.entry.entry--ringkasan:hover { background: var(--accent-soft); filter: brightn
   .site-footer__grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-5); }
 }
 
+/* Latar footer sekarang biru aksen (--accent) — semua warna teks di bawah
+   ini sengaja ditimpa ulang untuk kontras di atas latar gelap itu. Token
+   --ink-2/--ink-3 dirancang kontras di atas --paper (putih), bukan di
+   atas biru pekat, jadi tidak bisa dipakai apa adanya di sini. */
+
+.site-footer .muted { color: rgba(255, 255, 255, 0.85); }
+
 .site-footer__title {
   font-size: var(--fs-2xs);
   font-weight: 700;
   letter-spacing: var(--ls-label);
   text-transform: uppercase;
-  color: var(--ink-3);
+  color: rgba(255, 255, 255, 0.82);
   margin-bottom: var(--sp-3);
 }
 
@@ -1281,11 +1289,11 @@ a.entry.entry--ringkasan:hover { background: var(--accent-soft); filter: brightn
   align-items: center;
   min-height: 34px;
   font-size: var(--fs-sm);
-  color: var(--accent);
+  color: var(--paper);
   transition: color var(--t-fast) var(--ease-out);
 }
 
-.site-footer__link:hover { color: var(--accent-hover); }
+.site-footer__link:hover { color: var(--highlight); }
 
 .site-footer__bottom {
   display: flex;
@@ -1296,7 +1304,7 @@ a.entry.entry--ringkasan:hover { background: var(--accent-soft); filter: brightn
   padding-block: var(--sp-4);
   border-top: 1px solid var(--line);
   font-size: var(--fs-xs);
-  color: var(--ink-3);
+  color: rgba(255, 255, 255, 0.82);
 }
 
 /* --------------------------------------------------------------------------
