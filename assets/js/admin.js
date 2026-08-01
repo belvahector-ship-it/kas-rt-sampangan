@@ -198,6 +198,32 @@ export async function jalankanTulis(pesanSibuk, kerja, saatSukses) {
  * Menyisipkan tombol "Pengurus" ke header dan bilah status admin ke bagian
  * atas konten. Dipanggil semua halaman lewat pasangHalamanAdmin().
  */
+/* Sama dengan titik ganti breakpoint nav mobile di components.css
+   (@media max-width: 960px) — harus persis sama, kalau tidak tombol bisa
+   "terjebak" di posisi header pada lebar yang seharusnya sudah memakai
+   drawer, atau sebaliknya. */
+const MQ_MOBILE = window.matchMedia('(max-width: 960px)');
+
+/**
+ * Header sempit (RT + Pengurus + hamburger) tidak punya ruang untuk tombol
+ * Pengurus/Logout di layar sempit — di sana ia jadi berdesakan dengan
+ * tombol menu. Di mobile, tombol yang SAMA (bukan salinan — supaya status
+ * login/logout tidak perlu disinkron dua tempat) dipindah jadi item
+ * terakhir di dalam drawer navigasi; di desktop ia kembali ke header,
+ * di sebelah kiri tombol menu (yang toh tersembunyi di lebar itu).
+ */
+function tempatkanTombolPengurus(tombol) {
+  const nav = document.querySelector('.nav');
+  const baris = document.querySelector('.site-header__row');
+
+  if (MQ_MOBILE.matches && nav) {
+    if (tombol.parentElement !== nav) nav.appendChild(tombol);
+  } else if (baris) {
+    const toggle = baris.querySelector('.nav-toggle');
+    if (tombol.nextElementSibling !== toggle) baris.insertBefore(tombol, toggle || null);
+  }
+}
+
 function sisipkanKontrolUmum() {
   /* Tombol login di header — hanya jika backend memang dikonfigurasi.
      Tanpa APPS_SCRIPT_URL, fitur tulis tidak ada gunanya dan tombolnya
@@ -211,10 +237,23 @@ function sisipkanKontrolUmum() {
     b.className = 'btn-pengurus';
     b.setAttribute('data-tombol-login', '');
     b.innerHTML = `${ikon('gembok')}<span>Pengurus</span>`;
-    /* Diselipkan sebelum tombol menu mobile supaya urutan fokus keyboard
-       tetap masuk akal: brand → pengurus → menu → nav. */
-    const toggle = baris.querySelector('.nav-toggle');
-    baris.insertBefore(b, toggle || null);
+
+    /* Mengklik tombol ini tidak berpindah halaman (beda dari .nav__link
+       lain di drawer), jadi drawer tidak tertutup sendiri lewat navigasi.
+       Tutup manual supaya drawer tidak menganggur terbuka di belakang
+       modal login/logout. Tidak berbahaya dipanggil di desktop — kelas
+       is-open memang cuma berpengaruh di lebar mobile. */
+    b.addEventListener('click', () => {
+      const nav = document.querySelector('.nav');
+      const toggle = document.querySelector('.nav-toggle');
+      if (nav && nav.classList.contains('is-open')) {
+        nav.classList.remove('is-open');
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    tempatkanTombolPengurus(b);
+    MQ_MOBILE.addEventListener('change', () => tempatkanTombolPengurus(b));
   }
 
   const utama = document.querySelector('.site-main');

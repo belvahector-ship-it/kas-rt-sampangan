@@ -170,6 +170,17 @@
   }
 
   .nav__link + .nav__link { margin-top: 2px; }
+
+  /* Tombol Pengurus/Logout dipindah ke sini oleh admin.js saat mobile
+     (lihat tempatkanTombolPengurus) — diberi lebar penuh dan jarak dari
+     tautan di atasnya supaya terbaca sebagai aksi terpisah, bukan tautan
+     navigasi biasa. */
+  .nav .btn-pengurus {
+    width: 100%;
+    justify-content: center;
+    min-height: 52px;
+    margin-top: var(--sp-4);
+  }
 }
 
 /* --------------------------------------------------------------------------
