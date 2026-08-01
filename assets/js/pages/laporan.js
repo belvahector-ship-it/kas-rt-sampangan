@@ -34,8 +34,28 @@ function baseKategori(kategori) {
   return kategori || 'Lain-lain';
 }
 
-function renderEntri(daftar, wadah, jenis) {
-  if (!daftar.length) {
+/**
+ * @param {number} setoranWarga total Iuran+IPAL+Lelayu dari matrik pembayaran
+ *        pada periode yang sama — hanya dipakai untuk daftar 'masuk'. Bukan
+ *        transaksi sungguhan (tidak punya baris di lembar Transaksi), jadi
+ *        ditampilkan sebagai satu ringkasan yang menaut ke Iuran Warga,
+ *        bukan diselipkan ke dalam daftar transaksi manual.
+ * @param {string} labelPeriode "Semua Bulan" atau nama bulan terpilih
+ */
+function renderEntri(daftar, wadah, jenis, setoranWarga = 0, labelPeriode = '') {
+  const ringkasan = jenis === 'masuk' && setoranWarga > 0 ? `
+    <a class="entry entry--ringkasan" href="iuran.html">
+      <div class="entry__main">
+        <div class="entry__meta">
+          <span class="entry__date num">${amankan(labelPeriode)}</span>
+          <span class="badge badge--iuran">Setoran Warga</span>
+        </div>
+        <p class="entry__desc">Iuran + IPAL + Lelayu dari matrik pembayaran &middot; rincian per warga di halaman Iuran Warga &rarr;</p>
+      </div>
+      <span class="entry__amount text-pos">+${amankan(rupiah(setoranWarga))}</span>
+    </a>` : '';
+
+  if (!daftar.length && !ringkasan) {
     wadah.innerHTML = keadaanKosong(
       jenis === 'masuk' ? 'Belum ada kas masuk' : 'Belum ada kas keluar',
       'Tidak ada transaksi manual tercatat pada bulan ini.',
@@ -44,7 +64,7 @@ function renderEntri(daftar, wadah, jenis) {
     return;
   }
 
-  wadah.innerHTML = daftar.map((t) => `
+  wadah.innerHTML = ringkasan + daftar.map((t) => `
     <div class="entry">
       <div class="entry__main">
         <div class="entry__meta">
@@ -163,8 +183,22 @@ function render(data, bulanTerpilih) {
 
   const masuk = terfilter.filter((t) => t.jenis === 'masuk');
   const keluar = terfilter.filter((t) => t.jenis === 'keluar');
-  const sumMasuk = masuk.reduce((a, t) => a + t.jumlah, 0);
+
+  /* "Kas Masuk" bukan cuma transaksi manual — setoran Iuran/IPAL/Lelayu
+     warga (dicatat lewat matrik di halaman Iuran Warga) SAMA-SAMA uang
+     yang masuk ke kas RT. Sebelum ini kartu hanya menjumlah transaksi
+     manual, jadi bulan yang tidak ada transaksi manual (tapi warga tetap
+     membayar iuran) selalu tampil "Rp 0" — menyesatkan.
+     Angkanya diambil dari stat (dihitung store.js), BUKAN dihitung ulang
+     di sini, supaya grafik tren, Beranda, dan halaman ini tidak pernah
+     berbeda angka untuk periode yang sama. */
+  const setoranWarga = bulanTerpilih === 0
+    ? stat.setoranIuran + stat.setoranIpal + stat.setoranLelayu
+    : (({ iuran, ipal, lelayu }) => iuran + ipal + lelayu)(stat.perBulan[bulanTerpilih - 1]);
+
+  const sumManualMasuk = masuk.reduce((a, t) => a + t.jumlah, 0);
   const sumKeluar = keluar.reduce((a, t) => a + t.jumlah, 0);
+  const sumMasuk = setoranWarga + sumManualMasuk;
   const selisih = sumMasuk - sumKeluar;
 
   const labelBulan = bulanTerpilih === 0 ? 'Semua Bulan' : BULAN_PANJANG[bulanTerpilih - 1];
@@ -186,7 +220,7 @@ function render(data, bulanTerpilih) {
   document.getElementById('total-masuk-list').textContent = rupiah(sumMasuk);
   document.getElementById('total-keluar-list').textContent = rupiah(sumKeluar);
 
-  renderEntri(masuk, document.getElementById('daftar-masuk'), 'masuk');
+  renderEntri(masuk, document.getElementById('daftar-masuk'), 'masuk', setoranWarga, labelBulan);
   renderEntri(keluar, document.getElementById('daftar-keluar'), 'keluar');
   renderKategori(document.getElementById('wadah-kategori'), stat.perKategori);
 

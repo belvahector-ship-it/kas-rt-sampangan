@@ -904,6 +904,18 @@
 .entry:last-child { border-bottom: none; }
 .entry:hover { background: var(--surface-alt); }
 
+/* Baris ringkasan setoran matrik (bukan transaksi manual) di puncak daftar
+   Kas Masuk — dibedakan dari baris transaksi biasa lewat garis tepi kiri
+   dan latar aksen, sekaligus bertindak sebagai tautan ke Iuran Warga. */
+a.entry.entry--ringkasan {
+  border-left: var(--bw-2) solid var(--accent);
+  background: var(--accent-soft);
+  text-decoration: none;
+  color: inherit;
+}
+
+a.entry.entry--ringkasan:hover { background: var(--accent-soft); filter: brightness(0.97); }
+
 .entry__main { min-width: 0; flex: 1; }
 
 .entry__meta {
