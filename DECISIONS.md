@@ -674,3 +674,96 @@ HTML.
 **Reversible:** ya.
 
 **Status:** confirmed
+
+---
+
+## CP-22 · Build · 2026-08-01
+
+**Decision:** Membalik sebagian CP-02 (yang menghapus seluruh fungsi admin/tulis) —
+menambahkan login pengurus (Google Identity Services) dan operasi tulis
+terbatas: toggle matrik Iuran/IPAL/Lelayu, tambah/ubah/hapus Transaksi,
+tambah/ubah/hapus Dana Operasional. Backend: Google Apps Script Web App
+(`apps-script/Code.gs`, disalin manual ke editor Apps Script, TIDAK
+dijalankan dari repo) yang memverifikasi ID token ke endpoint tokeninfo
+Google (cek `aud`, `email_verified`, `exp`) lalu mencocokkan email ke
+whitelist di Script Properties (bukan di kode — repo publik). Setiap
+tulisan dicatat ke lembar AuditLog baru; Transaksi & DanaOperasional
+mendapat kolom ID (bukan nomor baris) untuk sunting/hapus yang aman.
+
+**Why:** Permintaan warga/pengurus untuk bisa mencatat langsung dari situs
+tanpa membuka spreadsheet. Kelas `is-admin` di klien murni kosmetik —
+satu-satunya penjaga keamanan sungguhan ada di `verifikasiToken()` sisi
+server; ini diuji langsung ke backend live: permintaan tanpa token, token
+ngawur, dan JWT berklaim benar tapi tanda tangan palsu — ketiganya
+ditolak.
+
+**Affects:** `apps-script/Code.gs`, `assets/js/auth.js`, `assets/js/admin.js`,
+`assets/js/config.js` (OAUTH_CLIENT_ID, APPS_SCRIPT_URL), `assets/js/store.js`
+(kolom `id` pada transaksi/danaOperasional), seluruh halaman (tombol
+Pengurus di header).
+
+**Reversible:** sebagian — mengosongkan `APPS_SCRIPT_URL` mematikan fitur
+tulis dan mengembalikan situs ke baca-saja tanpa mengubah kode lain.
+
+**Status:** confirmed
+
+---
+
+## CP-23 · Audit · 2026-08-01
+
+**Decision:** Kas IPAL dan Kas Lelayu di Beranda sekarang ikut menghitung
+transaksi manual berpos itu (bukan cuma setoran matrik seperti CP-10),
+DITAHAN DI 0 kalau hasilnya negatif — selisih/defisitnya tetap diserap
+Kas Iuran, persis seperti CP-10, supaya Iuran+IPAL+Lelayu tetap selalu
+genap dengan saldo/kas fisik.
+
+```js
+const kasIpal = Math.max(0, setoranIpal + manualMasukPos.ipal - keluarPos.ipal);
+const kasLelayu = Math.max(0, setoranLelayu + manualMasukPos.lelayu - keluarPos.lelayu);
+const kasIuran = saldo - kasIpal - kasLelayu;
+```
+
+**Options considered:** (a) biarkan CP-10 apa adanya; (b) pool per-pos
+murni tanpa penahan 0 (boleh tampil minus ke publik); (c) pool per-pos
+ditahan di 0, sisa diserap Iuran — DIPILIH.
+
+**Why:** Audit diminta user setelah mendapati Kas IPAL tertampil Rp 603rb
+padahal ada transaksi manual "Saldo Ipal tahun 2025" Rp 1.238.000 yang
+sudah diklasifikasikan benar ke pos IPAL oleh `posDariKategori()` —
+tapi `kasIpal` lama (`= setoranIpal`, murni matrik) mengabaikannya sama
+sekali. Ditelusuri sampai data live: selisihnya persis Rp 1.238.000.
+Audit juga menemukan pos Lelayu SEBENARNYA defisit besar (pengeluaran
+lelayu Rp 4.158.000 jauh melebihi setoran+manual masuknya) yang
+disembunyikan CP-10 lama dengan menyerapnya diam-diam ke Iuran, membuat
+Lelayu terlihat sehat (Rp 160rb) padahal minus. User memilih opsi (c)
+supaya angka pos akurat TANPA menampilkan minus ke warga di situs publik.
+
+User juga mengklarifikasi bahwa "Sosial" (jenguk warga sakit) dan
+"Lelayu" (kematian warga) adalah dua hal berbeda secara riil, tapi
+`posDariKategori()` memetakan keduanya ke pos yang sama — user memilih
+TETAP DIGABUNG untuk sekarang (bukan pos ke-4 terpisah), jadi tidak ada
+perubahan pada `posDariKategori()`. Juga dikonfirmasi: Iuran wajib
+(15k/25k) adalah bundel beberapa sub-keperluan (Sosial, Uang Meja,
+Lain-lain, dan untuk 25k ada tambahan Arisan) yang TIDAK dipecah di
+data — user memilih tetap satu angka Iuran, bukan dipecah lebih jauh.
+
+**Ditemukan tapi TIDAK diubah (di luar cakupan sesi ini):**
+- Transaksi "Saldo Sosial/Lelayu 2025" (Rp 1.000.000, Masuk, 2026-01-01)
+  berkategori teks "Lain-Lain" — seharusnya sesuatu yang mengandung kata
+  "sosial"/"lelayu" supaya `posDariKategori()` mengenalinya sebagai pos
+  Lelayu. Ini kesalahan INPUT DATA, bukan kode — perlu diperbaiki manual
+  di spreadsheet atau lewat menu sunting transaksi di situs.
+- `stat.masukIpal`/`keluarIpal`/dst. dan `stat.perBulan[i].ipal/.lelayu`
+  (matrik-only per bulan) tetap ada di objek stat tapi tidak dikonsumsi
+  UI mana pun — dipertahankan karena `kasIpal`/`kasLelayu` baru di atas
+  memakainya, dan grafik tren sudah benar (pakai `masuk`/`keluar` agregat
+  yang sudah termasuk transaksi manual, bukan field per-pos ini).
+- Entri Dana Operasional "tes 1 / Tes 2 / cek" (Rp 330.000) tampak seperti
+  data uji coba, mempengaruhi "Sisa Dana" yang tertampil — user belum
+  memutuskan mau dihapus atau tidak.
+
+**Affects:** `assets/js/store.js` fungsi `hitungStatistik()`.
+
+**Reversible:** ya — dua baris.
+
+**Status:** confirmed

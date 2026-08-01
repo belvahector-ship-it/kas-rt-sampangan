@@ -321,13 +321,17 @@ function normalkan(lembar, meta) {
 }
 
 /* --- Statistik turunan ----------------------------------------------------
-   PERINGATAN AKUNTANSI (DECISIONS.md CP-10)
-   Kas Iuran dihitung sebagai sisa: Saldo Total − Kas IPAL − Kas Lelayu.
-   Artinya pos Iuran menyerap SELURUH pengeluaran, dari pos mana pun asalnya.
-   Itu keliru secara akuntansi, tapi menjamin ketiga pos selalu berjumlah
-   persis sama dengan uang fisik di tangan bendahara. Rumus ini sengaja
-   diwarisi dari aplikasi lama supaya angka di situs tidak pernah berbeda
-   dari catatan bendahara. Jangan "diperbaiki" tanpa membaca CP-10 dulu. */
+   PERINGATAN AKUNTANSI (DECISIONS.md CP-10, diamandemen CP-23)
+   Kas Iuran dihitung sebagai SISA: Saldo Total − Kas IPAL − Kas Lelayu.
+   Sejak CP-23, Kas IPAL/Lelayu sudah menghitung transaksi manual berpos itu
+   (bukan cuma setoran matrik lagi) dan ditahan di 0 kalau minus — tapi
+   kalau salah satu pos defisit LEBIH BESAR dari yang bisa ditutup pos itu
+   sendiri, sisanya tetap diam-diam diserap Kas Iuran, bukan ditampilkan
+   minus ke warga. Itu keliru secara akuntansi (pengeluaran satu pos bisa
+   "ditagih" ke pos lain), tapi menjamin ketiga pos selalu berjumlah persis
+   sama dengan uang fisik di tangan bendahara. Jangan ubah lagi tanpa
+   membaca CP-10 dan CP-23 dulu — keduanya menjelaskan kenapa pola "serap
+   ke Iuran" ini dipertahankan, bukan dihapus. */
 
 export function hitungStatistik(data) {
   const { warga, transaksi } = data;
@@ -356,9 +360,18 @@ export function hitungStatistik(data) {
   const totalMasuk = setoranIuran + setoranIpal + setoranLelayu + manualMasuk;
   const saldo = totalMasuk - totalKeluar;
 
-  const kasIpal = setoranIpal;
-  const kasLelayu = setoranLelayu;
-  const kasIuran = saldo - kasIpal - kasLelayu; /* lihat CP-10 */
+  /* Kas IPAL/Lelayu HARUS ikut menghitung transaksi manual berpos itu, bukan
+     cuma setoran matrik (lihat CP-23) — sebelumnya transaksi manual yang
+     sudah diklasifikasikan benar ke pos IPAL/Lelayu tetap tidak muncul di
+     pool-nya, "nyasar" ke Iuran lewat baris kasIuran di bawah.
+     Ditahan di 0 (bukan boleh negatif): kalau pengeluaran pos itu melebihi
+     pemasukannya, pool tidak ditampilkan minus ke warga — CP-10 tetap
+     dipertahankan untuk BAGIAN INI: sisa/selisihnya (termasuk yang negatif)
+     tetap diserap kasIuran, supaya Iuran+IPAL+Lelayu masih selalu genap
+     dengan saldo/kas fisik. */
+  const kasIpal = Math.max(0, setoranIpal + manualMasukPos.ipal - keluarPos.ipal);
+  const kasLelayu = Math.max(0, setoranLelayu + manualMasukPos.lelayu - keluarPos.lelayu);
+  const kasIuran = saldo - kasIpal - kasLelayu; /* lihat CP-10, CP-23 */
 
   const paguIuranTotal = jml(warga.map((w) => w.paguIuran));
   const paguIpalTotal = jml(warga.map((w) => w.paguIpal));
