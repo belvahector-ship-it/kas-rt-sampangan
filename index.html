@@ -110,6 +110,39 @@
     </div>
   </section>
 
+  <!-- ==================== TOTAL SELURUH DANA TERCATAT =================== -->
+  <section class="container">
+    <div class="balance balance--gabungan reveal" data-loading>
+      <div class="balance__label">
+        <p class="eyebrow">Total Seluruh Dana Tercatat</p>
+      </div>
+      <p class="balance__amount num" data-nilai="0" data-bentuk="rupiah" data-target="totalTercatat">
+        <span class="skeleton skeleton-line" style="width:12ch"></span>
+      </p>
+      <p class="balance__note">
+        Penjumlahan tiga kantong dana yang tercatat di portal ini, untuk gambaran menyeluruh
+        &mdash; <strong>bukan berarti bisa dipakai bergantian</strong>. Kas Utama adalah uang tunai
+        warga yang dipegang bendahara; Rekening BPD tersimpan di bank atas nama RT; Dana Operasional
+        adalah bantuan Pemkot/Kelurahan dengan aturan pakainya sendiri.
+      </p>
+
+      <div class="balance__split">
+        <div class="fund fund--utama">
+          <span class="fund__name">Kas Utama</span>
+          <span class="fund__value num" data-nilai="0" data-target="saldo">&mdash;</span>
+        </div>
+        <div class="fund fund--bpd">
+          <span class="fund__name">Rekening BPD</span>
+          <span class="fund__value num" data-nilai="0" data-target="totalBpd">&mdash;</span>
+        </div>
+        <div class="fund fund--danaop">
+          <span class="fund__name">Dana Operasional</span>
+          <span class="fund__value num" data-nilai="0" data-target="danaOperasionalSisa">&mdash;</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ========================== STATISTIK RINGKAS ======================= -->
   <section class="section" style="padding-block: var(--sp-6) var(--sp-7)">
     <div class="container grid grid-3 reveal-group">

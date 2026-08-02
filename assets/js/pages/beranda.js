@@ -11,8 +11,14 @@ import { pasangHalamanAdmin } from '../admin.js';
 
 pasangHeader();
 
-/** Isi kartu saldo & statistik ringkas dari objek statistik terhitung. */
-function isiAngka(stat) {
+/** Isi kartu saldo & statistik ringkas dari objek statistik terhitung.
+    @param stat dari hitungStatistik() — Kas Utama (Iuran/IPAL/Lelayu).
+    @param statLain dari hitungStatistikLain() — Rekening BPD & Dana
+           Operasional, SENGAJA dihitung terpisah (lihat CP-14). Dipakai di
+           sini hanya untuk kartu "Total Seluruh Dana Tercatat" — kartu itu
+           MENJUMLAHKAN untuk gambaran menyeluruh, tapi tidak mengubah
+           bagaimana Kas Utama sendiri dihitung. */
+function isiAngka(stat, statLain) {
   const peta = {
     saldo: stat.saldo,
     kasIuran: stat.kasIuran,
@@ -21,6 +27,9 @@ function isiAngka(stat) {
     totalMasuk: stat.totalMasuk,
     totalKeluar: stat.totalKeluar,
     jumlahKK: stat.jumlahKK,
+    totalBpd: statLain.totalBpd,
+    danaOperasionalSisa: statLain.danaOperasionalSisa,
+    totalTercatat: stat.saldo + statLain.totalBpd + statLain.danaOperasionalSisa,
   };
 
   document.querySelectorAll('[data-target]').forEach((el) => {
@@ -33,7 +42,7 @@ function isiAngka(stat) {
     el.textContent = el.dataset.bentuk === 'angka' ? '0' : rupiah(0);
   });
 
-  document.querySelector('.balance').removeAttribute('data-loading');
+  document.querySelectorAll('.balance').forEach((el) => el.removeAttribute('data-loading'));
 }
 
 function isiKontak(pengaturan) {
@@ -65,7 +74,7 @@ async function mulai() {
 
   pasangIdentitas(data);
   pitaSumberData(data);
-  isiAngka(data.stat);
+  isiAngka(data.stat, data.statLain);
   isiKontak(data.pengaturan || {});
 
   selesaiRender();
