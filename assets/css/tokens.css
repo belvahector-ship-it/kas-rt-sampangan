@@ -27,6 +27,11 @@
   --line-soft:      #D6D6CE;   /* untuk pemisah internal yang sengaja diredam (mis. baris tabel) */
   --line-strong:    #0A0A0A;
 
+  /* Latar footer — biru-navy nyaris hitam, diambil dari contoh warna yang
+     diminta user. Dipisah dari --ink karena ini khusus latar .site-footer,
+     bukan bagian palet neo-brutalist utama di atas. */
+  --footer-bg:      #0D1117;
+
   /* Aksen utama: biru. Dipakai untuk tautan, tombol utama, fokus, dan
      pos "Iuran" — mencerminkan konvensi aplikasi referensi (I = biru). */
   --accent:         #2148F5;

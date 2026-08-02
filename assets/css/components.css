@@ -1253,7 +1253,7 @@ a.entry.entry--ringkasan:hover { background: var(--accent-soft); filter: brightn
 .site-footer {
   margin-top: var(--sp-9);
   border-top: 1px solid var(--line);
-  background: var(--accent);
+  background: var(--footer-bg);
   color: var(--paper);
 }
 
