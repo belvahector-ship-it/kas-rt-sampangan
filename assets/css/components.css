@@ -377,21 +377,6 @@
 .fund--ipal   { --fund-color: var(--pos-ipal-ink); }
 .fund--lelayu { --fund-color: var(--pos-lelayu); }
 
-/* Kartu "Total Seluruh Dana Tercatat" — palet SENGAJA berbeda dari
-   iuran/ipal/lelayu di atas, supaya dua kartu .balance yang berdekatan di
-   Beranda tidak terbaca sebagai bagian dari pembagian pos yang sama
-   (kartu ini menjumlahkan TIGA KANTONG TERPISAH, bukan sub-pos Kas Utama). */
-.balance--gabungan::before {
-  background: linear-gradient(90deg,
-    var(--accent) 0%, var(--accent) 40%,
-    var(--ink) 40%, var(--ink) 70%,
-    var(--ink-3) 70%, var(--ink-3) 100%);
-}
-
-.fund--utama  { --fund-color: var(--accent); }
-.fund--bpd    { --fund-color: var(--ink); }
-.fund--danaop { --fund-color: var(--ink-3); }
-
 .fund__name {
   font-size: var(--fs-2xs);
   font-weight: 600;

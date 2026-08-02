@@ -14,10 +14,9 @@ pasangHeader();
 /** Isi kartu saldo & statistik ringkas dari objek statistik terhitung.
     @param stat dari hitungStatistik() — Kas Utama (Iuran/IPAL/Lelayu).
     @param statLain dari hitungStatistikLain() — Rekening BPD & Dana
-           Operasional, SENGAJA dihitung terpisah (lihat CP-14). Dipakai di
-           sini hanya untuk kartu "Total Seluruh Dana Tercatat" — kartu itu
-           MENJUMLAHKAN untuk gambaran menyeluruh, tapi tidak mengubah
-           bagaimana Kas Utama sendiri dihitung. */
+           Operasional. Ditampilkan sebagai dua kartu ringkas TERPISAH
+           (bukan dijumlahkan ke Kas Utama) — lihat CP-14: dua kantong ini
+           punya aturan pakai sendiri, tidak boleh terkesan satu pot. */
 function isiAngka(stat, statLain) {
   const peta = {
     saldo: stat.saldo,
@@ -29,7 +28,6 @@ function isiAngka(stat, statLain) {
     jumlahKK: stat.jumlahKK,
     totalBpd: statLain.totalBpd,
     danaOperasionalSisa: statLain.danaOperasionalSisa,
-    totalTercatat: stat.saldo + statLain.totalBpd + statLain.danaOperasionalSisa,
   };
 
   document.querySelectorAll('[data-target]').forEach((el) => {
