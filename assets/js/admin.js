@@ -199,10 +199,14 @@ export async function jalankanTulis(pesanSibuk, kerja, saatSukses) {
  * atas konten. Dipanggil semua halaman lewat pasangHalamanAdmin().
  */
 /* Sama dengan titik ganti breakpoint nav mobile di components.css
-   (@media max-width: 960px) — harus persis sama, kalau tidak tombol bisa
+   (@media max-width: 1100px) — harus persis sama, kalau tidak tombol bisa
    "terjebak" di posisi header pada lebar yang seharusnya sudah memakai
-   drawer, atau sebaliknya. */
-const MQ_MOBILE = window.matchMedia('(max-width: 960px)');
+   drawer, atau sebaliknya.
+
+   Sempat tertinggal di 960px saat breakpoint nav dinaikkan ke 1100px
+   (CP-24), sehingga di lebar 961–1100px tombol Pengurus duduk di baris
+   header padahal navigasinya sudah berwujud drawer. */
+const MQ_MOBILE = window.matchMedia('(max-width: 1100px)');
 
 /**
  * Header sempit (RT + Pengurus + hamburger) tidak punya ruang untuk tombol
