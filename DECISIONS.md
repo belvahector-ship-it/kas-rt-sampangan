@@ -767,3 +767,273 @@ data — user memilih tetap satu angka Iuran, bukan dipecah lebih jauh.
 **Reversible:** ya — dua baris.
 
 **Status:** confirmed
+
+---
+
+## CP-24 · Build · 2026-08-07
+
+**Decision:** Seluruh tema visual diganti dari "Neo-Brutalist RT" (CP-19)
+menjadi **"BRUTAL"** — spesifikasi neo-brutalism yang diberikan user hasil
+ekstraksi CSS dari situs demo `ui-ux-pro-max` (creative-agency). Perubahan
+inti: palet dipurnakan jadi PRIMER MURNI (merah `#FF0000`, biru `#0000FF`,
+kuning `#FFFF00`, hitam `#000000`, putih, abu `#666666`) menggantikan palet
+lama yang masih "dijinakkan" (`#E8353A` / `#2148F5` / `#FFD400` / `#0A0A0A`);
+font Archivo + Inter + JetBrains Mono diganti **Syne (800) + Manrope**;
+border naik 2px → 3px; bayangan keras naik jadi 4/6/8px; radius 0 di
+SEMUA elemen termasuk pil dan lingkaran; dan ditambahkan interaksi tanda
+tangan "tekan" — bayangan menyusut setengah sementara elemen bergeser
+sejauh selisihnya, jadi sudut kanan-bawah bayangan diam di tempat.
+
+Section baru mengikuti struktur spesifikasi: pita **marquee** hitam di
+bawah header (tiap halaman), **hero dua kolom** dengan kolase empat balok
+warna + bintang, section **hitam bernomor 01–04** ("Cara Kerjanya"), dan
+section **kuning penuh** untuk kontak bendahara.
+
+**Options considered:** (a) memakai Tailwind seperti sumber spesifikasi;
+(b) menerjemahkan spesifikasi ke arsitektur token yang sudah ada.
+
+**Why (b):** Situs ini vanilla HTML/CSS/JS tanpa build step, dan yang
+lebih penting — markup yang dirakit di JavaScript (`chart.js`,
+`iuran.js`, `laporan.js`) menulis `var(--pos-iuran)`, `var(--line)`, dst.
+langsung ke dalam string HTML. Mengganti sistem ke Tailwind berarti
+menulis ulang seluruh lapisan JS itu juga. Karena setiap komponen sudah
+membaca token, ~80% pergantian tema terjadi di `tokens.css` saja, persis
+seperti CP-19. Kelas utilitas dari spesifikasi (`.brutal-border`,
+`.brutal-shadow`, `.highlight-*`, `.grid-pattern`, `.animate-marquee`)
+tetap dibuat di `base.css`/`motion.css` dengan nama yang sama, supaya
+markup baru bisa memakai bahasa spesifikasi apa adanya.
+
+**Penyimpangan sadar dari spesifikasi (tiga, semuanya dicatat):**
+
+1. **Font ketiga dilepas, bukan dipertahankan.** Spesifikasi adalah sistem
+   dua font. Tema lama memakai JetBrains Mono khusus angka rupiah. Manrope
+   punya angka tabular sungguhan (`font-variant-numeric: tabular-nums`),
+   jadi kolom rupiah tetap lurus tanpa font ketiga — identitas utuh,
+   sekaligus satu permintaan jaringan font lebih sedikit. Angka TERBESAR
+   (saldo, statistik) pindah ke Syne supaya terbaca sebagai pernyataan.
+
+2. **Token merah kedua (`--critical-ink: #D40000`).** `#FF0000` di atas
+   putih hanya **4.0:1** — lulus AA untuk teks besar, GAGAL untuk teks
+   kecil. Situs ini dibaca warga sepuh (CP-06) dan punya banyak angka
+   rupiah negatif berukuran kecil. Merah murni tetap dipakai untuk isian,
+   border, angka besar, dan sorotan judul; `--critical-ink` (5.53:1)
+   dipakai HANYA di tempat merah harus jadi teks kecil (`.text-neg`).
+   Ini pola yang sama persis dengan `--pos-ipal-ink` di CP-19, bukan
+   pengecualian baru.
+
+3. **Footer.** Spesifikasi bagian 8 meminta footer putih dengan garis atas
+   hitam 3px; ini MEMBATALKAN commit terakhir sebelum sesi ini yang baru
+   saja mengubah latar footer jadi biru-navy `#0D1117`. Navy tidak ada di
+   palet BRUTAL. Dipilih mengikuti spesifikasi karena permintaannya
+   "redesign whole web app"; mudah dikembalikan lewat satu token
+   (`--footer-bg`) bila user lebih suka yang navy.
+
+**Cacat nyata yang ditemukan & diperbaiki saat pengujian 320px:**
+
+- **Judul brutalist tidak bisa membungkus di tengah kata.** Kata seperti
+  "TERBUKA" (hero) melebar 439px di layar 335px dan mendorong halaman
+  menggulir ke samping. Batas bawah tiap `clamp()` di `tokens.css` kini
+  dihitung dari kata terpanjang yang harus muat di 320px, bukan dipilih
+  karena enak dilihat, ditambah `overflow-wrap: break-word` pada h1–h4
+  sebagai jaring pengaman untuk judul yang datang dari data.
+- **Item flex menolak menyusut.** `min-width: auto` bawaan membuat
+  `.panel__head`, `.person`, `.ledger__head`, dst. mendorong keluar
+  induknya di layar sempit. Dikumpulkan jadi satu aturan `min-width: 0`
+  di puncak `components.css` karena gejalanya identik di banyak komponen
+  dan mudah terlupa saat menambah komponen flex baru.
+- **Panah `.doorway__title` terpotong hilang** di 320px karena flex
+  `space-between` dengan teks yang tak mau menyusut. Diganti grid
+  `minmax(0, 1fr) auto`.
+- **Sudut membulat yang lolos lewat JavaScript**: `rx="2.5"` pada batang
+  grafik (`chart.js`) dan `border-radius:50%` pada swatch legenda
+  (`iuran.js`). Token CSS tidak bisa menjangkau nilai yang ditulis di
+  string HTML — keduanya diperbaiki di sumbernya.
+- **Tabel rincian kategori** di `laporan.js` memakai gaya inline sendiri,
+  jadi ia satu-satunya tabel yang tidak ikut berganti tema. Dipindah ke
+  komponen `.simple-table` yang sama dengan halaman lain.
+
+**Verifikasi:** ketujuh halaman diperiksa pada 320px, 375px, dan desktop —
+nol gulir horizontal, nol elemen terpotong, nol galat konsol. Rasio
+kontras seluruh pasangan warna yang dipakai diukur dan lulus ambangnya
+(teks kecil ≥4.5:1, teks besar ≥3:1); yang paling ketat adalah putih di
+atas merah murni pada sorotan judul, 4.00:1, dan itu hanya pernah dipakai
+pada teks ≥24px.
+
+**Catatan pengujian:** panel pratinjau yang dipakai tidak meng-compose
+frame, sehingga properti yang DITRANSISIKAN (opacity, visibility,
+`grid-template-rows`) membeku di nilai awalnya dan tampak seperti bug pada
+menu mobile dan akordeon FAQ. Setelah transisi dinonaktifkan sementara,
+keduanya terbukti benar. Bukan cacat kode — dicatat supaya tidak
+"diperbaiki" ulang di sesi berikutnya.
+
+**Affects:** `assets/css/tokens.css`, `base.css`, `motion.css`,
+`components.css` (ditulis ulang); ketujuh berkas HTML (font, favicon,
+marquee, hero, section baru); `assets/js/chart.js`,
+`assets/js/pages/iuran.js`, `assets/js/pages/laporan.js`.
+
+**Reversible:** sebagian besar ya — palet, bentuk, bayangan, dan
+tipografi semuanya token di `tokens.css`. Yang TIDAK otomatis kembali:
+markup section baru (marquee, kolase hero, daftar bernomor) dan tiga
+perbaikan JS di atas.
+
+**Status:** confirmed
+
+---
+
+## CP-25 · Build · 2026-08-07
+
+**Decision:** Lapisan tipografi tema BRUTAL (CP-24) direvisi demi
+keterbacaan. **Syne dilepas, diganti Archivo.** Angka rupiah dipindah ke
+Manrope tabular. Huruf kapital dicabut dari seluruh JUDUL dan KONTEN,
+disisakan hanya di label pendek. Line-height, tracking, ukuran teks kecil,
+dan warna teks sekunder semuanya dilonggarkan.
+
+**Why:** User melaporkan fontnya "terlalu brutal... sulit terbaca" dan
+minta yang lebih ramah untuk orang tua. Benar, dan itu kesalahan eksekusi
+CP-24 — bukan kesalahan spesifikasinya. Spesifikasi BRUTAL memakai Syne
+untuk judul di situs agensi kreatif, tempat judul hanya muncul dalam
+ukuran raksasa. Di CP-24 saya menerapkannya ke SEMUA judul, termasuk judul
+panel 20px, nama pengurus, dan pertanyaan FAQ — dan yang terburuk, ke
+**angka rupiah**. Syne adalah font display geometris; bentuk hurufnya
+nyeleneh dan angkanya harus ditebak. Untuk portal keuangan yang dibaca
+warga sepuh (CP-06), itu kegagalan telak.
+
+Yang membuat perbaikan ini murah: **nilai brutalis tema ini tidak dibawa
+oleh font sama sekali** — melainkan oleh border 3px hitam, bayangan keras
+ber-offset, sudut 0, warna primer murni, dan interaksi "tekan". Semuanya
+tetap utuh. Hanya lapisan tipografi yang berubah.
+
+**Perubahan spesifik:**
+
+1. `--font-display`: Syne → **Archivo** (x-height besar, apertur terbuka,
+   1/l/I dan 0/O jelas berbeda, dirancang tetap terbaca di ukuran kecil).
+   Archivo sudah pernah dipakai proyek ini di CP-19, jadi terbukti cocok.
+2. **Semua angka → Manrope + `tabular-nums`**, termasuk saldo raksasa yang
+   sebelumnya memakai font judul. Satu sistem angka untuk seluruh situs:
+   kartu saldo dan baris jurnal memakai bentuk digit yang sama persis,
+   yang membedakan bobotnya saja. Warga tidak perlu "menyesuaikan mata".
+3. **Uppercase dicabut** dari judul hero-kecil, judul halaman, judul panel,
+   judul doorway, judul kegiatan, pertanyaan FAQ, judul langkah, nama
+   pengurus, judul modal, dan judul bernomor. Teks kapital menghapus
+   bentuk-kata (word shape) yang justru jadi pegangan utama pembaca sepuh.
+   **Tetap kapital** di 24 tempat yang semuanya label pendek 1–3 kata:
+   eyebrow, lencana, tombol, nav, kepala tabel, label statistik. Judul hero
+   juga tetap kapital karena skalanya display (94px) dan hanya empat kata.
+4. `--lh-tight` 1 → **1.1**; judul multi-baris tidak lagi bersentuhan.
+5. `--ls-display` -0.02em → **-0.005em**; tracking negatif merapatkan huruf
+   sampai menempel.
+6. Ukuran kecil dinaikkan: `--fs-2xs` 0.72 → **0.8rem** (12,2px → 13,6px),
+   `--fs-xs` 0.8 → 0.86rem, `--fs-sm` 0.88 → 0.94rem.
+7. Teks sekunder panjang (`.lede`, deskripsi panel/doorway/langkah,
+   jawaban FAQ, ringkasan kegiatan) dinaikkan dari `--ink-3` (#666,
+   5.74:1) ke `--ink-2` (#333, **12.6:1**). #666 lolos ambang WCAG, tapi
+   ambang itu batas minimum untuk penglihatan normal — bukan target untuk
+   pembaca sepuh.
+
+**Cacat lama yang ikut ketahuan & diperbaiki — lencana matrik bertumpuk:**
+Tiga lencana I/P/L dalam satu sel bulan butuh 59px (3×17 + gap + padding),
+tapi `col-month` cuma 52px — jadi ketiganya saling menimpa dan status
+pembayaran mustahil dibaca. **Ini sudah salah sejak sebelum CP-24**, bukan
+regresi; baru terlihat saat mengukur ukuran huruf terkecil di situs. Lebar
+kolom sekarang diturunkan dari hitungan isinya (`3 × lencana + 2 × gap +
+padding`), lalu `min-width` tabel mengikuti (`col-name + col-pagu +
+12 × col-month`) — 1120px di desktop, 920px di mobile. Tabelnya jadi lebih
+sering perlu digeser; itu disengaja, dan sudah ada `.scroll-hint`. Lencana
+yang terbaca lebih penting daripada tabel yang muat tanpa digeser.
+
+**Verifikasi:** ketujuh halaman pada 320px dan 1280px — nol gulir
+horizontal, nol elemen terpotong, nol galat konsol. Teks terkecil yang
+memuat kalimat kini ≥16px; label metadata ≥13,6px; huruf I/P/L di matrik
+naik dari 9px ke 10–11px di dalam lencana yang kini benar-benar muat.
+
+**Affects:** `assets/css/tokens.css` (font, line-height, tracking, skala),
+`base.css` (`.num--display`, `.lede`, komentar tipografi),
+`components.css` (26 suntingan: font angka, uppercase, warna teks
+sekunder, dimensi matrik), ketujuh berkas HTML (tautan Google Fonts), dan
+`index.html` (tiga `text-transform` inline dilepas).
+
+**Reversible:** ya, seluruhnya lewat token — `--font-display` mengembalikan
+Syne, dan uppercase per komponen ada di `components.css`. Tapi jangan:
+alasan pelepasannya ada di atas.
+
+**Status:** confirmed
+
+---
+
+## CP-26 · Build · 2026-08-07
+
+**Decision:** Pita berjalan (marquee) yang diperkenalkan CP-24 tidak lagi
+memuat label kategori statis, melainkan **nominal saldo sungguhan** dari
+lima kantong dana: Kas Utama, Kas IPAL, Kas Lelayu, Rekening BPD, dan Dana
+Hibah Operasional. Ditambahkan tombol jeda, dan kecepatan pita dihitung
+dari lebar isinya.
+
+**Why:** Permintaan user — pita diisi "semua informasi saldo kas yg
+tercatat". Sebelumnya pita hanya mengulang nama kategori, yang tidak
+memberi informasi apa pun.
+
+**Kas Iuran Wajib SENGAJA dikeluarkan — jangan ditambahkan kembali.**
+Pos Iuran adalah penyerap defisit (`kasIuran = saldo - kasIpal -
+kasLelayu`, CP-23). IPAL dan Lelayu ditahan di minimum 0, tapi Iuran tidak
+punya lantai, jadi nilainya bisa — dan saat ini memang — minus
+(Rp -1.086.400). CP-23 mencatat pilihan user: angka pos akurat tapi minus
+tidak ditampilkan ke warga di situs publik. Menaruhnya di pita berarti
+angka minus itu berjalan di ketujuh halaman sebagai elemen paling mencolok
+di situs, tanpa konteks apa pun. User memilih opsi ini setelah ditawari
+tiga kemungkinan (tampilkan apa adanya / keluarkan Kas Iuran / pita hanya
+tiga total besar). Rinciannya tidak hilang — kartu saldo di Beranda tetap
+memuat ketiga pos dengan nilai sebenarnya.
+
+**Temuan terpisah yang BELUM diperbaiki:** niat CP-23 ("tanpa menampilkan
+minus ke warga") sebenarnya belum tercapai. Penahan `Math.max(0, ...)`
+hanya dipasang di `kasIpal` dan `kasLelayu`; `kasIuran` sebagai penyerap
+tidak punya lantai, sehingga kartu saldo di Beranda **sudah** menampilkan
+minus sejak sebelum sesi ini. Ini bukan regresi dari CP-24/CP-25. Belum
+disentuh karena memperbaikinya berarti memilih antara dua hal yang saling
+meniadakan: menahan Iuran di 0 akan membuat Iuran+IPAL+Lelayu tidak lagi
+genap dengan saldo — invarian yang justru jadi dasar CP-23. Perlu
+keputusan user tersendiri.
+
+**Detail teknis:**
+- Nama pos ditulis di HTML, nominalnya diisi JavaScript. Tanpa JS pita
+  tetap menampilkan daftar nama kantong yang bermakna — hanya angkanya
+  yang hilang. Lebih baik kehilangan angka daripada menampilkan angka yang
+  salah.
+- Saat `meta.sumber === 'gagal'`, nominal sengaja dibiarkan KOSONG. `stat`
+  pada keadaan itu berisi nol, dan "Rp 0" di pita paling menonjol akan
+  terbaca sebagai "kas RT benar-benar kosong" — kebohongan yang jauh lebih
+  merusak daripada tidak menampilkan apa-apa.
+- `isiMarquee()` dipanggil dari `pasangIdentitas()`, bukan dari tiap berkas
+  halaman, karena fungsi itu sudah dipanggil ketujuh halaman dengan objek
+  data lengkap. Halaman baru otomatis ikut terisi — tidak ada langkah yang
+  bisa terlupa.
+- **Kecepatan dihitung, bukan dipatok.** Animasi menggeser jalur -50%;
+  dengan durasi tetap, pita berjalan makin cepat setiap kali angkanya makin
+  panjang — persis saat isinya makin perlu dibaca. Durasi kini diturunkan
+  dari lebar jalur sesungguhnya (65 px/detik), dihitung ulang saat font
+  selesai dimuat, saat angka masuk, dan saat jendela diubah ukurannya.
+- **Tombol jeda ditambahkan.** Teks bergerak yang memuat informasi wajib
+  bisa dihentikan (WCAG 2.2.2); jeda-saat-hover yang ada sebelumnya tidak
+  menjangkau pengguna papan ketik maupun layar sentuh. Juga membantu warga
+  sepuh yang butuh waktu lebih lama membaca nominal.
+- Pada `prefers-reduced-motion`, pita berhenti di posisi awal, salinan
+  kedua disembunyikan, dan tombol jeda ikut disembunyikan karena tidak ada
+  lagi yang perlu dihentikan.
+- Nominal memakai kuning di atas hitam (19,6:1); nama pos putih diredam
+  supaya angkanya yang menonjol.
+
+**Ikut diperbaiki:** `pasangHeader()` masih memakai ambang
+`(min-width: 961px)` untuk membuang keadaan menu mobile, padahal CP-24
+memindahkan breakpoint nav ke 1100px. Akibatnya di lebar 961–1100px menu
+masih berwujud panel mobile tapi dipaksa tertutup saat jendela diubah
+ukurannya. Disamakan jadi 1101px.
+
+**Affects:** ketujuh berkas HTML (markup pita), `assets/js/ui.js`
+(`pasangMarquee`, `isiMarquee`, `pasangIdentitas`, ambang breakpoint),
+`assets/css/components.css` (viewport, tombol jeda, gaya nominal),
+`assets/css/motion.css` (perilaku reduced-motion).
+
+**Reversible:** ya. Menambah kembali Kas Iuran = satu baris di `isiMarquee`
+plus satu item di tiap HTML — tapi baca dulu alasan pengeluarannya di atas.
+
+**Status:** confirmed

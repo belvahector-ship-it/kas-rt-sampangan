@@ -148,29 +148,33 @@ function renderKategori(wadah, perKategori) {
     return;
   }
 
+  /* Memakai komponen .simple-table yang sama dengan halaman Rekening BPD dan
+     Dana Operasional, bukan gaya inline sendiri — kalau tidak, tabel ini
+     satu-satunya di situs yang tidak ikut berganti tema saat components.css
+     berubah (itu yang terjadi pada tema sebelumnya). */
   wadah.innerHTML = `
-    <div style="overflow-x:auto">
-    <table style="min-width:480px">
-      <thead>
-        <tr style="border-bottom:1px solid var(--line)">
-          <th class="eyebrow" style="text-align:left;padding:var(--sp-3) var(--sp-5)">Kategori</th>
-          <th class="eyebrow" style="text-align:left;padding:var(--sp-3) var(--sp-2)">Jenis</th>
-          <th class="eyebrow" style="text-align:right;padding:var(--sp-3) var(--sp-5)">Jumlah Entri</th>
-          <th class="eyebrow" style="text-align:right;padding:var(--sp-3) var(--sp-5)">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${perKategori.map((k) => `
-          <tr style="border-bottom:1px solid var(--line-soft)">
-            <td style="padding:var(--sp-3) var(--sp-5);font-weight:600">${amankan(k.kategori)}</td>
-            <td style="padding:var(--sp-3) var(--sp-2)">
-              <span class="badge ${k.jenis === 'masuk' ? 'badge--pos' : 'badge--neg'}">${k.jenis === 'masuk' ? 'Masuk' : 'Keluar'}</span>
-            </td>
-            <td class="num" style="padding:var(--sp-3) var(--sp-5);text-align:right;color:var(--ink-3)">${k.jumlahEntri}</td>
-            <td class="num" style="padding:var(--sp-3) var(--sp-5);text-align:right;font-weight:700" >${amankan(rupiah(k.total))}</td>
-          </tr>`).join('')}
-      </tbody>
-    </table>
+    <div class="simple-table-wrap">
+      <table class="simple-table">
+        <thead>
+          <tr>
+            <th>Kategori</th>
+            <th>Jenis</th>
+            <th class="num-col">Jumlah Entri</th>
+            <th class="num-col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${perKategori.map((k) => `
+            <tr>
+              <td class="cell-strong">${amankan(k.kategori)}</td>
+              <td>
+                <span class="badge ${k.jenis === 'masuk' ? 'badge--pos' : 'badge--neg'}">${k.jenis === 'masuk' ? 'Masuk' : 'Keluar'}</span>
+              </td>
+              <td class="num num-col cell-dim">${k.jumlahEntri}</td>
+              <td class="num num-col cell-strong">${amankan(rupiah(k.total))}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
     </div>`;
 }
 

@@ -76,7 +76,7 @@ function renderProgres() {
     return `
       <div class="stat reveal">
         <div class="stat__head">
-          <span style="width:10px;height:10px;border-radius:50%;background:${k.warna};flex:none"></span>
+          <span style="width:12px;height:12px;border:2px solid var(--ink);background:${k.warna};flex:none"></span>
           <span class="stat__label">${amankan(k.nama)}</span>
         </div>
         <p class="stat__value num" style="color:${k.teks}">${amankan(rupiah(k.terkumpul))}</p>

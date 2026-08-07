@@ -275,6 +275,107 @@ function pasangProgresGulir() {
   window.addEventListener('resize', tulis, { passive: true });
 }
 
+/* --- Pita saldo berjalan ---------------------------------------------------
+   Dua hal yang diurus di sini, keduanya tidak menyentuh isi teksnya sama
+   sekali (itu tugas isiMarquee di bawah).
+
+   1. KECEPATAN. Animasi menggeser jalur sejauh -50%, yaitu selebar satu
+      salinan daftar. Kalau durasinya dipatok tetap, pita akan berjalan makin
+      CEPAT setiap kali angkanya makin panjang — persis di saat isinya makin
+      perlu dibaca. Jadi durasi dihitung dari lebar sesungguhnya supaya
+      kecepatan pikselnya konstan, berapa pun panjang angkanya.
+
+   2. TOMBOL JEDA. Teks bergerak yang memuat informasi wajib bisa
+      dihentikan (WCAG 2.2.2). Jeda saat kursor lewat saja tidak cukup:
+      pengguna papan ketik dan layar sentuh tidak punya "hover". Tombolnya
+      juga membantu warga sepuh yang butuh waktu lebih lama membaca nominal.
+*/
+const MARQUEE_PX_PER_DETIK = 65;
+
+function pasangMarquee() {
+  const pita = document.querySelector('[data-marquee]');
+  if (!pita) return;
+
+  const grup = pita.querySelector('.marquee__group');
+  const tombol = pita.querySelector('[data-marquee-jeda]');
+
+  const hitungDurasi = () => {
+    if (!grup) return;
+    const lebar = grup.scrollWidth;
+    if (!lebar) return;
+    pita.style.setProperty('--marquee-speed', `${(lebar / MARQUEE_PX_PER_DETIK).toFixed(1)}s`);
+  };
+
+  hitungDurasi();
+  /* Angka baru datang belakangan (isiMarquee) dan font web dimuat asinkron —
+     keduanya mengubah lebar jalur, jadi durasinya dihitung ulang. */
+  window.addEventListener('resize', hitungDurasi, { passive: true });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(hitungDurasi);
+  pita.addEventListener('marquee:terisi', hitungDurasi);
+
+  if (tombol) {
+    const label = tombol.querySelector('.sr-only');
+    tombol.addEventListener('click', () => {
+      const berhenti = pita.classList.toggle('is-berhenti');
+      tombol.setAttribute('aria-pressed', String(berhenti));
+      if (label) label.textContent = berhenti ? 'Jalankan teks berjalan' : 'Hentikan teks berjalan';
+    });
+  }
+}
+
+/**
+ * Isi nominal tiap kantong dana ke dalam pita berjalan.
+ *
+ * Label kantong sudah tertulis di HTML, jadi tanpa JavaScript pita tetap
+ * menampilkan daftar nama pos yang bermakna — hanya angkanya yang hilang.
+ * Itu disengaja: lebih baik kehilangan angka daripada menampilkan angka
+ * yang salah.
+ *
+ * Saat data GAGAL dimuat, angkanya sengaja dibiarkan kosong. `stat` pada
+ * keadaan itu berisi nol, dan menampilkan "Rp 0" di pita paling menonjol
+ * di halaman akan terbaca sebagai "kas RT benar-benar kosong" — kebohongan
+ * yang jauh lebih merusak daripada sekadar tidak menampilkan apa-apa.
+ * Pita peringatan dari pitaSumberData() yang menjelaskan keadaannya.
+ */
+export function isiMarquee(data) {
+  const pita = document.querySelector('[data-marquee]');
+  if (!pita) return;
+
+  if ((data.meta || {}).sumber === 'gagal') return;
+
+  /* `kasIuran` SENGAJA tidak ada di sini — jangan ditambahkan.
+
+     Pos Iuran adalah penyerap defisit: `kasIuran = saldo - kasIpal -
+     kasLelayu` (CP-23). IPAL dan Lelayu ditahan di minimum 0, tapi Iuran
+     tidak punya lantai, jadi nilainya BISA minus — dan saat ini memang
+     minus. CP-23 mencatat pilihan user: angka pos akurat, tapi minus tidak
+     ditampilkan ke warga di situs publik. Menaruhnya di pita berarti angka
+     minus itu berjalan di ketujuh halaman sebagai elemen paling mencolok
+     di situs, tanpa konteks apa pun yang menjelaskannya.
+
+     Rinciannya tidak hilang: kartu saldo di Beranda tetap memuat ketiga pos
+     lengkap dengan nilai sebenarnya. Yang di sini hanya ringkasan berjalan.
+     Rujukan: DECISIONS.md CP-26. */
+  const nilai = {
+    saldo: data.stat.saldo,
+    kasIpal: data.stat.kasIpal,
+    kasLelayu: data.stat.kasLelayu,
+    totalBpd: data.statLain.totalBpd,
+    danaOperasionalSisa: data.statLain.danaOperasionalSisa,
+  };
+
+  pita.querySelectorAll('[data-marquee-pos]').forEach((item) => {
+    const kunci = item.dataset.marqueePos;
+    const kotak = item.querySelector('[data-marquee-nilai]');
+    if (!kotak || !(kunci in nilai)) return;
+    kotak.textContent = rupiah(nilai[kunci]);
+  });
+
+  /* Lebar jalur berubah setelah angka masuk — minta durasinya dihitung ulang
+     supaya kecepatannya tetap sama. */
+  pita.dispatchEvent(new CustomEvent('marquee:terisi'));
+}
+
 export function pasangHeader() {
   const header = document.querySelector('.site-header');
   const tombol = document.querySelector('.nav-toggle');
@@ -314,11 +415,17 @@ export function pasangHeader() {
       tutup();
     });
 
-    /* Kalau layar melebar sampai nav kembali horizontal, buang keadaan mobile */
-    window.matchMedia('(min-width: 961px)').addEventListener('change', (e) => {
+    /* Kalau layar melebar sampai nav kembali horizontal, buang keadaan mobile.
+       Ambang ini WAJIB cocok dengan @media (max-width: 1100px) di
+       components.css — sebelumnya tertinggal di 961px, sehingga di lebar
+       961–1100px menu masih berwujud panel mobile tapi sudah dipaksa tertutup
+       saat jendela diubah ukurannya. */
+    window.matchMedia('(min-width: 1101px)').addEventListener('change', (e) => {
       if (e.matches) tutup();
     });
   }
+
+  pasangMarquee();
 
   /* Tandai halaman aktif berdasarkan nama berkas */
   const berkas = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
@@ -330,10 +437,20 @@ export function pasangHeader() {
   });
 }
 
-/** Isi bagian-bagian yang bergantung pada lembar Pengaturan. */
+/**
+ * Isi bagian-bagian bersama yang muncul di SETIAP halaman: identitas RT dari
+ * lembar Pengaturan, dan nominal di pita saldo berjalan.
+ *
+ * isiMarquee dipanggil dari sini, bukan dari tiap berkas halaman, karena
+ * fungsi ini sudah dipanggil ketujuh halaman dengan objek data lengkap.
+ * Halaman baru yang mengikuti pola yang sama otomatis ikut mendapat pitanya
+ * terisi — tidak ada langkah yang bisa terlupa.
+ */
 export function pasangIdentitas(data) {
   const p = data.pengaturan || {};
   const namaRT = p.nama_rt || 'RT 01 / RW 04 Sampangan';
+
+  if (data.stat && data.statLain) isiMarquee(data);
 
   document.querySelectorAll('[data-isi="nama_rt"]').forEach((el) => { el.textContent = namaRT; });
   document.querySelectorAll('[data-isi="tahun"]').forEach((el) => { el.textContent = String(data.tahun); });

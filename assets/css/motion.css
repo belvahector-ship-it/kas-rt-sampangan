@@ -3,15 +3,14 @@
    Aturan yang dipegang di seluruh berkas ini:
    1. Hanya transform dan opacity. Tidak pernah width/height/top/left.
    2. Gerak menjelaskan sebab-akibat, tidak menghias.
-   3. Maksimal dua elemen bergerak per layar.
+   3. Brutalism menjepret, bukan mengalun — interaksi tekan 100ms, bukan 300.
    4. Semuanya berhenti pada prefers-reduced-motion.
-   Rujukan: DECISIONS.md CP-07
+   Rujukan: DECISIONS.md CP-07, CP-24
    ========================================================================== */
 
 /* --- Latar bergerak -------------------------------------------------------
-   Siklus 45–70 detik. Cukup lambat sehingga mata tidak menangkapnya sebagai
-   gerakan, hanya sebagai "halaman ini hidup". Amplitudo kecil supaya gumpalan
-   tidak pernah melintas di belakang blok teks dengan kontras yang berubah. */
+   Keyframes aurora dipertahankan supaya elemen DOM lama tidak jadi yatim,
+   tetapi opasitasnya sudah 0 di tokens.css — praktis tidak dirender. */
 
 @keyframes aurora-drift-a {
   0%   { transform: translate3d(0, 0, 0) scale(1); }
@@ -30,20 +29,42 @@
 .bg-canvas__aurora--a { animation: aurora-drift-a 62s var(--ease-mid) infinite; }
 .bg-canvas__aurora--b { animation: aurora-drift-b 74s var(--ease-mid) infinite; }
 
+/* --- Pita marquee ---------------------------------------------------------
+   Teks berjalan tak berujung di pita hitam. Jalurnya berisi DUA salinan
+   daftar yang identik; animasi menggeser -50%, yaitu tepat selebar satu
+   salinan, lalu melompat balik ke 0. Karena salinan kedua saat itu persis
+   menempati posisi salinan pertama, lompatannya tidak terlihat.
+
+   Konsekuensinya: markup HTML wajib memuat kedua salinan, dan salinan kedua
+   harus aria-hidden supaya pembaca layar tidak membacakan daftar dua kali. */
+
+@keyframes marquee {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.animate-marquee {
+  animation: marquee var(--marquee-speed) linear infinite;
+  will-change: transform;
+}
+
+/* Berhenti saat kursor di atasnya — memberi kesempatan membaca, sekaligus
+   isyarat bahwa pita ini bukan sekadar dekorasi. */
+.marquee:hover .animate-marquee { animation-play-state: paused; }
+
 /* --- Reveal saat gulir ----------------------------------------------------
    Kelas .reveal dipasang di HTML; JS menambahkan .is-visible lewat
    IntersectionObserver. Kalau JS mati, aturan .no-js di bawah menampilkan
    semuanya — konten tidak boleh sandera pada JavaScript.
 
-   Gaya "pantul masuk": elemen naik dari bawah sedikit membesar lewat posisi
-   akhirnya lalu mental balik pas di tempat — seperti kartu yang "klik"
-   terkunci ke posisinya. Opacity tetap pakai ease-out biasa (opacity tidak
-   enak dianimasikan dengan overshoot, hasilnya berkedip), hanya transform
-   yang memakai --ease-overshoot. */
+   Gaya "jatuh dan mengunci": elemen naik dari bawah, melewati sedikit posisi
+   akhirnya, lalu mental balik pas di tempat — seperti kartu yang "klik"
+   terkunci. Opacity tetap ease-out biasa (opacity dengan overshoot berkedip),
+   hanya transform yang memakai --ease-overshoot. */
 
 .reveal {
   opacity: 0;
-  transform: translate3d(0, 26px, 0) scale(0.96);
+  transform: translate3d(0, 28px, 0);
   transition:
     opacity var(--t-base) var(--ease-out),
     transform var(--t-slow) var(--ease-overshoot);
@@ -53,7 +74,7 @@
 
 .reveal.is-visible {
   opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
+  transform: translate3d(0, 0, 0);
 }
 
 /* Setelah selesai, lepas will-change supaya tidak menahan layer GPU */
@@ -69,17 +90,17 @@
 .reveal-group > *:nth-child(n+7) { --reveal-delay: 340ms; }
 
 /* --- Bilah progres gulir ---------------------------------------------------
-   Garis tebal di puncak viewport yang memanjang mengikuti seberapa jauh
-   halaman sudah digulir. JS (ui.js: pasangProgresGulir) mengatur
-   --progres-gulir (0–1); di sinilah nilainya dipakai sebagai scaleX,
-   supaya JS tidak pernah menulis style transform langsung. */
+   Pita kuning tebal di puncak viewport yang memanjang mengikuti gulir. JS
+   (ui.js: pasangProgresGulir) mengatur --progres-gulir (0–1); di sinilah
+   nilainya dipakai sebagai scaleX, supaya JS tidak pernah menulis style
+   transform langsung. */
 .scroll-progress {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: var(--z-toast);
-  height: 4px;
-  background: var(--surface-alt);
-  border-bottom: 1px solid var(--line);
+  height: 6px;
+  background: var(--paper);
+  border-bottom: var(--bw-2) solid var(--ink);
   pointer-events: none;
 }
 
@@ -87,35 +108,34 @@
   height: 100%;
   width: 100%;
   background: var(--highlight);
-  border-right: var(--bw-2) solid var(--ink);
   transform: scaleX(var(--progres-gulir, 0));
   transform-origin: left center;
-  /* Sengaja TANPA transition — bilah ini harus mengikuti posisi gulir
-     persis 1:1 pada setiap frame. Transisi di sini akan membuatnya
-     "mengekor" dan terasa lamban, bukan responsif. */
+  /* Sengaja TANPA transition — bilah ini harus mengikuti posisi gulir persis
+     1:1 pada setiap frame. Transisi di sini akan membuatnya "mengekor". */
 }
 
 @media (prefers-reduced-motion: reduce) {
   .scroll-progress__bar { background: var(--ink); }
 }
 
-/* --- Garis bawah editorial yang tertarik saat hover ----------------------- */
+/* --- Garis bawah yang tertarik saat hover --------------------------------- */
 
 .link-draw {
   position: relative;
   display: inline-block;
   padding-bottom: 2px;
+  font-weight: 700;
 }
 
 .link-draw::after {
   content: '';
   position: absolute;
   left: 0; bottom: 0;
-  width: 100%; height: 1.5px;
+  width: 100%; height: var(--bw-2);
   background: currentColor;
   transform: scaleX(0);
   transform-origin: right;
-  transition: transform var(--t-base) var(--ease-out);
+  transition: transform var(--t-base) var(--ease-step);
 }
 
 .link-draw:hover::after,
@@ -124,34 +144,30 @@
   transform-origin: left;
 }
 
-/* --- Kilau garis pada pita/pemisah tertentu ------------------------------- */
-
-@keyframes sheen {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* --- Denyut halus untuk penanda "data langsung" --------------------------- */
+/* --- Penanda "data langsung" ----------------------------------------------
+   Kotak, bukan lingkaran — tidak ada sudut membulat di tema ini. Denyutnya
+   memakai opacity+scale supaya tidak memicu layout. */
 
 @keyframes soft-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.45; transform: scale(0.86); }
+  50%      { opacity: 0.3; transform: scale(0.7); }
 }
 
 .live-dot {
   display: inline-block;
-  width: 7px; height: 7px;
-  border-radius: 50%;
+  width: 9px; height: 9px;
   background: var(--accent);
-  animation: soft-pulse 2.6s var(--ease-mid) infinite;
+  border: 1.5px solid var(--ink);
+  animation: soft-pulse 2.2s steps(1, end) infinite;
   flex: none;
 }
 
-.live-dot--stale { background: var(--pos-lelayu); animation: none; }
+.live-dot--stale { background: var(--critical); animation: none; }
 
 /* --- Skeleton saat memuat -------------------------------------------------
-   Dipakai alih-alih spinner: bentuknya sudah menyerupai konten akhir,
-   jadi tata letak tidak melompat saat data tiba. */
+   Dipakai alih-alih spinner: bentuknya sudah menyerupai konten akhir, jadi
+   tata letak tidak melompat saat data tiba. Kilaunya diganti jadi geser
+   blok bertepi keras — gradien lembut tidak punya tempat di tema ini. */
 
 @keyframes shimmer {
   0%   { transform: translateX(-100%); }
@@ -162,7 +178,7 @@
   position: relative;
   overflow: hidden;
   background: var(--surface-alt);
-  border-radius: var(--r-sm);
+  border: var(--bw-1) solid var(--ink);
   color: transparent !important;
   user-select: none;
 }
@@ -171,14 +187,15 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(127, 127, 127, 0.13), transparent);
-  animation: shimmer 1.5s var(--ease-mid) infinite;
+  width: 40%;
+  background: var(--surface-sunk);
+  animation: shimmer 1.4s var(--ease-mid) infinite;
 }
 
 .skeleton-line { height: 1em; display: block; }
 .skeleton-line + .skeleton-line { margin-top: var(--sp-2); }
 
-/* --- Masuknya pita peringatan --------------------------------------------- */
+/* --- Masuknya pita peringatan & toast -------------------------------------- */
 
 @keyframes slide-down {
   from { opacity: 0; transform: translate3d(0, -10px, 0); }
@@ -194,10 +211,10 @@
 @view-transition { navigation: auto; }
 
 ::view-transition-old(root) {
-  animation: vt-out 180ms var(--ease-in) both;
+  animation: vt-out 140ms var(--ease-in) both;
 }
 ::view-transition-new(root) {
-  animation: vt-in 300ms var(--ease-out) both;
+  animation: vt-in 240ms var(--ease-out) both;
 }
 
 @keyframes vt-out { to { opacity: 0; } }
@@ -205,8 +222,9 @@
 
 /* ==========================================================================
    HORMATI PREFERENSI GERAK
-   Bukan sekadar memperpendek durasi — latar benar-benar berhenti, angka
-   langsung menampilkan nilai akhir, dan tidak ada yang bergeser.
+   Bukan sekadar memperpendek durasi — marquee benar-benar berhenti di posisi
+   awalnya (bukan di tengah teks yang terpotong), angka langsung menampilkan
+   nilai akhir, dan tidak ada yang bergeser.
    ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
@@ -220,9 +238,20 @@
   .bg-canvas__aurora--a,
   .bg-canvas__aurora--b { animation: none !important; transform: none !important; }
 
+  /* Marquee: hentikan di translate 0, bukan di posisi acak. Pitanya jadi
+     daftar saldo statis yang bisa digulir manual — isinya tetap terbaca
+     seluruhnya, hanya tidak berjalan sendiri. */
+  .animate-marquee { animation: none !important; transform: none !important; }
+  .marquee__viewport { overflow-x: auto; }
+  /* Salinan kedua hanya ada demi ilusi gulungan tanpa ujung. Tanpa animasi
+     ia cuma jadi daftar saldo yang terulang dua kali. */
+  .marquee__group[aria-hidden='true'] { display: none; }
+  /* Tidak ada yang bergerak, jadi tombol jeda kehilangan gunanya. */
+  .marquee__jeda { display: none; }
+
   .reveal { opacity: 1 !important; transform: none !important; }
 
-  .skeleton::after { animation: none !important; }
+  .skeleton::after { animation: none !important; display: none; }
 
   .live-dot { animation: none !important; }
 

@@ -55,9 +55,9 @@ export function gambarTrenChart(wadah, perBulan, bulanSorot = -1) {
          aria-label="${amankan(b.label)}: masuk ${amankan(rupiah(b.masuk))}, keluar ${amankan(rupiah(b.keluar))}">
         <title>${amankan(b.label)} — Masuk ${amankan(rupiah(b.masuk))} · Keluar ${amankan(rupiah(b.keluar))}</title>
         <rect x="${xMasuk}" y="${padT + tinggiPlot - hMasuk}" width="${lebarBar}" height="${Math.max(hMasuk, b.masuk > 0 ? 2 : 0)}"
-              rx="2.5" fill="var(--accent)" opacity="${disorot || bulanSorot === -1 ? 1 : 0.35}"/>
+              fill="var(--accent)" opacity="${disorot || bulanSorot === -1 ? 1 : 0.35}"/>
         <rect x="${xKeluar}" y="${padT + tinggiPlot - hKeluar}" width="${lebarBar}" height="${Math.max(hKeluar, b.keluar > 0 ? 2 : 0)}"
-              rx="2.5" fill="var(--critical)" opacity="${disorot || bulanSorot === -1 ? 1 : 0.35}"/>
+              fill="var(--critical)" opacity="${disorot || bulanSorot === -1 ? 1 : 0.35}"/>
       </g>`;
 
     labelBulan += `<text x="${xGrup + lebarGrup / 2}" y="${H - 8}" text-anchor="middle"

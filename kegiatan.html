@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-pola="Kegiatan — {rt}">Kegiatan — RT 01/RW 04 Sampangan</title>
 <meta name="description" content="Agenda kerja bakti, rapat, dan pengumuman terbaru dari pengurus RT 01/RW 04 Sampangan.">
-<meta name="color-scheme" content="light dark">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%231B6B4C'/%3E%3Ctext x='12' y='16.5' font-family='Georgia,serif' font-size='13' font-weight='700' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23FFFF00'/%3E%3Crect x='1.5' y='1.5' width='21' height='21' fill='none' stroke='%23000000' stroke-width='3'/%3E%3Ctext x='12' y='16.5' font-family='Verdana,sans-serif' font-size='10' font-weight='700' fill='%23000000' text-anchor='middle'%3ERT%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/motion.css">
@@ -50,6 +50,32 @@
     </nav>
   </div>
 </header>
+
+<div class="marquee" data-marquee role="complementary" aria-label="Ringkasan saldo kas tercatat">
+  <div class="marquee__viewport">
+    <div class="marquee__track">
+      <div class="marquee__group animate-marquee">
+        <span class="marquee__item" data-marquee-pos="saldo"><span class="marquee__label">Kas Utama</span><span class="marquee__nilai num" data-marquee-nilai></span><span class="marquee__sep" aria-hidden="true">&#10022;</span></span>
+        <span class="marquee__item" data-marquee-pos="kasIpal"><span class="marquee__label">Kas IPAL</span><span class="marquee__nilai num" data-marquee-nilai></span><span class="marquee__sep" aria-hidden="true">&#10022;</span></span>
+        <span class="marquee__item" data-marquee-pos="kasLelayu"><span class="marquee__label">Kas Lelayu</span><span class="marquee__nilai num" data-marquee-nilai></span><span class="marquee__sep" aria-hidden="true">&#10022;</span></span>
+        <span class="marquee__item" data-marquee-pos="totalBpd"><span class="marquee__label">Rekening BPD</span><span class="marquee__nilai num" data-marquee-nilai></span><span class="marquee__sep" aria-hidden="true">&#10022;</span></span>
+        <span class="marquee__item" data-marquee-pos="danaOperasionalSisa"><span class="marquee__label">Dana Hibah</span><span class="marquee__nilai num" data-marquee-nilai></span><span class="marquee__sep" aria-hidden="true">&#10022;</span></span>
+      </div>
+      <div class="marquee__group animate-marquee" aria-hidden="true">
+        <span class="marquee__item" data-marquee-pos="saldo"><span class="marquee__label">Kas Utama</span><span class="marquee__nilai num" data-marquee-nilai></span><span class="marquee__sep" aria-hidden="true">&#10022;</span></span>
+        <span class="marquee__item" data-marquee-pos="kasIpal"><span class="marquee__label">Kas IPAL</span><span class="marquee__nilai num" data-marquee-nilai></span><span class="marquee__sep" aria-hidden="true">&#10022;</span></span>
+        <span class="marquee__item" data-marquee-pos="kasLelayu"><span class="marquee__label">Kas Lelayu</span><span class="marquee__nilai num" data-marquee-nilai></span><span class="marquee__sep" aria-hidden="true">&#10022;</span></span>
+        <span class="marquee__item" data-marquee-pos="totalBpd"><span class="marquee__label">Rekening BPD</span><span class="marquee__nilai num" data-marquee-nilai></span><span class="marquee__sep" aria-hidden="true">&#10022;</span></span>
+        <span class="marquee__item" data-marquee-pos="danaOperasionalSisa"><span class="marquee__label">Dana Hibah</span><span class="marquee__nilai num" data-marquee-nilai></span><span class="marquee__sep" aria-hidden="true">&#10022;</span></span>
+      </div>
+    </div>
+  </div>
+  <button class="marquee__jeda" type="button" aria-pressed="false" data-marquee-jeda>
+    <span class="sr-only">Hentikan teks berjalan</span>
+    <svg class="marquee__ikon marquee__ikon--jeda" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+    <svg class="marquee__ikon marquee__ikon--main" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l12 8-12 8z"/></svg>
+  </button>
+</div>
 
 <main class="site-main" id="konten">
 
