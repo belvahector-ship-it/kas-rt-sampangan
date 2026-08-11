@@ -1037,3 +1037,110 @@ ukurannya. Disamakan jadi 1101px.
 plus satu item di tiap HTML — tapi baca dulu alasan pengeluarannya di atas.
 
 **Status:** confirmed
+
+---
+
+## CP-27 · Build · 2026-08-08
+
+**Decision:** Dibuat aplikasi Android **offline-first** (`../kas-rt-android/`) yang
+membungkus situs ini apa adanya. Situs tidak ditulis ulang: folder
+`kas-rt-sampangan/` disalin ke dalam APK saat build. Yang berubah adalah dari
+mana halaman mendapat datanya.
+
+**Why:** Permintaan user — "intinya apk kokoh tanpa internet tidak masalah".
+Situs saat ini mati total tanpa jaringan: seluruh datanya ditarik saat halaman
+dibuka, dan cadangannya hanya `localStorage` 30 menit plus `snapshot.json` yang
+ter-commit. Warga yang membuka portal di area sinyal lemah melihat halaman
+kosong — yang pada portal keuangan terbaca sebagai "pengurus menyembunyikan
+sesuatu", persis kegagalan yang CP-08 berusaha hindari.
+
+**Pembalikan arah yang jadi intinya.** Di situs, jaringan adalah sumber
+kebenaran dan penyimpanan lokal adalah cadangan. Di aplikasi, urutannya
+dibalik: **basis data lokal adalah yang ditampilkan**, dan jaringan hanya
+bertugas memperbaruinya di lain waktu. Semua halaman karena itu terbuka penuh
+tanpa internet, disertai keterangan kapan data terakhir ditarik.
+
+**Tiga titik sambung, bukan tujuh halaman.** Seluruh integrasi menempel pada
+tiga fungsi yang kebetulan sudah menjadi pintu tunggal:
+
+| Seam | Berkas | Di dalam APK |
+|---|---|---|
+| Baca | `muatSemuaData()` — `sheets.js` | Room DB lewat jembatan native |
+| Tulis | `kirimAksi()` — `auth.js` | antrian lokal (outbox), dikirim belakangan |
+| Login | `mulaiLogin()`/`pasangAuth()` — `auth.js` | Credential Manager native |
+
+Tidak ada satu pun berkas di `pages/` yang disentuh. Semua percabangan dijaga
+`diApp()` / `html.di-app`, jadi kasmenoreh.my.id berperilaku persis seperti
+sebelumnya di peramban.
+
+**Google Identity Services tidak bisa dipertahankan di dalam aplikasi.** Google
+memblokir alur login webnya sendiri saat halaman berjalan di WebView
+(`disallowed_useragent`). Memindahkannya ke Credential Manager bukan pilihan
+gaya — itu satu-satunya cara login bisa bekerja. `serverClientId` tetap memakai
+Web Client ID yang sama, sehingga klaim `aud` tidak berubah dan
+`verifikasiToken()` di `Code.gs` tidak perlu disentuh.
+
+**Sesi pengurus 7 hari — dan apa yang sebenarnya dijaganya.** Setelah login
+online sukses, pengurus boleh mencatat offline selama 7 hari. Yang bertahan 7
+hari adalah izin MENGISI ANTRIAN LOKAL, bukan akses tulis ke buku kas: ID token
+Google sendiri hanya berlaku ~1 jam, dan pengiriman antrian selalu menuntut
+token segar. HP yang hilang dalam keadaan login tidak memberi penemunya
+kemampuan mengubah pembukuan RT — paling jauh mengisi antrian yang akan ditolak
+server. Konsisten dengan CP-22: penjaga sesungguhnya ada di Apps Script.
+
+**Bentrok ditahan, tidak diputuskan aplikasi.** Perubahan offline yang
+bertabrakan dengan perubahan pengurus lain TIDAK ditimpa dan TIDAK dibuang. Ia
+masuk `antrian.html` dengan nilai lokal dan nilai server berdampingan, dan
+pengurus yang memutuskan (Timpa / Buang / Coba lagi). Menimpa otomatis adalah
+cara paling halus untuk kehilangan catatan keuangan tanpa jejak yang bisa
+dilihat siapa pun. Sisa antrian yang tidak bentrok tetap terkirim — satu sel
+yang bentrok tidak boleh membekukan sembilan catatan lain di belakangnya.
+
+**`Code.gs` v2 WAJIB, bukan opsional.** Antrian offline tidak aman dengan
+backend lama, karena dua lubang yang hanya muncul begitu klien boleh mengulang
+kiriman:
+
+1. `tambahBaris()` membuat ID di server. Jaringan yang putus tepat setelah baris
+   tersimpan tapi sebelum balasannya sampai membuat percobaan berikutnya
+   menambah baris kedua yang identik. → ID kini dibuat di HP (`idKlien`) dan
+   server mengenali ID yang sudah ada lalu berhenti. Idempoten.
+2. `ubahBaris()`/`hapusBaris()` menimpa tanpa memeriksa. → klien mengirim
+   `nilaiSebelum`, server membandingkannya dengan isi terkini, dan menolak
+   dengan kode `BENTROK` bila sudah berbeda.
+
+Keduanya opsional di sisi permintaan, jadi versi 2 kompatibel mundur penuh.
+
+**Font di-vendor.** Ketujuh halaman memanggil `fonts.googleapis.com` lewat
+`<link>`. Offline itu pasti gagal, dan yang terlihat bukan "sedang offline"
+melainkan judul dan angka rupiah berganti font sistem — aplikasinya tampak rusak
+justru saat ia bekerja persis seperti seharusnya. Archivo dan Manrope keduanya
+font variabel, jadi cukup dua berkas (58 KB total, subset latin). Situs ikut
+untung: satu perjalanan CDN hilang dari jalur render kritis.
+
+**Matrik iuran diperbesar di layar sempit, bukan diperkecil.** Nilai lama
+(lencana 17px, huruf 10px, kolom nama 132px) dipilih untuk mengurangi jarak
+geser. Itu tidak menyelesaikan apa pun: dengan `min-width: 920px` di layar
+360px tabelnya tetap harus digeser. Yang dibeli hanya beberapa sentimeter
+gulir; yang dibayar adalah huruf I/P/L yang nyaris tidak terbaca pada perangkat
+yang paling sering dipakai warga. Sekarang lencana 21px/huruf 12px, kolom nama
+140px, dan `min-width` naik ke 1118px. Keterbacaan menang (CP-06).
+
+**Jalur cadangan login tidak setara, dan itu disebutkan terus terang.**
+Perangkat tanpa layanan Google diarahkan membuka situs di peramban, tempat
+pencatatan berlangsung online dan antrian offline tidak aktif. Membuatnya
+setara menuntut alur OAuth PKCE sendiri, Client ID Android kedua, DAN `Code.gs`
+menerima audiens `aud` kedua — memperlebar permukaan yang menjaga buku kas demi
+kemungkinan perangkat yang di lingkungan ini praktis nol.
+
+**Affects:** `assets/js/jembatan.js` (baru), `sheets.js`, `auth.js`, `admin.js`,
+`ui.js`, `antrian.html` + `assets/js/pages/antrian.js` (baru), `assets/font/`
+(baru), `assets/css/tokens.css`, `assets/css/components.css`, ketujuh berkas
+HTML (tautan font), `apps-script/Code.gs` (v2), dan seluruh `../kas-rt-android/`.
+
+**Reversible:** ya, dan terpisah. Menghapus folder `kas-rt-android/` sudah cukup
+untuk membatalkan aplikasinya; perubahan di repo situs semuanya dijaga
+`diApp()`/`html.di-app` dan tidak aktif di peramban. Yang TIDAK boleh dibatalkan
+sendirian adalah `Code.gs` v2 selama masih ada APK beredar — antrian di HP warga
+akan kehilangan jaminan idempotennya.
+
+**Status:** confirmed (aplikasi belum pernah dikompilasi — lihat README project)

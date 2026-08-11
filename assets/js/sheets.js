@@ -9,9 +9,17 @@
    keuangan yang menampilkan halaman kosong terbaca sebagai "pengurus
    menyembunyikan sesuatu", bukan sebagai kegagalan teknis. Yang terburuk
    yang boleh terjadi adalah data lama disertai label kapan diambil.
+
+   DI DALAM APLIKASI ANDROID, ketiga lapis ini DILEWATI seluruhnya — lihat
+   muatSemuaData() di bawah. Bukan karena lapisannya buruk, tapi karena
+   ketiganya sama-sama mengandaikan ada jaringan saat halaman dibuka.
+   Aplikasi membalik urutan itu: basis data lokal adalah kebenaran yang
+   ditampilkan, dan jaringan hanya bertugas memperbaruinya di lain waktu
+   (DECISIONS.md CP-27).
    ========================================================================== */
 
 import { CONFIG } from './config.js';
+import { diApp, nativeMuatData } from './jembatan.js';
 
 /* --- Pembantu ------------------------------------------------------------- */
 
@@ -224,6 +232,26 @@ async function muatLembar(namaLembar, galat) {
 export async function muatSemuaData() {
   const galat = [];
   const namaLembar = Object.values(CONFIG.SHEETS);
+
+  /* --- Di dalam aplikasi Android ------------------------------------------
+     Sisi native menjawab dari basis data lokal, dengan perubahan pengurus
+     yang belum terkirim sudah diterapkan di atasnya. Bentuk kembaliannya
+     sama persis dengan yang disusun di bawah, dan `meta.sumber` sengaja
+     memakai kosakata yang sama ('live'/'cache'/'snapshot'/'gagal') supaya
+     pitaSumberData() di ui.js tidak perlu tahu apa-apa soal aplikasi.
+
+     Kalau jembatannya sendiri yang gagal — bug, bukan jaringan — kita TIDAK
+     mundur ke gviz. Di dalam APK hasilnya hampir pasti juga gagal (biasanya
+     memang sedang offline), dan yang lebih penting: mundur diam-diam ke
+     jalur online akan menyembunyikan bug yang justru perlu terlihat. */
+  if (diApp()) {
+    try {
+      return await nativeMuatData();
+    } catch (e) {
+      console.error('[kas-rt] Jembatan native gagal:', e);
+      return { lembar: {}, meta: { sumber: 'gagal', diambilPada: null, galat: [String(e.message || e)] } };
+    }
+  }
 
   if (CONFIG.SHEET_ID) {
     const hasil = await Promise.all(namaLembar.map((n) => muatLembar(n, galat)));

@@ -13,6 +13,50 @@
    yang sendiri menggantikan CP-05 "Editorial Ledger").
    ========================================================================== */
 
+/* ==========================================================================
+   FONT DIMUAT DARI SINI, BUKAN DARI CDN GOOGLE
+
+   Sebelumnya tiap halaman memanggil fonts.googleapis.com lewat <link>. Itu
+   berarti tipografi seluruh situs bergantung pada permintaan jaringan yang
+   bisa gagal — dan di dalam aplikasi Android yang memang dirancang jalan
+   tanpa internet, ia PASTI gagal setiap kali warga sedang offline. Yang
+   terlihat bukan "sedang offline", melainkan judul dan angka rupiah yang
+   tiba-tiba berganti font sistem: aplikasinya terlihat rusak justru pada
+   saat ia sebenarnya bekerja persis seperti seharusnya.
+
+   Keduanya adalah font VARIABEL, jadi satu berkas per keluarga sudah memuat
+   seluruh rentang bobot yang dipakai proyek ini (600–800 untuk judul,
+   400–800 untuk teks). Total 58 KB — lebih kecil daripada kumpulan berkas
+   statis yang akan diunduh CDN untuk bobot-bobot yang sama.
+
+   Hanya subset LATIN yang disertakan. Seluruh isi situs berbahasa Indonesia
+   dan tidak memakai satu pun karakter di luar rentang itu.
+
+   Situs juga ikut untung: satu perjalanan pulang-pergi ke CDN hilang dari
+   jalur render kritis setiap halaman.
+
+   Rujukan keputusan: DECISIONS.md CP-27.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  /* Rentang, bukan satu angka — inilah cara font variabel dideklarasikan.
+     Menuliskannya sebagai `font-weight: 700` akan membuat peramban
+     mensintesis bobot lain dengan menebalkan garis secara kasar. */
+  font-weight: 600 800;
+  font-display: swap;
+  src: url('../font/archivo-latin-var.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../font/manrope-latin-var.woff2') format('woff2');
+}
+
 :root {
   /* --- Palet inti ----------------------------------------------------------
      Empat warna aksen saja, semuanya PRIMER MURNI — tidak ada tint, shade,

@@ -11,6 +11,7 @@
 import { CONFIG } from './config.js';
 import { amankan, ikon } from './ui.js';
 import { pasangAuth, statusAuth, keluar } from './auth.js';
+import { diApp, getar } from './jembatan.js';
 
 /* --- Toast ----------------------------------------------------------------
    Menulis ke spreadsheet lewat internet bisa makan 1–3 detik. Tanpa umpan
@@ -183,7 +184,20 @@ export async function jalankanTulis(pesanSibuk, kerja, saatSukses) {
     const hasil = await kerja();
     tutupSibuk();
     if (saatSukses) await saatSukses(hasil);
-    toast('Tersimpan ke spreadsheet', 'ok');
+
+    /* Di dalam aplikasi, "tersimpan" berarti masuk antrian di HP — belum tentu
+       sampai ke spreadsheet. Kalimatnya harus mengatakan itu apa adanya.
+       Bendahara yang mengira catatannya sudah masuk padahal masih menunggu
+       akan menutup rapat dengan angka yang belum ada di mana pun.
+       Pemeriksaannya lewat diApp(), bukan lewat isi `hasil`: sebagian
+       pemanggil (mis. simpan matrik di iuran.js) menjalankan beberapa tulisan
+       sekaligus dan tidak mengembalikan apa pun. */
+    if (diApp()) {
+      getar();
+      toast('Tersimpan di HP — menunggu dikirim', 'ok');
+    } else {
+      toast('Tersimpan ke spreadsheet', 'ok');
+    }
     return hasil;
   } catch (err) {
     tutupSibuk();
@@ -198,34 +212,17 @@ export async function jalankanTulis(pesanSibuk, kerja, saatSukses) {
  * Menyisipkan tombol "Pengurus" ke header dan bilah status admin ke bagian
  * atas konten. Dipanggil semua halaman lewat pasangHalamanAdmin().
  */
-/* Sama dengan titik ganti breakpoint nav mobile di components.css
-   (@media max-width: 1100px) — harus persis sama, kalau tidak tombol bisa
-   "terjebak" di posisi header pada lebar yang seharusnya sudah memakai
-   drawer, atau sebaliknya.
-
-   Sempat tertinggal di 960px saat breakpoint nav dinaikkan ke 1100px
-   (CP-24), sehingga di lebar 961–1100px tombol Pengurus duduk di baris
-   header padahal navigasinya sudah berwujud drawer. */
-const MQ_MOBILE = window.matchMedia('(max-width: 1100px)');
 
 /**
- * Header sempit (RT + Pengurus + hamburger) tidak punya ruang untuk tombol
- * Pengurus/Logout di layar sempit — di sana ia jadi berdesakan dengan
- * tombol menu. Di mobile, tombol yang SAMA (bukan salinan — supaya status
- * login/logout tidak perlu disinkron dua tempat) dipindah jadi item
- * terakhir di dalam drawer navigasi; di desktop ia kembali ke header,
- * di sebelah kiri tombol menu (yang toh tersembunyi di lebar itu).
+ * Tombol Pengurus/Logout selalu tinggal di baris header, di sebelah kiri
+ * tombol menu — TIDAK PERNAH ikut masuk ke panel dropdown navigasi
+ * (menu tautan halaman itu satu urusan, login itu urusan lain).
  */
 function tempatkanTombolPengurus(tombol) {
-  const nav = document.querySelector('.nav');
   const baris = document.querySelector('.site-header__row');
-
-  if (MQ_MOBILE.matches && nav) {
-    if (tombol.parentElement !== nav) nav.appendChild(tombol);
-  } else if (baris) {
-    const toggle = baris.querySelector('.nav-toggle');
-    if (tombol.nextElementSibling !== toggle) baris.insertBefore(tombol, toggle || null);
-  }
+  if (!baris) return;
+  const toggle = baris.querySelector('.nav-toggle');
+  if (tombol.nextElementSibling !== toggle) baris.insertBefore(tombol, toggle || null);
 }
 
 function sisipkanKontrolUmum() {
@@ -257,7 +254,6 @@ function sisipkanKontrolUmum() {
     });
 
     tempatkanTombolPengurus(b);
-    MQ_MOBILE.addEventListener('change', () => tempatkanTombolPengurus(b));
   }
 
   const utama = document.querySelector('.site-main');

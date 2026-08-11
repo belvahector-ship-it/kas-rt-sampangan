@@ -7,9 +7,12 @@
 <meta name="description" content="Agenda kerja bakti, rapat, dan pengumuman terbaru dari pengurus RT 01/RW 04 Sampangan.">
 <meta name="color-scheme" content="light">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23FFFF00'/%3E%3Crect x='1.5' y='1.5' width='21' height='21' fill='none' stroke='%23000000' stroke-width='3'/%3E%3Ctext x='12' y='16.5' font-family='Verdana,sans-serif' font-size='10' font-weight='700' fill='%23000000' text-anchor='middle'%3ERT%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Font dimuat lokal lewat @font-face di tokens.css (lihat catatan di sana).
+     Tidak ada permintaan ke CDN Google: situs jadi satu perjalanan jaringan
+     lebih ringan, dan di dalam aplikasi Android tipografinya tetap benar saat
+     warga sedang offline. -->
+<link rel="preload" href="assets/font/archivo-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/font/manrope-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/motion.css">
@@ -47,6 +50,7 @@
       <a class="nav__link" href="bank-bpd.html">Rekening BPD</a>
       <a class="nav__link" href="dana-operasional.html">Dana Operasional</a>
       <a class="nav__link" href="tentang.html">Tentang</a>
+      <a class="nav__link" href="https://arsip-gratis.my.id" target="_blank" rel="noopener">Simpan File Gratis</a>
     </nav>
   </div>
 </header>

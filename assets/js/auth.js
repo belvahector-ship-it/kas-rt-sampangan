@@ -23,6 +23,10 @@
 
 import { CONFIG } from './config.js';
 import { amankan, ikon } from './ui.js';
+import {
+  diApp, dengarkan,
+  nativeStatusAuth, nativeLogin, nativeKeluar, mintaNative,
+} from './jembatan.js';
 
 const KUNCI_SESI = 'kasrt.idToken';
 const KUNCI_EMAIL = 'kasrt.email';
@@ -33,6 +37,11 @@ const status = {
   admin: false,
   email: '',
   siap: false,   /* true setelah percobaan pemulihan sesi selesai */
+
+  /* Hanya berarti di dalam aplikasi Android: pengurus masih berwenang, tapi
+     saat ini tidak ada jaringan — jadi yang ia catat masuk antrian dulu.
+     Selalu false di peramban, tempat tulisan memang harus langsung sampai. */
+  luring: false,
 };
 
 export function statusAuth() {
@@ -56,6 +65,20 @@ export function tokenSaatIni() {
  * membaca mentahnya lewat e.postData.contents dan JSON.parse sendiri.
  */
 export async function kirimAksi(aksi, muatan = {}) {
+  /* --- Di dalam aplikasi Android ------------------------------------------
+     Perubahan TIDAK dikirim dari sini. Ia masuk antrian lokal, langsung
+     diterapkan ke data yang sedang tampil, dan baru benar-benar sampai ke
+     spreadsheet ketika mesin sinkronisasi berhasil mengirimkannya.
+
+     Yang dikembalikan sengaja berbentuk sama dengan balasan server (berisi
+     `id`), supaya kode halaman tidak perlu bercabang. Bedanya hanya satu
+     penanda tambahan, `tertunda`, yang dipakai admin.js untuk memilih
+     kalimat konfirmasi yang jujur: "tersimpan di HP" bukan "tersimpan ke
+     spreadsheet". */
+  if (diApp()) {
+    return await mintaNative('antrikanAksi', { aksi, muatan });
+  }
+
   if (!CONFIG.APPS_SCRIPT_URL) {
     throw new Error('URL backend belum diatur di assets/js/config.js');
   }
@@ -152,6 +175,31 @@ function tampilkanGalat(pesan) {
 /* --- Alur login ------------------------------------------------------------ */
 
 async function mulaiLogin() {
+  /* --- Di dalam aplikasi Android ------------------------------------------
+     Modal dan pustaka GIS dilewati sama sekali. Bukan pilihan gaya: Google
+     MEMBLOKIR alur login webnya sendiri ketika halaman berjalan di dalam
+     WebView (galat `disallowed_useragent`), jadi memakai dialog sistem
+     Android bukan penyempurnaan — itu satu-satunya cara login bisa bekerja
+     di dalam aplikasi. */
+  if (diApp()) {
+    try {
+      const hasil = await nativeLogin();
+      Object.assign(status, {
+        masuk: !!hasil.masuk,
+        admin: !!hasil.admin,
+        email: hasil.email || '',
+        luring: !!hasil.luring,
+      });
+      terapkanStatus();
+    } catch (err) {
+      /* Cangkang native sudah menampilkan pesannya sendiri lewat toast —
+         memunculkan modal galat di sini akan membuat pengurus melihat
+         keluhan yang sama dua kali. */
+      console.warn('[kas-rt] Login native:', err.message);
+    }
+    return;
+  }
+
   const modal = bukaModal();
   const galat = document.getElementById('auth-galat');
   if (galat) galat.hidden = true;
@@ -219,6 +267,24 @@ async function terimaKredensial(respons) {
 }
 
 export function keluar() {
+  if (diApp()) {
+    /* Sesi sesungguhnya ada di penyimpanan terenkripsi sisi native, bukan di
+       sessionStorage. Cangkang yang menghapusnya, lalu keadaan dibaca ulang
+       dari sana — bukan diasumsikan di sini. */
+    nativeKeluar()
+      .then((hasil) => {
+        Object.assign(status, {
+          masuk: !!hasil.masuk,
+          admin: !!hasil.admin,
+          email: hasil.email || '',
+          luring: !!hasil.luring,
+        });
+        terapkanStatus();
+      })
+      .catch((err) => console.warn('[kas-rt] Gagal keluar:', err.message));
+    return;
+  }
+
   sessionStorage.removeItem(KUNCI_SESI);
   sessionStorage.removeItem(KUNCI_EMAIL);
   status.masuk = false;
@@ -281,6 +347,42 @@ export async function pasangAuth() {
       if (status.admin) keluar();
       else mulaiLogin();
     });
+  }
+
+  /* --- Di dalam aplikasi Android ------------------------------------------
+     Sesi bertahan di penyimpanan terenkripsi native, bukan di sessionStorage,
+     jadi ia selamat dari berpindah halaman DAN dari aplikasi ditutup. Tidak
+     ada verifikasi ulang ke server di sini: saat offline itu memang tidak
+     mungkin, dan justru di situlah gunanya — pengurus tetap bisa mencatat.
+     Yang memverifikasi tetap Apps Script, saat antriannya dikirim nanti. */
+  if (diApp()) {
+    try {
+      const hasil = await nativeStatusAuth();
+      Object.assign(status, {
+        masuk: !!hasil.masuk,
+        admin: !!hasil.admin,
+        email: hasil.email || '',
+        luring: !!hasil.luring,
+      });
+    } catch (err) {
+      console.warn('[kas-rt] Status auth native:', err.message);
+    }
+
+    /* Sesi bisa berubah dari luar halaman ini — pengurus login lewat menu
+       "Lainnya", atau sesi 7 harinya habis di tengah pemakaian. */
+    dengarkan('auth-berubah', (data) => {
+      Object.assign(status, {
+        masuk: !!data.masuk,
+        admin: !!data.admin,
+        email: data.email || '',
+        luring: !!data.luring,
+      });
+      terapkanStatus();
+    });
+
+    status.siap = true;
+    terapkanStatus();
+    return;
   }
 
   const tersimpan = tokenSaatIni();

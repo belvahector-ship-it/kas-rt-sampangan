@@ -128,19 +128,16 @@
   line-height: 1.4;
 }
 
-/* --- Navigasi desktop --- */
+/* --- Navigasi (satu panel dropdown, semua lebar layar) --- */
 
 .nav {
   display: flex;
-  align-items: center;
   gap: var(--sp-1);
 }
 
 .nav__link {
   display: inline-flex;
   align-items: center;
-  min-height: var(--touch);
-  padding: 0 var(--sp-3);
   font-size: var(--fs-sm);
   font-weight: 700;
   text-transform: uppercase;
@@ -168,7 +165,7 @@
 /* --- Tombol menu mobile --- */
 
 .nav-toggle {
-  display: none;
+  display: grid;
   width: var(--touch); height: var(--touch);
   flex: none;
   place-items: center;
@@ -187,51 +184,47 @@
 .nav-toggle[aria-expanded='true'] .nav-toggle__open { display: none; }
 .nav-toggle[aria-expanded='true'] .nav-toggle__close { display: block; }
 
-@media (max-width: 1100px) {
-  .nav-toggle { display: grid; }
+/* Satu panel dropdown untuk semua tautan menu, di semua lebar layar —
+   tombol Pengurus/Logout TIDAK ikut di sini, ia tetap di baris header
+   (lihat tempatkanTombolPengurus di admin.js). */
+.nav {
+  position: absolute;
+  top: 100%;
+  left: 0; right: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: var(--sp-4) var(--gutter) var(--sp-5);
+  background: var(--paper);
+  border-bottom: var(--bw-2) solid var(--ink);
+  box-shadow: var(--sh-3);
 
-  .nav {
-    position: absolute;
-    top: 100%;
-    left: 0; right: 0;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    padding: var(--sp-4) var(--gutter) var(--sp-5);
-    background: var(--paper);
-    border-bottom: var(--bw-2) solid var(--ink);
-    box-shadow: var(--sh-3);
+  /* Tersembunyi memakai transform, bukan display — supaya bisa dianimasi
+     dan tetap dapat difokus urutannya saat terbuka */
+  transform: translateY(-8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--t-base) var(--ease-out),
+              transform var(--t-base) var(--ease-out),
+              visibility var(--t-base);
+}
 
-    /* Tersembunyi memakai transform, bukan display — supaya bisa dianimasi
-       dan tetap dapat difokus urutannya saat terbuka */
-    transform: translateY(-8px);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--t-base) var(--ease-out),
-                transform var(--t-base) var(--ease-out),
-                visibility var(--t-base);
-  }
+.nav.is-open { transform: translateY(0); opacity: 1; visibility: visible; }
 
-  .nav.is-open { transform: translateY(0); opacity: 1; visibility: visible; }
+.nav__link {
+  min-height: 56px;
+  padding-inline: var(--sp-4);
+  font-size: var(--fs-base);
+  border: var(--bw-1) solid var(--ink);
+}
 
-  .nav__link {
-    min-height: 56px;
-    padding-inline: var(--sp-4);
-    font-size: var(--fs-base);
-    border: var(--bw-1) solid var(--ink);
-  }
+.nav__link + .nav__link { margin-top: -2px; }
 
-  .nav__link + .nav__link { margin-top: -2px; }
-
-  /* Tombol Pengurus/Logout dipindah ke sini oleh admin.js saat mobile
-     (lihat tempatkanTombolPengurus) — diberi lebar penuh dan jarak dari
-     tautan di atasnya supaya terbaca sebagai aksi terpisah. */
-  .nav .btn-pengurus {
-    width: 100%;
-    justify-content: center;
-    min-height: 56px;
-    margin-top: var(--sp-4);
-  }
+/* Tautan eksternal (mis. "Simpan File Gratis") dibuka tab baru — beri
+   tanda visual kecil supaya jelas ini meninggalkan situs. */
+.nav__link[target='_blank']::after {
+  content: '↗';
+  margin-left: var(--sp-2);
 }
 
 /* --------------------------------------------------------------------------
@@ -1066,15 +1059,29 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
 .scroll-hint svg { width: 16px; height: 16px; }
 
 @media (max-width: 720px) {
-  /* Hitungan yang sama seperti di atas, dengan lencana 17px:
-     3×17 + 2×2 gap + 2 padding = 57  →  col-month 60px
-     min-width = 132 + 62 + 12 × 60 = 914 */
-  .matrix { min-width: 920px; }
-  .matrix th.col-name { width: 132px; min-width: 132px; }
-  .matrix th.col-pagu { width: 62px; min-width: 62px; }
-  .matrix th.col-month { width: 60px; min-width: 60px; }
-  .dot-tri { gap: 2px; padding: 3px 1px; }
-  .dot-tri__dot { width: 17px; height: 17px; font-size: 10px; }
+  /* REVISI: di layar sempit lencananya DINAIKKAN, bukan diturunkan.
+     Sebelumnya nilainya dikecilkan (17px, huruf 10px, kolom nama 132px)
+     untuk mengurangi jarak geser. Itu tidak menyelesaikan apa pun: dengan
+     min-width 920px di layar 360px, tabelnya TETAP harus digeser — jadi
+     yang dibeli hanya beberapa sentimeter gulir, dan yang dibayar adalah
+     huruf I/P/L yang nyaris tidak terbaca justru pada perangkat yang paling
+     sering dipakai warga. Karena tabel ini toh digeser dalam keadaan apa
+     pun, keterbacaan menang (DECISIONS.md CP-06).
+
+     Hitungan barunya, dengan lencana 21px:
+       3×21 + 2×3 gap + 2×2 padding = 73  →  col-month 76px
+       min-width = 140 + 66 + 12 × 76 = 1118 */
+  .matrix { min-width: 1118px; }
+  .matrix th.col-name { width: 140px; min-width: 140px; }
+  .matrix th.col-pagu { width: 66px; min-width: 66px; }
+  .matrix th.col-month { width: 76px; min-width: 76px; }
+  .dot-tri { gap: 3px; padding: 4px 2px; }
+  .dot-tri__dot { width: 21px; height: 21px; font-size: 12px; }
+
+  /* 10px adalah ukuran teks terkecil di seluruh proyek, dan kebetulan
+     dipakai untuk angka pagu — hal yang justru perlu dibaca teliti. */
+  .matrix td.cell-pagu { font-size: 11px; }
+  .cell-pagu__titik { width: 8px; height: 8px; }
 }
 
 /* --------------------------------------------------------------------------
@@ -2188,3 +2195,199 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 .toast--ok    { background: var(--accent);    color: #FFFFFF; }
 .toast--galat { background: var(--critical);  color: #FFFFFF; }
 .toast--sibuk { background: var(--highlight); color: var(--ink); }
+
+/* --------------------------------------------------------------------------
+   ANTRIAN & RIWAYAT  (antrian.html — khusus aplikasi)
+
+   Kartu per catatan pengurus. Keadaannya dibedakan oleh PITA WARNA di sisi
+   kiri, bukan oleh latar berwarna: kartu bentrok memuat tabel perbandingan
+   angka rupiah di dalamnya, dan angka di atas bidang merah muda jauh lebih
+   sulit dibaca daripada di atas putih. Warna cukup menandai, tidak perlu
+   mewarnai.
+   -------------------------------------------------------------------------- */
+
+.antrian-daftar {
+  display: grid;
+  /* minmax(0, 1fr), bukan 1fr. Item grid punya min-width: auto secara bawaan,
+     artinya ia menolak menyempit di bawah lebar isinya — dan isi kartu bentrok
+     mengandung tabel perbandingan empat kolom. Tanpa ini, tabel itu meregangkan
+     kartunya, kartunya meregangkan halaman, dan seluruh body ikut bisa digeser
+     ke samping di layar HP. Pembungkus .simple-table-wrap yang sudah punya
+     overflow-x: auto tidak pernah kebagian kesempatan bekerja. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-4);
+}
+
+.antrian-kartu {
+  min-width: 0;
+  border: var(--bw-2) solid var(--ink);
+  border-left-width: 8px;
+  background: var(--surface);
+  box-shadow: var(--sh-2);
+  padding: var(--sp-4);
+}
+
+.antrian-kartu--tunggu  { border-left-color: var(--pos-ipal); }
+.antrian-kartu--bentrok { border-left-color: var(--critical); }
+.antrian-kartu--gagal   { border-left-color: var(--critical); }
+.antrian-kartu--kirim   { border-left-color: var(--ink-3); box-shadow: var(--sh-1); }
+
+.antrian-kartu__kepala {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.antrian-kartu__judul {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  line-height: var(--lh-snug);
+}
+
+.antrian-kartu__status {
+  flex: none;
+  padding: 2px var(--sp-2);
+  border: var(--bw-1) solid var(--ink);
+  background: var(--surface-alt);
+  font-size: var(--fs-2xs);
+  font-weight: 800;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
+
+.antrian-kartu--bentrok .antrian-kartu__status,
+.antrian-kartu--gagal .antrian-kartu__status {
+  background: var(--critical);
+  color: #FFFFFF;
+}
+
+.antrian-kartu--tunggu .antrian-kartu__status { background: var(--highlight); }
+
+.antrian-kartu__ringkas {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  /* Nominal dan nama kolom dibaca berdampingan; lebar digit yang seragam
+     membuat keduanya sejajar walau ada di kalimat, bukan di tabel. */
+  font-variant-numeric: tabular-nums;
+}
+
+.antrian-kartu__meta {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+.antrian-kartu__galat {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding: var(--sp-3);
+  border: var(--bw-1) solid var(--critical);
+  background: var(--critical-soft);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--critical-ink);
+}
+
+.antrian-kartu__galat svg { width: 18px; height: 18px; flex: none; margin-top: 2px; }
+
+.antrian-kartu__aksi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top: var(--bw-1) solid var(--ink);
+}
+
+/* "Buang catatan saya" menghapus pekerjaan yang tidak bisa dikembalikan.
+   Dipisahkan ke ujung kanan supaya jarinya tidak berada tepat di sebelah
+   tombol yang paling sering ditekan. */
+.antrian-kartu__buang {
+  margin-left: auto;
+  color: var(--critical-ink);
+  border-color: var(--critical);
+}
+
+@media (max-width: 560px) {
+  /* Di layar sempit ketiga tombol menumpuk; margin-left:auto tidak lagi
+     memisahkan apa pun, jadi pemisahnya diganti jarak vertikal. */
+  .antrian-kartu__aksi { flex-direction: column; align-items: stretch; }
+  .antrian-kartu__buang { margin-left: 0; margin-top: var(--sp-2); }
+}
+
+/* ==========================================================================
+   DI DALAM APLIKASI ANDROID  (html.di-app)
+
+   Kelas ini dipasang cangkang native sebelum skrip halaman mana pun berjalan
+   (WebViewCompat.addDocumentStartJavaScript di MainActivity), dengan
+   jembatan.js sebagai pengaman untuk WebView lama. Di peramban biasa kelas
+   ini tidak pernah ada, jadi seluruh blok di bawah tidak berlaku dan
+   kasmenoreh.my.id sama sekali tidak terpengaruh.
+
+   Yang diubah hanya hal-hal yang benar-benar BENTROK dengan kerangka native
+   di sekelilingnya. Sisanya dibiarkan apa adanya — halaman yang tampil beda
+   antara situs dan aplikasi akan jadi dua desain yang harus dijaga terpisah,
+   dan itulah yang justru ingin dihindari.
+
+   Rujukan keputusan: DECISIONS.md CP-27.
+   ========================================================================== */
+
+/* Navigasi ganda. Di dalam aplikasi ada bilah navigasi native di bawah layar
+   yang selalu terlihat; menyisakan hamburger + drawer di atas berarti dua
+   navigasi berdampingan yang masing-masing punya gagasan sendiri tentang
+   "halaman aktif". Yang dibuang yang atas — ia butuh satu ketukan tambahan
+   untuk sesuatu yang di bawah sudah langsung terlihat.
+
+   Tautan halaman di FOOTER sengaja DIBIARKAN. Ia bukan duplikat yang
+   mengganggu: di sanalah satu-satunya jalan cepat ke Rekening BPD, Dana
+   Operasional, dan Tentang tanpa membuka sheet "Lainnya". */
+html.di-app .nav,
+html.di-app .nav-toggle {
+  display: none !important;
+}
+
+/* Tombol "Pengurus" berpindah ke sheet "Lainnya" di cangkang native, karena
+   di sanalah login benar-benar terjadi (dialog sistem Android, bukan modal
+   halaman). Membiarkan tombol versi web tetap ada akan memberi dua pintu
+   masuk yang perilakunya berbeda. */
+html.di-app .btn-pengurus {
+  display: none !important;
+}
+
+/* Header tetap menempel di atas, tapi tanpa navigasi ia hanya perlu setinggi
+   identitasnya sendiri. */
+html.di-app .site-header__row {
+  min-height: 0;
+  padding-block: var(--sp-3);
+}
+
+/* Pita "muat ulang halaman untuk mencoba lagi" tidak berlaku di aplikasi —
+   yang menyegarkan data adalah tarik-untuk-menyegarkan atau bilah status
+   native, bukan memuat ulang halaman. Pitanya sendiri sudah tidak dibuat
+   (lihat pitaSumberData di ui.js); aturan ini menutup celah kalau ada
+   halaman yang menuliskannya sendiri di luar jalur itu. */
+html.di-app [data-sumber-data]:empty {
+  display: none;
+}
+
+/* Efek hover tidak ada artinya di layar sentuh, dan pada tabel matrik ia
+   justru menyesatkan: baris tetap tersorot kuning setelah disentuh, seolah
+   sedang terpilih. */
+@media (hover: none) {
+  html.di-app .matrix tbody tr:hover td,
+  html.di-app .matrix tbody tr:hover td.cell-name,
+  html.di-app .matrix tbody tr:hover td.cell-pagu {
+    background: inherit;
+  }
+
+  html.di-app .dot-tri:hover .dot-tri__dot {
+    transform: none;
+    box-shadow: none;
+  }
+}

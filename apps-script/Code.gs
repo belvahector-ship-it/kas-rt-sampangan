@@ -14,7 +14,35 @@
    dan jangan pernah memindahkan pemeriksaan whitelist ke sisi klien —
    JavaScript di browser bisa diedit siapa saja lewat DevTools.
 
-   Rujukan keputusan: DECISIONS.md CP-22 (menggantikan sebagian CP-02).
+   VERSI 2 — MENDUKUNG PENCATATAN OFFLINE DARI APLIKASI ANDROID.
+
+   Aplikasi Android menyimpan perubahan pengurus di antrian lokal saat tidak
+   ada jaringan, lalu mengirimkannya belakangan. Itu memunculkan dua persoalan
+   yang tidak ada ketika satu-satunya klien adalah halaman web online, dan
+   keduanya ditangani di berkas ini:
+
+   1. PENGIRIMAN ULANG BISA MENGGANDAKAN CATATAN.
+      Kalau jaringan putus tepat setelah baris tersimpan tapi sebelum
+      balasannya sampai, aplikasi akan mencoba lagi — dan versi lama akan
+      menambahkan baris kedua yang identik. Jawabannya: ID baris dibuat di
+      HP (`idKlien`), bukan di sini, dan `tambahBaris` mengenali ID yang sudah
+      ada lalu berhenti. Aman diulang berapa kali pun.
+
+   2. DUA PENGURUS BISA MENGUBAH HAL YANG SAMA.
+      Perubahan yang mengendap sehari di antrian bisa saja menimpa pekerjaan
+      pengurus lain yang sudah masuk lebih dulu. Jawabannya: klien mengirim
+      `nilaiSebelum` — isi sel seperti yang ia lihat saat menekan Simpan — dan
+      di sini dibandingkan dengan isi terkini. Kalau berbeda, TIDAK ditulis;
+      dikembalikan kode BENTROK beserta isi server, dan aplikasi menyerahkan
+      keputusannya ke pengurus. Menimpa diam-diam adalah cara paling halus
+      untuk kehilangan catatan keuangan tanpa ada yang menyadarinya.
+
+   Keduanya OPSIONAL: permintaan tanpa `idKlien` dan tanpa `nilaiSebelum`
+   berperilaku persis seperti versi 1, jadi kasmenoreh.my.id yang sekarang
+   tetap berjalan tanpa perlu diubah sedikit pun.
+
+   Rujukan keputusan: DECISIONS.md CP-22 (menggantikan sebagian CP-02),
+   CP-27 (aplikasi Android offline-first).
    ========================================================================== */
 
 /* --- Konfigurasi ---------------------------------------------------------- */
@@ -70,6 +98,29 @@ var POS_VALID = [LEMBAR.IURAN, LEMBAR.IPAL, LEMBAR.LELAYU];
 
 /* --- Titik masuk ---------------------------------------------------------- */
 
+/* --- Galat bertipe -------------------------------------------------------
+   Klien perlu MEMBEDAKAN tiga kegagalan, karena tindak lanjutnya berlawanan:
+
+     BENTROK  data sudah berubah duluan  → tahan, tanyakan pengurus
+     AUTH     sesi habis / bukan pengurus → minta login ulang, antrian tetap
+     (lain)   isinya memang salah         → jangan diulang, tampilkan pesannya
+
+   Tanpa pembeda ini aplikasi hanya punya satu pilihan untuk ketiganya, dan
+   pilihan apa pun yang diambilnya akan salah untuk dua kasus lainnya. */
+
+function GalatBentrok(pesan, server) {
+  var e = new Error(pesan);
+  e.kode = 'BENTROK';
+  e.server = server || null;
+  return e;
+}
+
+function GalatAuth(pesan) {
+  var e = new Error(pesan);
+  e.kode = 'AUTH';
+  return e;
+}
+
 function doPost(e) {
   try {
     if (!e || !e.postData || !e.postData.contents) {
@@ -85,7 +136,10 @@ function doPost(e) {
     /* Pesan galat dikembalikan apa adanya supaya bendahara tahu apa yang
        salah (mis. "Nama tidak ditemukan"). Tidak ada rahasia di sini —
        token tidak pernah ikut dikembalikan. */
-    return keluaran({ ok: false, error: String((err && err.message) || err) });
+    var jawab = { ok: false, error: String((err && err.message) || err) };
+    if (err && err.kode) jawab.kode = err.kode;
+    if (err && err.server) jawab.server = err.server;
+    return keluaran(jawab);
   }
 }
 
@@ -111,7 +165,7 @@ function keluaran(obj) {
    -------------------------------------------------------------------------- */
 
 function verifikasiToken(idToken) {
-  if (!idToken) throw new Error('Belum login');
+  if (!idToken) throw GalatAuth('Belum login');
 
   var res = UrlFetchApp.fetch(
     'https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(idToken),
@@ -119,7 +173,7 @@ function verifikasiToken(idToken) {
   );
 
   if (res.getResponseCode() !== 200) {
-    throw new Error('Token tidak sah atau sudah kedaluwarsa. Silakan login ulang.');
+    throw GalatAuth('Token tidak sah atau sudah kedaluwarsa. Silakan login ulang.');
   }
 
   var info = JSON.parse(res.getContentText());
@@ -131,12 +185,12 @@ function verifikasiToken(idToken) {
     throw new Error('Email Google Anda belum terverifikasi');
   }
   if (!info.exp || (Number(info.exp) * 1000) < Date.now()) {
-    throw new Error('Sesi sudah kedaluwarsa. Silakan login ulang.');
+    throw GalatAuth('Sesi sudah kedaluwarsa. Silakan login ulang.');
   }
 
   var email = String(info.email || '').trim().toLowerCase();
   if (ambilAdminEmails().indexOf(email) === -1) {
-    throw new Error('Akun ' + email + ' tidak terdaftar sebagai pengurus');
+    throw GalatAuth('Akun ' + email + ' tidak terdaftar sebagai pengurus');
   }
 
   return email;
@@ -202,6 +256,63 @@ function keAngka(v) {
   return isNaN(n) ? 0 : n;
 }
 
+/* --- Perbandingan nilai untuk deteksi bentrok -----------------------------
+   Nilai yang sama bisa datang dalam tiga wujud berbeda: objek Date dari
+   spreadsheet, string "2026-01-15" hasil normalisasi gviz di sisi klien, dan
+   angka yang tersimpan sebagai teks. Membandingkannya mentah-mentah akan
+   menyatakan bentrok pada baris yang sebenarnya tidak berubah sama sekali —
+   dan bentrok palsu jauh lebih merusak daripada tidak ada deteksi: pengurus
+   akan belajar menekan "Timpa" tanpa membaca, dan sejak itu deteksinya tidak
+   lagi menjaga apa pun.
+
+   Zona waktu dipatok Asia/Jakarta, sama dengan yang dipakai catatAudit. */
+
+function normalNilai(v) {
+  if (v === null || v === undefined || v === '') return '';
+  if (v instanceof Date) return Utilities.formatDate(v, 'Asia/Jakarta', 'yyyy-MM-dd');
+  if (typeof v === 'number') return String(v);
+
+  var s = String(v).trim();
+  if (s === '') return '';
+  if (!isNaN(Number(s))) return String(Number(s));
+  return s;
+}
+
+function samaNilai(a, b) {
+  return normalNilai(a) === normalNilai(b);
+}
+
+/**
+ * Membandingkan potret klien dengan isi sel yang sebenarnya.
+ *
+ * @param nilaiSebelum objek {kolom: nilai} kiriman klien, atau null/undefined
+ *        bila klien memang tidak mengirimkannya (klien web versi lama, atau
+ *        aksi tambah). Tanpa potret, TIDAK ADA pemeriksaan — perilaku versi 1
+ *        dipertahankan apa adanya.
+ * @param bacaSel fungsi (namaKolom) => nilai terkini
+ * @throws GalatBentrok bila ada satu kolom pun yang sudah berbeda
+ */
+function periksaBentrok(nilaiSebelum, bacaSel, keterangan) {
+  if (!nilaiSebelum || typeof nilaiSebelum !== 'object') return;
+
+  var server = {};
+  var berbeda = [];
+
+  for (var kunci in nilaiSebelum) {
+    var terkini = bacaSel(kunci);
+    server[kunci] = normalNilai(terkini);
+    if (!samaNilai(terkini, nilaiSebelum[kunci])) berbeda.push(kunci);
+  }
+
+  if (berbeda.length) {
+    throw GalatBentrok(
+      keterangan + ' sudah diubah orang lain sejak Anda mencatatnya (kolom: ' +
+      berbeda.join(', ') + ')',
+      server
+    );
+  }
+}
+
 /* --- AuditLog -------------------------------------------------------------
    Ditulis SETELAH operasi utama sukses. Kalau pencatatan audit sendiri gagal
    (mis. lembar AuditLog terhapus), operasi utama TIDAK dibatalkan — data
@@ -261,6 +372,16 @@ function setMatrik(p, email) {
   var sel = sh.getRange(barisTarget, kolomTarget);
   var sebelum = sel.getValue();
 
+  /* Potret dari klien berkunci NAMA KOLOM ("Jan".."Des"), sementara di sini
+     yang ada cuma satu sel. Nilainya diambil dari kunci mana pun yang
+     dikirim — hanya ada satu, karena Penerap.nilaiSebelum() memang cuma
+     memotret sel yang disentuh. */
+  periksaBentrok(
+    p.nilaiSebelum,
+    function () { return sebelum; },
+    'Setoran ' + nama + ' bulan ke-' + (bulan + 1) + ' di ' + p.pos
+  );
+
   if (nominal > 0) sel.setValue(nominal);
   else sel.clearContent();
 
@@ -280,9 +401,26 @@ function tambahBaris(namaLembar, p, email) {
   var peta = petaKolom(sh);
   var kolomId = butuhKolom(peta, 'ID', namaLembar);
 
+  /* ID dari klien kalau ada. INILAH yang membuat pengiriman ulang aman:
+     kalau baris dengan ID ini sudah ada, permintaan ini adalah percobaan
+     kedua atas catatan yang SAMA — bukan catatan baru. Dijawab sukses tanpa
+     menulis apa pun, sehingga aplikasi bisa mencoret entrinya dari antrian
+     dan tidak ada transaksi yang tercatat dua kali di buku kas.
+
+     Tanpa idKlien, perilakunya persis versi 1: ID dibuat di sini. */
+  var id = String(p.idKlien || '').trim();
+  if (id) {
+    var sudahAda = cariBarisOpsional(sh, id, namaLembar);
+    if (sudahAda) {
+      catatAudit(email, 'tambah-diulang', namaLembar, { id: id });
+      return { id: id, sudahAda: true };
+    }
+  } else {
+    id = buatId();
+  }
+
   var judul = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
   var baris = new Array(judul.length).fill('');
-  var id = buatId();
   baris[kolomId] = id;
 
   var nilai = p.nilai || {};
@@ -296,11 +434,12 @@ function tambahBaris(namaLembar, p, email) {
   return { id: id };
 }
 
-function cariBarisById(sh, id, namaLembar) {
+/** Seperti cariBarisById, tapi mengembalikan null alih-alih melempar. */
+function cariBarisOpsional(sh, id, namaLembar) {
   var peta = petaKolom(sh);
   var kolomId = butuhKolom(peta, 'ID', namaLembar);
   var jumlahBaris = sh.getLastRow();
-  if (jumlahBaris < 2) throw new Error('Lembar ' + namaLembar + ' masih kosong');
+  if (jumlahBaris < 2) return null;
 
   var kolom = sh.getRange(2, kolomId + 1, jumlahBaris - 1, 1).getValues();
   for (var i = 0; i < kolom.length; i++) {
@@ -308,13 +447,40 @@ function cariBarisById(sh, id, namaLembar) {
       return { baris: i + 2, peta: peta };
     }
   }
-  throw new Error('Baris dengan ID ' + id + ' tidak ditemukan — mungkin sudah dihapus orang lain');
+  return null;
+}
+
+function cariBarisById(sh, id, namaLembar) {
+  var temu = cariBarisOpsional(sh, id, namaLembar);
+  if (temu) return temu;
+
+  /* Baris yang hilang BUKAN kegagalan biasa — hampir selalu berarti pengurus
+     lain sudah menghapusnya. Dikembalikan sebagai BENTROK supaya aplikasi
+     menahannya untuk ditinjau, bukan menandainya gagal permanen dan
+     membuang catatan yang mungkin masih ingin dipulihkan pemiliknya. */
+  throw GalatBentrok(
+    'Baris dengan ID ' + id + ' tidak ditemukan — mungkin sudah dihapus orang lain',
+    null
+  );
 }
 
 function ubahBaris(namaLembar, p, email) {
   if (!p.id) throw new Error('ID baris tidak disertakan');
   var sh = ambilLembar(namaLembar);
   var temu = cariBarisById(sh, p.id, namaLembar);
+
+  /* Diperiksa SEBELUM satu sel pun ditulis. Kalau pemeriksaan diselipkan di
+     tengah perulangan, sebagian kolom sudah berubah saat bentrok ditemukan —
+     dan baris itu berakhir setengah-lama-setengah-baru, keadaan yang tidak
+     dikehendaki siapa pun dan tidak tercatat di mana pun. */
+  periksaBentrok(
+    p.nilaiSebelum,
+    function (kunci) {
+      if (!(kunci in temu.peta)) return '';
+      return sh.getRange(temu.baris, temu.peta[kunci] + 1).getValue();
+    },
+    'Catatan ini'
+  );
 
   var nilai = p.nilai || {};
   var perubahan = {};
@@ -344,6 +510,16 @@ function hapusBaris(namaLembar, p, email) {
     var k = String(judul[i]).trim();
     if (k) salinan[k] = isi[i];
   }
+
+  /* Penghapusan diperiksa terhadap SELURUH baris, bukan sebagian kolom.
+     Menghapus catatan tidak bisa dibatalkan dari sisi mana pun, jadi ambang
+     kehati-hatiannya memang sengaja dibuat lebih tinggi daripada mengubah:
+     satu kolom saja yang sudah berbeda cukup untuk menahannya. */
+  periksaBentrok(
+    p.nilaiSebelum,
+    function (kunci) { return salinan[kunci]; },
+    'Catatan yang akan dihapus'
+  );
 
   sh.deleteRow(temu.baris);
   catatAudit(email, 'hapus', namaLembar, { id: p.id, isiSebelumDihapus: salinan });

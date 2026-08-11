@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="id" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-pola="Antrian &amp; Riwayat — {rt}">Antrian &amp; Riwayat — RT 01/RW 04 Sampangan</title>
+<meta name="description" content="Daftar catatan pengurus yang belum terkirim ke spreadsheet, dan perubahan yang perlu ditinjau.">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23FFFF00'/%3E%3Crect x='1.5' y='1.5' width='21' height='21' fill='none' stroke='%23000000' stroke-width='3'/%3E%3Ctext x='12' y='16.5' font-family='Verdana,sans-serif' font-size='10' font-weight='700' fill='%23000000' text-anchor='middle'%3ERT%3C/text%3E%3C/svg%3E">
+<!-- Font dimuat lokal lewat @font-face di tokens.css (lihat catatan di sana).
+     Tidak ada permintaan ke CDN Google: situs jadi satu perjalanan jaringan
+     lebih ringan, dan di dalam aplikasi Android tipografinya tetap benar saat
+     warga sedang offline. -->
+<link rel="preload" href="assets/font/archivo-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/font/manrope-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/motion.css">
+<link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body>
+<!--
+  HALAMAN KHUSUS APLIKASI.
+
+  Dibuat sebagai halaman web, bukan layar native, dengan sengaja: isinya
+  memperbandingkan angka rupiah, tanggal, dan nama kolom lembar — persis
+  jenis tampilan yang sudah punya komponennya di sini (kartu, tabel, lencana,
+  tombol brutalist). Membangunnya lagi dengan View Android berarti memelihara
+  dua bahasa desain untuk satu produk, dan yang kedua pasti akan tertinggal.
+
+  Dibuka lewat peramban biasa, halaman ini menjelaskan dirinya dan berhenti —
+  tidak ada antrian di luar aplikasi.
+-->
+<div class="scroll-progress" aria-hidden="true"><span class="scroll-progress__bar"></span></div>
+<a class="skip-link" href="#konten">Langsung ke konten</a>
+
+<div class="bg-canvas" aria-hidden="true">
+  <div class="bg-canvas__grid"></div>
+</div>
+
+<header class="site-header">
+  <div class="container site-header__row">
+    <a href="index.html" class="brand">
+      <span class="brand__mark" aria-hidden="true">RT</span>
+      <span class="brand__text">
+        <span class="brand__name" data-isi="nama_rt">RT 01 / RW 04 Sampangan</span>
+        <span class="brand__sub">Portal Transparansi Kas</span>
+      </span>
+    </a>
+
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-utama" aria-label="Buka menu navigasi">
+      <svg class="nav-toggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <svg class="nav-toggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+
+    <nav class="nav" id="nav-utama" aria-label="Navigasi utama">
+      <a class="nav__link" href="index.html">Beranda</a>
+      <a class="nav__link" href="laporan.html">Laporan Kas</a>
+      <a class="nav__link" href="iuran.html">Iuran Warga</a>
+      <a class="nav__link" href="kegiatan.html">Kegiatan</a>
+      <a class="nav__link" href="bank-bpd.html">Rekening BPD</a>
+      <a class="nav__link" href="dana-operasional.html">Dana Operasional</a>
+      <a class="nav__link" href="tentang.html">Tentang</a>
+      <a class="nav__link" href="https://arsip-gratis.my.id" target="_blank" rel="noopener">Simpan File Gratis</a>
+    </nav>
+  </div>
+</header>
+
+<main class="site-main" id="konten">
+
+  <div class="page-head">
+    <div class="container">
+      <p class="eyebrow eyebrow--accent reveal">Catatan Pengurus</p>
+      <h1 class="page-head__title reveal">Antrian &amp; Riwayat</h1>
+      <p class="lede reveal" id="ringkasan">
+        Catatan yang Anda buat saat tidak ada internet menunggu di sini sampai
+        berhasil dikirim ke spreadsheet.
+      </p>
+    </div>
+  </div>
+
+  <!-- Perlu ditinjau: bentrok dan penolakan. Ditaruh PALING ATAS karena
+       inilah satu-satunya bagian halaman ini yang menunggu keputusan orang. -->
+  <section class="container section" style="padding-top:var(--sp-6)" id="bagian-tinjau" hidden>
+    <div class="page-head__row mb-5 reveal">
+      <div>
+        <p class="eyebrow">Butuh Keputusan Anda</p>
+        <h2 style="margin-top:var(--sp-3)">Perlu <span class="highlight-red">ditinjau</span></h2>
+      </div>
+    </div>
+    <div id="daftar-tinjau" class="antrian-daftar"></div>
+  </section>
+
+  <section class="container section" style="padding-top:var(--sp-6)">
+    <div class="page-head__row mb-5 reveal">
+      <div>
+        <p class="eyebrow">Belum Terkirim</p>
+        <h2 style="margin-top:var(--sp-3)">Menunggu <span class="highlight-blue">dikirim</span></h2>
+      </div>
+    </div>
+    <div id="daftar-tertunda" class="antrian-daftar"></div>
+  </section>
+
+  <section class="container section" style="padding-top:var(--sp-6)">
+    <div class="page-head__row mb-5 reveal">
+      <div>
+        <p class="eyebrow">Sudah Sampai</p>
+        <h2 style="margin-top:var(--sp-3)">Riwayat terkirim</h2>
+      </div>
+    </div>
+    <div id="daftar-terkirim" class="antrian-daftar"></div>
+    <p class="fs-sm muted measure mt-4">
+      Riwayat disimpan 30 hari di HP ini. Catatan resmi yang permanen ada di
+      lembar <strong>AuditLog</strong> pada spreadsheet — ditulis server setiap
+      kali sebuah perubahan benar-benar diterima.
+    </p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container site-footer__bottom">
+    <span>&copy; <span data-isi="tahun_sekarang">2026</span> <span data-isi="nama_rt">RT 01/RW 04 Sampangan</span></span>
+    <span>Halaman ini hanya aktif di dalam aplikasi</span>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/pages/antrian.js"></script>
+</body>
+</html>

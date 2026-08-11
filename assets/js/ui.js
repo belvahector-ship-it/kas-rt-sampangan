@@ -3,6 +3,7 @@
    ========================================================================== */
 
 import { BULAN_PANJANG } from './config.js';
+import { diApp } from './jembatan.js';
 
 /* --- Format --------------------------------------------------------------- */
 
@@ -504,11 +505,19 @@ export function pitaSumberData(data) {
 
   if (!pesan) return;
 
-  wadah.innerHTML = `
-    <div class="notice notice--warn animate-slide-down" role="status">
-      ${ikon('awas')}
-      <div><strong>${amankan(pesan.judul)}.</strong> ${amankan(pesan.isi)}</div>
-    </div>`;
+  /* Di dalam aplikasi, pita ini TIDAK dimunculkan. Bukan karena informasinya
+     tidak penting — justru sebaliknya: di sana ada bilah status native yang
+     permanen di bawah layar dan mengatakan hal yang persis sama, lengkap
+     dengan waktu tarikan terakhir. Memunculkan keduanya berarti peringatan
+     yang sama berdiri dua kali di setiap halaman, dan peringatan yang selalu
+     ada akan berhenti dibaca. Stempel kecil di bawah ini tetap diperbarui. */
+  if (!diApp()) {
+    wadah.innerHTML = `
+      <div class="notice notice--warn animate-slide-down" role="status">
+        ${ikon('awas')}
+        <div><strong>${amankan(pesan.judul)}.</strong> ${amankan(pesan.isi)}</div>
+      </div>`;
+  }
 
   const jejak = document.querySelector('[data-stempel]');
   if (jejak) {
