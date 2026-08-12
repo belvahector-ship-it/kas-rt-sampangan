@@ -3,7 +3,8 @@
    Aturan yang dipegang di seluruh berkas ini:
    1. Hanya transform dan opacity. Tidak pernah width/height/top/left.
    2. Gerak menjelaskan sebab-akibat, tidak menghias.
-   3. Brutalism menjepret, bukan mengalun — interaksi tekan 100ms, bukan 300.
+   3. Menjepret, bukan mengalun — interaksi tekan 100ms, bukan 300. Dipertahankan
+      dari tema BRUTAL: bayangan tanpa blur menuntut gerak tanpa ekor.
    4. Semuanya berhenti pada prefers-reduced-motion.
    Rujukan: DECISIONS.md CP-07, CP-24
    ========================================================================== */
@@ -98,9 +99,11 @@
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: var(--z-toast);
-  height: 6px;
-  background: var(--paper);
-  border-bottom: var(--bw-2) solid var(--ink);
+  height: 4px;
+  background: var(--surface-alt);
+  /* Garis gelap 2px di bawah pita 6px membuatnya terbaca sebagai bilah tebal
+     yang duduk di atas header — di tema dasbor ini terlalu berat untuk elemen
+     yang sekadar menunjukkan posisi gulir. Cukup pitanya sendiri. */
   pointer-events: none;
 }
 
@@ -145,8 +148,10 @@
 }
 
 /* --- Penanda "data langsung" ----------------------------------------------
-   Kotak, bukan lingkaran — tidak ada sudut membulat di tema ini. Denyutnya
-   memakai opacity+scale supaya tidak memicu layout. */
+   Lingkaran. Tema BRUTAL memaksanya jadi kotak ("tidak ada sudut membulat di
+   tema ini"); tema dasbor mengembalikannya — titik status yang berdenyut sudah
+   punya bentuk baku yang dikenali orang, dan itu bulat. Denyutnya memakai
+   opacity+scale supaya tidak memicu layout. */
 
 @keyframes soft-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
@@ -156,8 +161,9 @@
 .live-dot {
   display: inline-block;
   width: 9px; height: 9px;
-  background: var(--accent);
+  background: var(--positive);
   border: 1.5px solid var(--ink);
+  border-radius: var(--r-pill);
   animation: soft-pulse 2.2s steps(1, end) infinite;
   flex: none;
 }
@@ -166,8 +172,8 @@
 
 /* --- Skeleton saat memuat -------------------------------------------------
    Dipakai alih-alih spinner: bentuknya sudah menyerupai konten akhir, jadi
-   tata letak tidak melompat saat data tiba. Kilaunya diganti jadi geser
-   blok bertepi keras — gradien lembut tidak punya tempat di tema ini. */
+   tata letak tidak melompat saat data tiba. Kilaunya berupa geser blok
+   bertepi keras, bukan gradien — konsisten dengan bayangan tanpa blur. */
 
 @keyframes shimmer {
   0%   { transform: translateX(-100%); }
@@ -178,7 +184,8 @@
   position: relative;
   overflow: hidden;
   background: var(--surface-alt);
-  border: var(--bw-1) solid var(--ink);
+  border: var(--bw-1) solid var(--line-soft);
+  border-radius: var(--r-sm);
   color: transparent !important;
   user-select: none;
 }

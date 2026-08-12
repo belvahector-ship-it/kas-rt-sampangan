@@ -1,15 +1,22 @@
 /* ==========================================================================
-   COMPONENTS — Tema "BRUTAL"
+   COMPONENTS — Tema "DASHBOARD" (Soft Neubrutalism Hybrid)
    Setiap komponen di sini punya keadaan hover, fokus, aktif, dan kosong.
    Komponen yang hanya benar saat datanya sempurna adalah mockup, bukan produk.
 
-   ATURAN EMAS TEMA INI (spesifikasi bagian 4):
-   Setiap kartu/tombol/kotak penting = border 3px hitam + bayangan keras
-   ber-offset (Npx Npx 0 hitam). Saat hover, bayangan MENGECIL sebesar N/2
-   sementara elemen BERGESER sejauh N/2 ke arah bayangan — sehingga sudut
-   kanan-bawah bayangan diam di tempat. Saat aktif/klik, bayangan hilang
-   sepenuhnya dan elemen bergeser penuh sejauh N. Ilusinya: tombol fisik
-   yang benar-benar ditekan masuk ke halaman.
+   ATURAN EMAS TEMA INI:
+   Setiap kartu/tombol/kotak penting = border gelap (--bw-2, 2px) + SUDUT
+   MEMBULAT (--r-lg untuk kartu, --r-md untuk kontrol, --r-pill untuk lencana)
+   + bayangan keras ber-offset (Npx Npx 0 --ink). Saat hover, bayangan
+   MENGECIL sementara elemen BERGESER sejauh selisihnya ke arah bayangan —
+   sehingga sudut kanan-bawah bayangan diam di tempat. Saat aktif/klik,
+   bayangan hilang sepenuhnya dan elemen bergeser penuh sejauh N. Ilusinya:
+   tombol fisik yang benar-benar ditekan masuk ke halaman.
+
+   Warna mengikuti tokens.css. Yang perlu diingat saat menyunting berkas ini:
+   pemetaan pos dana BERGESER dari tema BRUTAL — Iuran kini HIJAU, IPAL BIRU,
+   Lelayu KUNING. Artinya pos yang isiannya terang, dan karena itu butuh teks
+   gelap di atasnya, sekarang Lelayu; dulu IPAL. Setiap tempat yang memasangkan
+   warna pos dengan warna teks sudah disesuaikan dan diberi catatan.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -55,7 +62,7 @@
   top: 0;
   z-index: var(--z-header);
   /* Latar solid opak, tanpa blur — kaca buram bertentangan dengan bahasa
-     neo-brutalist yang datar dan tegas. */
+     berkontur yang datar dan tegas. */
   background: var(--paper);
   border-bottom: var(--bw-2) solid var(--ink);
 }
@@ -78,8 +85,7 @@
   min-width: 0;
 }
 
-/* Logo: kotak hitam bertuliskan RT, ditemani titik merah kecil — elemen
-   dekoratif "titik" dari spesifikasi bagian 6 item 1. */
+/* Logo: kotak rounded gelap bertuliskan RT, ditemani titik kecil di sudut. */
 .brand__mark {
   position: relative;
   width: 44px; height: 44px;
@@ -88,6 +94,7 @@
   place-items: center;
   background: var(--ink);
   color: var(--paper);
+  border-radius: var(--r-md);
   font-family: var(--font-display);
   font-weight: 800;
   font-size: var(--fs-sm);
@@ -101,6 +108,7 @@
   width: 10px; height: 10px;
   background: var(--brutal-red);
   border: 2px solid var(--ink);
+  border-radius: var(--r-pill);
 }
 
 .brand__text { min-width: 0; }
@@ -144,6 +152,7 @@
   letter-spacing: var(--ls-label);
   color: var(--ink);
   border: var(--bw-2) solid transparent;
+  border-radius: var(--r-md);
   transition: background var(--t-press) ease,
               color var(--t-press) ease,
               border-color var(--t-press) ease;
@@ -170,6 +179,7 @@
   flex: none;
   place-items: center;
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-md);
   background: var(--highlight);
   color: var(--ink);
   box-shadow: var(--sh-1);
@@ -177,7 +187,7 @@
 }
 
 .nav-toggle:hover { box-shadow: var(--sh-1-press); transform: translate(2px, 2px); }
-.nav-toggle:active { box-shadow: none; transform: translate(4px, 4px); }
+.nav-toggle:active { box-shadow: none; transform: translate(3px, 3px); }
 
 .nav-toggle svg { width: 22px; height: 22px; }
 .nav-toggle__close { display: none; }
@@ -197,6 +207,7 @@
   padding: var(--sp-4) var(--gutter) var(--sp-5);
   background: var(--paper);
   border-bottom: var(--bw-2) solid var(--ink);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
   box-shadow: var(--sh-3);
 
   /* Tersembunyi memakai transform, bukan display — supaya bisa dianimasi
@@ -218,7 +229,11 @@
   border: var(--bw-1) solid var(--ink);
 }
 
-.nav__link + .nav__link { margin-top: -2px; }
+/* Tema lama menumpuk tautan dengan margin -2px supaya bordernya menyatu jadi
+   satu kolom garis tunggal. Trik itu hanya bekerja pada sudut siku; begitu
+   tiap tautan punya sudut 12px, tumpangan itu memotong lengkungan tetangganya.
+   Diganti jarak positif kecil, jadi tiap tautan terbaca sebagai satu pil. */
+.nav__link + .nav__link { margin-top: var(--sp-2); }
 
 /* Tautan eksternal (mis. "Simpan File Gratis") dibuka tab baru — beri
    tanda visual kecil supaya jelas ini meninggalkan situs. */
@@ -241,6 +256,7 @@
   min-height: var(--touch);
   padding: var(--sp-3) var(--sp-6);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-md);
   font-family: var(--font-text);
   font-size: var(--fs-sm);
   font-weight: 700;
@@ -254,9 +270,9 @@
               box-shadow var(--t-press) ease;
 }
 
-/* 6px → 3px → 0, dengan geseran yang persis mengimbanginya */
+/* 5px → 2px → 0, dengan geseran yang persis mengimbanginya */
 .btn:hover  { box-shadow: var(--sh-2-press); transform: translate(3px, 3px); }
-.btn:active { box-shadow: none;              transform: translate(6px, 6px); }
+.btn:active { box-shadow: none;              transform: translate(5px, 5px); }
 
 .btn svg { width: 18px; height: 18px; flex: none; }
 
@@ -264,7 +280,7 @@
 .btn--primary:hover { background: var(--accent); }
 
 .btn--accent { background: var(--highlight); color: var(--highlight-ink); }
-.btn--accent:hover { background: var(--brutal-red); color: #FFFFFF; }
+.btn--accent:hover { background: var(--critical-ink); color: #FFFFFF; }
 
 .btn--outline { background: transparent; color: var(--ink); }
 .btn--outline:hover { background: var(--ink); color: var(--paper); }
@@ -272,14 +288,19 @@
 .btn--ghost { background: var(--paper); color: var(--ink); }
 .btn--ghost:hover { background: var(--surface-alt); }
 
+/* Tombol kecil = PIL penuh, bukan versi mengecil dari tombol besar. Inilah
+   wujud "nomor WA sebagai pill button" dan pil pemilih tahun pada desain
+   rujukan; membedakan bentuknya membuat aksi sekunder tidak pernah tertukar
+   dengan aksi utama, tanpa perlu warna tambahan. */
 .btn--sm {
   min-height: 40px;
   padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-pill);
   font-size: var(--fs-2xs);
   box-shadow: var(--sh-1);
 }
 .btn--sm:hover  { box-shadow: var(--sh-1-press); transform: translate(2px, 2px); }
-.btn--sm:active { box-shadow: none;              transform: translate(4px, 4px); }
+.btn--sm:active { box-shadow: none;              transform: translate(3px, 3px); }
 
 .btn[disabled], .btn[aria-disabled='true'] {
   opacity: 0.4;
@@ -289,8 +310,8 @@
 
 /* Tombol di dalam section gelap harus tetap terlihat: bayangan hitam di atas
    hitam tidak ada artinya, jadi dibalik jadi putih. */
-.section--dark .btn { box-shadow: 6px 6px 0 var(--paper); }
-.section--dark .btn:hover  { box-shadow: 3px 3px 0 var(--paper); }
+.section--dark .btn { box-shadow: 5px 5px 0 var(--paper); }
+.section--dark .btn:hover  { box-shadow: 2px 2px 0 var(--paper); }
 .section--dark .btn:active { box-shadow: none; }
 .section--dark .btn--outline { color: var(--paper); border-color: var(--paper); }
 .section--dark .btn--outline:hover { background: var(--paper); color: var(--ink); }
@@ -413,17 +434,21 @@
 .card {
   background: var(--surface);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-lg);
   padding: var(--sp-5);
   box-shadow: var(--sh-2);
 }
 
 .panel {
   background: var(--surface);
-  border: var(--bw-2) solid var(--ink);
+  border: var(--bw-3) solid var(--ink);
+  border-radius: var(--r-lg);
   box-shadow: var(--sh-3);
   /* Sengaja TANPA overflow:hidden — pada elemen yang punya box-shadow,
-     overflow:hidden memotong bayangannya sendiri. Sudut sudah 0, jadi tidak
-     ada konten anak yang perlu dipotong mengikuti radius. */
+     overflow:hidden memotong bayangannya sendiri. Konsekuensinya kini nyata,
+     karena panel punya sudut: anak yang menempel di tepi (kepala panel,
+     tabel) harus membulatkan sudutnya SENDIRI supaya tidak menonjol keluar
+     lengkungan induknya. Itu yang dilakukan .panel__head di bawah. */
 }
 
 .panel__head {
@@ -433,7 +458,10 @@
   justify-content: space-between;
   gap: var(--sp-4);
   padding: var(--sp-5);
-  border-bottom: var(--bw-2) solid var(--ink);
+  border-bottom: var(--bw-1) solid var(--line-soft);
+  /* Dua sudut atas mengikuti induknya; dikurangi tebal border supaya
+     lengkungannya sejajar, bukan sedikit meleset ke luar. */
+  border-radius: calc(var(--r-lg) - var(--bw-3)) calc(var(--r-lg) - var(--bw-3)) 0 0;
 }
 
 .panel__title {
@@ -446,14 +474,15 @@
   gap: var(--sp-3);
 }
 
-/* Balok warna tegas di kiri judul — bukan garis rambut */
+/* Penanda bulat di kiri judul — padanan titik berwarna pada judul section
+   desain rujukan, menggantikan balok persegi tema lama. */
 .panel__title::before {
   content: '';
-  width: 10px;
-  align-self: stretch;
-  min-height: 1em;
-  background: var(--accent);
-  border: var(--bw-1) solid var(--ink);
+  width: 14px; height: 14px;
+  align-self: center;
+  background: var(--highlight);
+  border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   flex: none;
 }
 
@@ -469,25 +498,29 @@
 
 /* --------------------------------------------------------------------------
    KARTU SALDO — elemen paling penting di situs
-   Bayangan terdalam (8px) karena ini puncak hierarki halaman.
+   Border dan bayangan terdalam karena ini puncak hierarki halaman.
    -------------------------------------------------------------------------- */
 
 .balance {
   position: relative;
   background: var(--surface);
-  border: var(--bw-2) solid var(--ink);
+  border: var(--bw-3) solid var(--ink);
+  border-radius: var(--r-xl);
   padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
   padding-top: clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
   box-shadow: var(--sh-3);
 }
 
-/* Tiga balok warna pos di tepi atas — batas keras, bukan gradien */
+/* Tiga balok warna pos di tepi atas — batas keras, bukan gradien. Sudut atas
+   ikut membulat mengikuti kartunya; kalau tidak, pitanya akan menonjol
+   melewati lengkungan dan sudut kartu terlihat sobek. */
 .balance::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 14px;
   border-bottom: var(--bw-2) solid var(--ink);
+  border-radius: calc(var(--r-xl) - var(--bw-3)) calc(var(--r-xl) - var(--bw-3)) 0 0;
   background: linear-gradient(90deg,
     var(--pos-iuran) 0%, var(--pos-iuran) 45%,
     var(--pos-ipal) 45%, var(--pos-ipal) 78%,
@@ -527,7 +560,7 @@
   gap: var(--sp-4);
   margin-top: var(--sp-6);
   padding-top: var(--sp-5);
-  border-top: var(--bw-2) solid var(--ink);
+  border-top: var(--bw-1) solid var(--line-soft);
 }
 
 @media (max-width: 560px) {
@@ -543,6 +576,7 @@
   padding: var(--sp-3);
   border: var(--bw-1) solid var(--ink);
   border-left: 10px solid var(--fund-color, var(--ink));
+  border-radius: var(--r-md);
   background: var(--surface);
 }
 
@@ -573,6 +607,7 @@
 .stat {
   background: var(--surface);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-lg);
   padding: var(--sp-5);
   display: flex;
   flex-direction: column;
@@ -587,7 +622,7 @@
 
 /* Hanya .stat yang berupa tautan yang boleh "ditekan penuh" — kartu statis
    tidak bisa diklik, jadi tidak boleh berpura-pura bisa. */
-a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
+a.stat:active { box-shadow: none; transform: translate(5px, 5px); }
 
 .stat__head {
   display: flex;
@@ -657,6 +692,7 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   padding: var(--sp-5);
   background: var(--surface);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-lg);
   box-shadow: var(--sh-2);
   transition: transform var(--t-press) ease,
               box-shadow var(--t-press) ease,
@@ -664,7 +700,7 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
 }
 
 .doorway:hover  { box-shadow: var(--sh-2-press); transform: translate(3px, 3px); }
-.doorway:active { box-shadow: none;              transform: translate(6px, 6px); }
+.doorway:active { box-shadow: none;              transform: translate(5px, 5px); }
 
 /* Ikon dalam kotak berwarna solid berbingkai — bukan latar lembut */
 .doorway__icon {
@@ -674,6 +710,7 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   background: var(--door-color, var(--accent));
   color: var(--door-ink, #FFFFFF);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-md);
   flex: none;
 }
 
@@ -701,6 +738,7 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   flex: none;
   padding: 4px;
   border: var(--bw-1) solid var(--ink);
+  border-radius: var(--r-pill);
   background: var(--paper);
   color: var(--ink);
   transition: background var(--t-press) ease, color var(--t-press) ease;
@@ -718,22 +756,33 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   margin-top: auto;
 }
 
-/* Kuning butuh tinta hitam; biru dan merah butuh tinta putih. */
-.doorway--iuran  { --door-color: var(--pos-iuran);  --door-ink: #FFFFFF; }
+/* ATURAN SATU BARIS UNTUK SELURUH SITUS: apa pun yang berlatar warna pos dana
+   memakai TINTA GELAP, tidak pernah putih.
+
+   Alasannya kontras, bukan selera. Ketiga warna pos di tema dasbor jauh lebih
+   terang daripada primer murni tema lama, dan putih di atasnya jatuh di bawah
+   ambang WCAG: emerald 2,13:1, sky 3,68:1, amber 1,25:1 — dua yang pertama
+   bahkan gagal untuk ikon (ambang 3:1). Dengan tinta gelap #111827, ketiganya
+   melompat ke 8,4:1 / 4,8:1 / 14,9:1 dan lulus AA tanpa kecuali.
+
+   Ini juga membuat aturannya mudah diingat saat menambah komponen baru:
+   tidak ada pengecualian per-pos yang harus dihafal. */
+.doorway--iuran  { --door-color: var(--pos-iuran);  --door-ink: var(--ink); }
 .doorway--ipal   { --door-color: var(--pos-ipal);   --door-ink: var(--ink); }
-.doorway--lelayu { --door-color: var(--pos-lelayu); --door-ink: #FFFFFF; }
+.doorway--lelayu { --door-color: var(--pos-lelayu); --door-ink: var(--ink); }
 
 /* --------------------------------------------------------------------------
    BADGE / LENCANA
-   Kotak tegas berbingkai hitam. Tidak ada pil membulat di tema ini.
+   Pil berbingkai gelap — bentuk baku lencana status di tema ini.
    -------------------------------------------------------------------------- */
 
 .badge {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-1);
-  padding: 3px var(--sp-2);
+  padding: 3px var(--sp-3);
   border: var(--bw-1) solid var(--ink);
+  border-radius: var(--r-pill);
   background: var(--surface-alt);
   font-size: var(--fs-2xs);
   font-weight: 700;
@@ -743,12 +792,23 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   white-space: nowrap;
 }
 
-/* Isian penuh warna dengan tinta kontras — bukan tint pucat */
-.badge--pos    { background: var(--accent);      color: #FFFFFF; }
-.badge--neg    { background: var(--critical);    color: #FFFFFF; }
-.badge--iuran  { background: var(--pos-iuran);   color: #FFFFFF; }
-.badge--ipal   { background: var(--pos-ipal);    color: var(--ink); }
-.badge--lelayu { background: var(--pos-lelayu);  color: #FFFFFF; }
+/* Isian penuh warna dengan tinta kontras — bukan tint pucat.
+
+   --pos memakai hijau, bukan --accent seperti tema lama: biru sudah dipakai
+   untuk "tautan" dan untuk pos IPAL, jadi memakainya lagi untuk "positif"
+   membuat satu warna memikul tiga arti berbeda di halaman yang sama.
+
+   Dua kelompok, dua perlakuan tinta:
+     · Lencana POS (I/P/L) memakai isian terang + tinta gelap — aturan pos dana
+       yang dijelaskan di .doorway--* di atas.
+     · Lencana ARAH (naik/turun) memakai varian `-ink` yang gelap sebagai
+       ISIAN, supaya huruf putih di atasnya tetap lulus AA (5,63:1 dan
+       4,83:1). Isian terangnya sendiri terlalu muda untuk teks putih. */
+.badge--pos    { background: var(--positive-ink); color: #FFFFFF; }
+.badge--neg    { background: var(--critical-ink); color: #FFFFFF; }
+.badge--iuran  { background: var(--pos-iuran);    color: var(--ink); }
+.badge--ipal   { background: var(--pos-ipal);     color: var(--ink); }
+.badge--lelayu { background: var(--pos-lelayu);   color: var(--ink); }
 
 /* --------------------------------------------------------------------------
    TAB (segmented control)
@@ -758,9 +818,13 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   display: inline-flex;
   gap: 0;
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   background: var(--surface);
   box-shadow: var(--sh-1);
   max-width: 100%;
+  /* Kebetulan menguntungkan di sini: `overflow-x: auto` sudah memaksa elemen
+     ini memotong isinya, jadi isian tab pertama dan terakhir otomatis
+     mengikuti lengkungan pil tanpa aturan tambahan. */
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -800,6 +864,7 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   padding: 0 var(--sp-4);
   background: var(--surface);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   box-shadow: var(--sh-1);
   transition: box-shadow var(--t-press) ease;
 }
@@ -826,18 +891,24 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   place-items: center;
   width: 30px; height: 30px;
   border: var(--bw-1) solid var(--ink);
+  border-radius: var(--r-pill);
   color: var(--ink);
   flex: none;
   transition: background var(--t-press) ease, color var(--t-press) ease;
 }
 
-.field__clear:hover { background: var(--critical); color: #FFFFFF; }
+.field__clear:hover { background: var(--critical-ink); color: #FFFFFF; }
 
 .select {
   min-height: var(--touch);
   padding: 0 var(--sp-7) 0 var(--sp-4);
-  background: var(--surface);
+  background: var(--highlight);
   border: var(--bw-2) solid var(--ink);
+  /* Pil kuning berpanah bawah — bentuk pemilih tahun/bulan pada desain
+     rujukan. Isian kuning dipilih karena dropdown di situs ini selalu berarti
+     "Anda sedang menyaring data": ia harus terlihat sebagai kontrol aktif,
+     bukan sebagai kotak isian pasif. */
+  border-radius: var(--r-pill);
   box-shadow: var(--sh-1);
   font-size: var(--fs-sm);
   font-weight: 700;
@@ -846,7 +917,7 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   color: var(--ink);
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23000000' stroke-width='3' stroke-linecap='square'%3E%3Cpath d='m3 6 5 5 5-5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23111827' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 6 5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right var(--sp-4) center;
   transition: box-shadow var(--t-press) ease;
@@ -865,6 +936,10 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   overflow-x: auto;
   overscroll-behavior-x: contain;
   border: var(--bw-2) solid var(--ink);
+  /* Karena pembungkus ini memang memotong isinya (ia yang menggulir), sudut
+     membulatnya otomatis merapikan keempat pojok tabel di dalamnya — termasuk
+     kepala tabel kuning yang menempel di tepi atas. */
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--sh-2);
   -webkit-overflow-scrolling: touch;
@@ -873,11 +948,12 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
 .matrix-wrap::-webkit-scrollbar { height: 14px; }
 .matrix-wrap::-webkit-scrollbar-track {
   background: var(--surface-alt);
-  border-top: var(--bw-1) solid var(--ink);
+  border-top: var(--bw-1) solid var(--line-soft);
 }
 .matrix-wrap::-webkit-scrollbar-thumb {
   background: var(--ink);
   border: 2px solid var(--surface-alt);
+  border-radius: var(--r-pill);
 }
 
 /* Lebar tabel ini BUKAN angka selera — ia dihitung dari isinya.
@@ -898,12 +974,18 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   font-size: var(--fs-sm);
 }
 
+/* Kepala tabel kuning bertinta gelap, menggantikan strip hitam-teks-putih tema
+   lama. Bukan cuma soal selera: kepala hitam setebal ini menjadi benda paling
+   gelap di halaman, sehingga mata jatuh ke NAMA BULAN lebih dulu, padahal isi
+   tabel — lencana status tiap warga — yang seharusnya jadi tujuan. Amber tetap
+   memisahkan kepala dari badan dengan jelas tanpa memenangkan perhatian. */
 .matrix thead th {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--highlight);
+  color: var(--ink);
+  border-bottom: var(--bw-2) solid var(--ink);
   padding: var(--sp-3) var(--sp-2);
   font-size: var(--fs-2xs);
   font-weight: 700;
@@ -921,27 +1003,33 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   min-width: 180px;
   text-align: left;
   padding-left: var(--sp-4);
-  border-right: var(--bw-1) solid var(--paper);
+  border-right: var(--bw-1) solid var(--ink);
 }
 
 .matrix th.col-pagu {
   width: 74px; min-width: 74px;
-  border-right: var(--bw-1) solid var(--paper);
+  border-right: var(--bw-1) solid var(--ink);
 }
 .matrix th.col-month { width: 72px; min-width: 72px; }   /* 3×20 + 2×3 gap + 4 padding = 70 */
 
-/* Pemisah baris: 1px hitam. Di tabel 91 warga ini menghasilkan efek kertas
-   milimeter — sangat sesuai bahasa brutalist, dan garis hitam penuh jauh
-   lebih mudah diikuti mata daripada garis abu tipis. */
+/* Pemisah baris. Tema lama memakai 1px HITAM PENUH dan menyebutnya efek kertas
+   milimeter. Dibalik di sini: 91 garis hitam penuh membuat tabelnya terbaca
+   sebagai jeruji, dan yang harus menonjol dari sel adalah lencana I/P/L
+   berwarna — bukan kisi-kisinya. Garis abu tipis tetap cukup untuk menuntun
+   mata menyusuri satu baris; kolom nama yang lengket di kiri yang menahan
+   pembaca supaya tidak kehilangan jejak, bukan tebalnya garis. */
 .matrix tbody td {
   padding: var(--sp-2);
   text-align: center;
-  border-bottom: 1px solid var(--ink);
+  border-bottom: 1px solid var(--line-soft);
   vertical-align: middle;
 }
 
 .matrix tbody tr:last-child td { border-bottom: none; }
-.matrix tbody tr:hover td { background: var(--highlight); }
+
+/* Kuning penuh sebagai latar hover membuat seluruh baris berkedip dan
+   menenggelamkan lencana di dalamnya — dipakai versi redupnya. */
+.matrix tbody tr:hover td { background: var(--highlight-soft); }
 
 .matrix td.cell-name {
   position: sticky;
@@ -951,13 +1039,13 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   text-align: left;
   padding-left: var(--sp-4);
   font-weight: 700;
-  border-right: var(--bw-1) solid var(--ink);
+  border-right: var(--bw-1) solid var(--line-soft);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.matrix tbody tr:hover td.cell-name { background: var(--highlight); }
+.matrix tbody tr:hover td.cell-name { background: var(--highlight-soft); }
 
 .matrix td.cell-pagu {
   font-family: var(--font-num);
@@ -965,21 +1053,22 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   font-weight: 600;
   line-height: 1.6;
   color: var(--ink-3);
-  border-right: var(--bw-1) solid var(--ink);
+  border-right: var(--bw-1) solid var(--line-soft);
   background: var(--surface-alt);
   white-space: nowrap;
   text-align: left !important;
   padding-left: var(--sp-2) !important;
 }
 
-.matrix tbody tr:hover td.cell-pagu { background: var(--highlight); }
+.matrix tbody tr:hover td.cell-pagu { background: var(--highlight-soft); }
 
 .cell-pagu__baris { display: flex; align-items: center; gap: 4px; }
 
-/* Kotak, bukan lingkaran */
+/* Titik bulat, mengikuti bentuk lencana I/P/L di sel sebelahnya */
 .cell-pagu__titik {
   width: 7px; height: 7px;
   border: 1px solid var(--ink);
+  border-radius: var(--r-pill);
   flex: none;
 }
 
@@ -988,10 +1077,16 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
 .cell-pagu__titik--lelayu { background: var(--pos-lelayu); }
 
 /* Sel status: TIGA lencana huruf (I/P/L) per bulan dalam satu sel — satu
-   tabel gabungan untuk Iuran/IPAL/Lelayu sekaligus. Huruf di dalam lencana
-   KOTAK, bukan warna saja, supaya statusnya langsung terbaca tanpa perlu
-   menghafal kode warna atau mengarahkan kursor. Warna tetap jadi penguat
-   kedua; makna penuh selalu ada di atribut title + sr-only. */
+   tabel gabungan untuk Iuran/IPAL/Lelayu sekaligus. HURUF di dalam lencana,
+   bukan warna saja, supaya statusnya langsung terbaca tanpa perlu menghafal
+   kode warna atau mengarahkan kursor. Warna tetap jadi penguat kedua; makna
+   penuh selalu ada di atribut title + sr-only.
+
+   Bentuknya kini lingkaran, bukan kotak. Ini bukan sekadar mengikuti gaya:
+   lencana bulat berisian penuh terbaca sebagai "sudah", lencana bulat kosong
+   berkontur tipis terbaca sebagai "belum", dan perbedaan isi-vs-kosong pada
+   lingkaran jauh lebih cepat ditangkap di ukuran 20px daripada pada kotak
+   yang bentuknya sama persis dengan sel di sekelilingnya. */
 .dot-tri {
   display: inline-flex;
   align-items: center;
@@ -1004,7 +1099,8 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   display: inline-grid;
   place-items: center;
   width: 20px; height: 20px;
-  border: var(--bw-1) solid var(--ink);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-pill);
   background: var(--surface);
   color: var(--ink-3);
   font-family: var(--font-text);
@@ -1017,11 +1113,20 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
 
 .dot-tri:hover .dot-tri__dot { transform: translate(-1px, -1px); box-shadow: 2px 2px 0 var(--ink); }
 
-/* Lunas/terisi: lencana penuh warna pos, huruf tetap kontras — kuning
-   (IPAL) pakai huruf tinta hitam, biru & merah pakai huruf putih. */
-.dot-tri__dot--iuran.is-terisi  { background: var(--pos-iuran);  color: #FFFFFF; }
-.dot-tri__dot--ipal.is-terisi   { background: var(--pos-ipal);   color: var(--ink); }
-.dot-tri__dot--lelayu.is-terisi { background: var(--pos-lelayu); color: #FFFFFF; }
+/* Lunas/terisi: lencana penuh warna pos + kontur gelap penuh + huruf tinta
+   gelap (aturan pos dana, lihat .doorway--* di atas). Huruf inilah bagian
+   terkecil yang harus dibaca di seluruh situs — 11px — jadi justru di sini
+   kontras paling tidak boleh dikompromikan.
+
+   Kontur juga ikut membedakan status, bukan cuma isian: yang belum terbayar
+   berkontur abu tipis (aturan .dot-tri__dot di atas), yang lunas berkontur
+   gelap penuh. Jadi status tetap terbaca pada layar monokrom atau cetakan
+   hitam-putih, tempat isian warna hilang seluruhnya. */
+.dot-tri__dot.is-terisi { border-color: var(--ink); color: var(--ink); }
+
+.dot-tri__dot--iuran.is-terisi  { background: var(--pos-iuran); }
+.dot-tri__dot--ipal.is-terisi   { background: var(--pos-ipal); }
+.dot-tri__dot--lelayu.is-terisi { background: var(--pos-lelayu); }
 
 .matrix-legend {
   display: flex;
@@ -1031,6 +1136,7 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   padding: var(--sp-4);
   margin-top: var(--sp-4);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-lg);
   background: var(--surface-alt);
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -1047,6 +1153,7 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   margin-bottom: var(--sp-3);
   padding: var(--sp-2) var(--sp-3);
   border: var(--bw-1) solid var(--ink);
+  border-radius: var(--r-pill);
   background: var(--highlight);
   font-size: var(--fs-xs);
   font-weight: 700;
@@ -1092,13 +1199,15 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   height: 14px;
   background: var(--surface-alt);
   border: var(--bw-1) solid var(--ink);
+  border-radius: var(--r-pill);
   overflow: hidden;
 }
 
 .progress__bar {
   height: 100%;
-  background: var(--bar-color, var(--accent));
+  background: var(--bar-color, var(--positive));
   width: 0;
+  border-radius: var(--r-pill);
   transition: width 700ms var(--ease-step);
 }
 
@@ -1117,15 +1226,18 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   gap: var(--sp-3);
   padding: var(--sp-3) var(--sp-4);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: var(--ls-label);
   text-transform: uppercase;
 }
 
-/* Isian penuh — biru untuk masuk, merah untuk keluar, tinta putih di atasnya */
-.ledger__head--in  { background: var(--accent);   color: #FFFFFF; }
-.ledger__head--out { background: var(--critical); color: #FFFFFF; }
+/* Isian penuh — HIJAU untuk masuk (dulu biru), coral untuk keluar. Ini pasangan
+   naik/turun yang dipakai seragam di seluruh situs; biru dikembalikan ke
+   tugasnya sendiri sebagai warna tautan dan pos IPAL. */
+.ledger__head--in  { background: var(--positive-ink); color: #FFFFFF; }
+.ledger__head--out { background: var(--critical-ink); color: #FFFFFF; }
 
 .ledger__head--in .live-dot { background: var(--highlight); border-color: #FFFFFF; }
 
@@ -1136,8 +1248,12 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
 }
 
 .ledger__list {
-  margin-top: -3px;   /* border bertumpuk dengan kepala di atasnya */
+  /* Dulu -3px supaya bordernya menyatu dengan kepala di atasnya. Kepala kini
+     berupa pil terpisah, jadi tumpangan itu justru memotong lengkungannya —
+     diganti jarak positif. */
+  margin-top: var(--sp-3);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--sh-2);
   max-height: 440px;
@@ -1151,12 +1267,12 @@ a.stat:active { box-shadow: none; transform: translate(6px, 6px); }
   justify-content: space-between;
   gap: var(--sp-4);
   padding: var(--sp-4);
-  border-bottom: var(--bw-1) solid var(--ink);
+  border-bottom: var(--bw-1) solid var(--line-soft);
   transition: background var(--t-press) ease;
 }
 
 .entry:last-child { border-bottom: none; }
-.entry:hover { background: var(--highlight); }
+.entry:hover { background: var(--highlight-soft); }
 
 /* Baris ringkasan setoran matrik (bukan transaksi manual) di puncak daftar
    Kas Masuk — dibedakan lewat balok biru tebal di kiri, sekaligus bertindak
@@ -1167,7 +1283,7 @@ a.entry.entry--ringkasan {
   color: inherit;
 }
 
-a.entry.entry--ringkasan:hover { background: var(--highlight); }
+a.entry.entry--ringkasan:hover { background: var(--highlight-soft); }
 
 .entry__main { min-width: 0; flex: 1; }
 
@@ -1212,7 +1328,8 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   transition: opacity var(--t-press) ease;
   cursor: pointer;
   stroke: var(--ink);
-  stroke-width: 2;
+  stroke-width: 1.5;
+  rx: 4;   /* ujung batang ikut membulat, sejalan dengan sudut kartu */
 }
 
 .chart__bar:hover { opacity: 0.6; }
@@ -1242,6 +1359,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 .chart-legend__swatch {
   width: 14px; height: 14px;
   border: var(--bw-1) solid var(--ink);
+  border-radius: var(--r-pill);
   flex: none;
 }
 
@@ -1254,6 +1372,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   flex-direction: column;
   background: var(--surface);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-lg);
   box-shadow: var(--sh-2);
   transition: transform var(--t-press) ease, box-shadow var(--t-press) ease;
 }
@@ -1265,7 +1384,10 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   aspect-ratio: 16 / 10;
   background: var(--surface-alt);
   border-bottom: var(--bw-2) solid var(--ink);
-  overflow: hidden;   /* memotong gambar yang membesar saat hover */
+  /* Memotong gambar yang membesar saat hover — dan sekarang juga memaksa
+     gambar mengikuti dua sudut atas kartunya. */
+  overflow: hidden;
+  border-radius: calc(var(--r-lg) - var(--bw-2)) calc(var(--r-lg) - var(--bw-2)) 0 0;
 }
 
 .event__media img {
@@ -1320,7 +1442,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   align-items: center;
   gap: var(--sp-3);
   padding-top: var(--sp-3);
-  border-top: var(--bw-1) solid var(--ink);
+  border-top: var(--bw-1) solid var(--line-soft);
   font-family: var(--font-num);
   font-size: var(--fs-2xs);
   font-weight: 700;
@@ -1341,7 +1463,8 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   align-items: center;
   padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
   background: var(--surface);
-  border: var(--bw-2) solid var(--ink);
+  border: var(--bw-3) solid var(--ink);
+  border-radius: var(--r-lg);
   box-shadow: var(--sh-3);
 }
 
@@ -1349,10 +1472,16 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   .contact { grid-template-columns: minmax(0, 1fr); gap: var(--sp-5); }
 }
 
+/* Daftar kunci-nilai. Kotaknya sendiri diredam jadi krem berbingkai tipis:
+   ia berada DI DALAM kartu putih yang sudah berbingkai gelap, jadi bingkai
+   gelap kedua di dalamnya membuat kartu terlihat seperti dua kartu bertumpuk. */
 .contact__rows {
   display: grid;
   gap: 0;
-  border: var(--bw-2) solid var(--ink);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--surface-note);
+  border: var(--bw-1) solid var(--line-soft);
+  border-radius: var(--r-md);
   min-width: min(100%, 360px);
 }
 
@@ -1361,9 +1490,9 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   grid-template-columns: 96px 1fr;
   gap: var(--sp-3);
   align-items: start;
-  padding: var(--sp-3) var(--sp-4);
+  padding: var(--sp-3) 0;
   font-size: var(--fs-sm);
-  border-bottom: var(--bw-1) solid var(--ink);
+  border-bottom: var(--bw-1) solid var(--line-soft);
 }
 
 .contact__row:last-child { border-bottom: none; }
@@ -1416,6 +1545,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   gap: var(--sp-3);
   padding: var(--sp-4);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-md);
   background: var(--surface-alt);
   box-shadow: var(--sh-1);
   font-size: var(--fs-sm);
@@ -1424,8 +1554,16 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 
 .notice svg { width: 20px; height: 20px; flex: none; margin-top: 2px; }
 
-.notice--warn { background: var(--critical); color: #FFFFFF; }
-.notice--warn strong { color: #FFFFFF; }
+/* Peringatan: kotak krem bertinta merah, bukan blok merah penuh. Merah selebar
+   pita di tengah halaman terbaca sebagai galat sistem ("situsnya rusak"),
+   padahal isinya catatan tentang UANG — mis. pos Lelayu yang defisit. Warna
+   tetap membawa peringatan lewat teks dan garis tepinya. */
+.notice--warn {
+  background: var(--surface-note);
+  border-color: var(--critical);
+  color: var(--critical-ink);
+}
+.notice--warn strong { color: var(--critical-ink); }
 
 .notice--info { background: var(--highlight); color: var(--ink); }
 
@@ -1455,7 +1593,11 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   letter-spacing: -0.02em;
   text-transform: uppercase;
   margin-block: var(--sp-5) var(--sp-5);
-  max-width: 14ch;
+  /* Dilebarkan dari 14ch. Batas itu dipilih untuk judul setinggi 100px, tempat
+     14 karakter sudah memenuhi satu baris penuh; dengan judul yang kini jauh
+     lebih kecil, 14ch memaksa "Kas Warga Tercatat &" patah jadi empat baris
+     pendek yang menganga di tengah kolom. */
+  max-width: 20ch;
   text-wrap: balance;
 }
 
@@ -1472,8 +1614,9 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
-  padding: var(--sp-2) var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   background: var(--surface);
   box-shadow: var(--sh-1);
   font-family: var(--font-num);
@@ -1509,6 +1652,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 
 .hero__block {
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-lg);
   box-shadow: var(--sh-2);
   display: grid;
   place-items: center;
@@ -1522,10 +1666,15 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   line-height: 1.1;
 }
 
-.hero__block--red    { background: var(--brutal-red);    color: #FFFFFF; }
-.hero__block--blue   { background: var(--brutal-blue);   color: #FFFFFF; }
-.hero__block--yellow { background: var(--brutal-yellow); color: var(--ink); }
-.hero__block--white  { background: var(--paper);         color: var(--ink); }
+/* Diberi nama menurut POS DANA-nya, bukan menurut warnanya. Tema lama memakai
+   --red/--blue/--yellow, dan begitu pemetaan warna pos bergeser, blok bertulis
+   "Iuran" berlatar biru sementara lencana Iuran di tabel di bawahnya hijau —
+   kolase dekoratif jadi mengajarkan kode warna yang salah. Dengan nama pos,
+   warnanya selalu ikut tokens.css sendiri. */
+.hero__block--iuran  { background: var(--pos-iuran);  color: var(--ink); }
+.hero__block--ipal   { background: var(--pos-ipal);   color: var(--ink); }
+.hero__block--lelayu { background: var(--pos-lelayu); color: var(--ink); }
+.hero__block--bpd    { background: var(--paper);      color: var(--ink); }
 
 /* Bintang di tengah, menimpa pertemuan keempat kotak */
 .hero__star {
@@ -1537,6 +1686,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   place-items: center;
   background: var(--paper);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   box-shadow: var(--sh-2);
   font-family: var(--font-display);
   font-size: 3.4rem;
@@ -1562,7 +1712,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 
 .page-head {
   padding-block: clamp(2rem, 1.2rem + 4vw, 3.5rem) var(--sp-6);
-  border-bottom: var(--bw-2) solid var(--ink);
+  border-bottom: var(--bw-1) solid var(--line-soft);
 }
 
 .page-head__title {
@@ -1682,7 +1832,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   transition: background var(--t-press) ease, color var(--t-press) ease;
 }
 
-.site-footer__link:hover { background: var(--highlight); }
+.site-footer__link:hover { background: var(--highlight); border-radius: var(--r-sm); }
 
 .site-footer__bottom {
   display: flex;
@@ -1691,7 +1841,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   justify-content: space-between;
   gap: var(--sp-3);
   padding-block: var(--sp-4);
-  border-top: var(--bw-2) solid var(--ink);
+  border-top: var(--bw-1) solid var(--line-soft);
   font-size: var(--fs-xs);
   font-weight: 600;
   color: var(--ink-3);
@@ -1701,9 +1851,9 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
    DAFTAR PERTANYAAN (halaman Tentang)
    -------------------------------------------------------------------------- */
 
-.faq { border-top: var(--bw-2) solid var(--ink); }
+.faq { border-top: var(--bw-1) solid var(--line-soft); }
 
-.faq__item { border-bottom: var(--bw-2) solid var(--ink); }
+.faq__item { border-bottom: var(--bw-1) solid var(--line-soft); }
 
 .faq__q {
   display: flex;
@@ -1722,13 +1872,14 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   transition: background var(--t-press) ease;
 }
 
-.faq__q:hover { background: var(--highlight); }
+.faq__q:hover { background: var(--highlight-soft); border-radius: var(--r-md); }
 
 .faq__q svg {
   width: 28px; height: 28px;
   flex: none;
   padding: 3px;
   border: var(--bw-1) solid var(--ink);
+  border-radius: var(--r-pill);
   color: var(--ink);
   transition: transform var(--t-base) var(--ease-step),
               background var(--t-press) ease,
@@ -1773,6 +1924,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   align-items: start;
   padding: var(--sp-4);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--sh-1);
   transition: transform var(--t-press) ease, box-shadow var(--t-press) ease;
@@ -1793,6 +1945,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   width: 52px; height: 52px;
   background: var(--highlight);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   font-family: var(--font-display);
   font-size: var(--fs-base);
   font-weight: 800;
@@ -1809,7 +1962,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 
 /* --------------------------------------------------------------------------
    KARTU PENGURUS
-   Avatar kotak berwarna solid dengan inisial — spesifikasi bagian 6 item 6.
+   Avatar bulat berwarna solid dengan inisial.
    -------------------------------------------------------------------------- */
 
 .person {
@@ -1819,6 +1972,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   padding: var(--sp-4);
   background: var(--surface);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-lg);
   box-shadow: var(--sh-2);
   transition: transform var(--t-press) ease, box-shadow var(--t-press) ease;
 }
@@ -1833,15 +1987,16 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   background: var(--accent);
   color: #FFFFFF;
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   font-family: var(--font-display);
   font-weight: 800;
   font-size: var(--fs-md);
 }
 
-/* Avatar berselang-seling warna supaya grid pengurus tidak monoton — pola
-   yang sama dipakai grid tim di spesifikasi. nth-child dihitung di dalam
-   wadah grid, jadi tidak perlu kelas tambahan dari JS. */
-.person:nth-child(3n+2) .person__avatar { background: var(--brutal-red); }
+/* Avatar berselang-seling warna supaya grid pengurus tidak monoton.
+   nth-child dihitung di dalam wadah grid, jadi tidak perlu kelas tambahan
+   dari JS. Amber butuh tinta gelap; dua lainnya tinta putih. */
+.person:nth-child(3n+2) .person__avatar { background: var(--positive-ink); }
 .person:nth-child(3n+3) .person__avatar { background: var(--brutal-yellow); color: var(--ink); }
 
 .person__role {
@@ -1864,7 +2019,15 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
    rincian kategori di Laporan Kas. Baca-saja, tanpa kolom Tindakan.
    -------------------------------------------------------------------------- */
 
-.simple-table-wrap { overflow-x: auto; }
+/* Sengaja TANPA border sendiri: pembungkus ini hampir selalu duduk di dalam
+   .panel__body--flush, yang berarti tepinya sudah dijaga border panel. Yang
+   perlu ditambahkan cuma dua sudut bawah, supaya baris terakhir tabel tidak
+   memotong lengkungan panel di sekelilingnya. `overflow-x: auto` yang sudah
+   ada di sini yang membuat pemotongan itu berlaku. */
+.simple-table-wrap {
+  overflow-x: auto;
+  border-radius: 0 0 calc(var(--r-lg) - var(--bw-3)) calc(var(--r-lg) - var(--bw-3));
+}
 
 .simple-table { min-width: 600px; font-size: var(--fs-sm); }
 
@@ -1875,8 +2038,11 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   font-weight: 700;
   letter-spacing: var(--ls-label);
   text-transform: uppercase;
-  background: var(--ink);
-  color: var(--paper);
+  /* Sama seperti matrik iuran: kepala amber, bukan blok hitam. Lihat catatan
+     di .matrix thead th. */
+  background: var(--highlight);
+  color: var(--ink);
+  border-bottom: var(--bw-2) solid var(--ink);
   white-space: nowrap;
 }
 
@@ -1884,12 +2050,12 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 
 .simple-table tbody td {
   padding: var(--sp-3) var(--sp-5);
-  border-bottom: var(--bw-1) solid var(--ink);
+  border-bottom: var(--bw-1) solid var(--line-soft);
   vertical-align: top;
 }
 
 .simple-table tbody tr:last-child td { border-bottom: none; }
-.simple-table tbody tr:hover td { background: var(--highlight); }
+.simple-table tbody tr:hover td { background: var(--highlight-soft); }
 
 .simple-table td.num-col {
   text-align: right;
@@ -1912,6 +2078,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   background: var(--surface-alt);
   border: var(--bw-2) solid var(--ink);
   border-left: 10px solid var(--brutal-blue);
+  border-radius: var(--r-md);
   box-shadow: var(--sh-1);
   font-size: var(--fs-sm);
   color: var(--ink-2);
@@ -1951,8 +2118,9 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   align-items: center;
   gap: var(--sp-2);
   min-height: 40px;
-  padding: 0 var(--sp-3);
+  padding: 0 var(--sp-4);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   background: var(--surface);
   font-size: var(--fs-2xs);
   font-weight: 700;
@@ -1966,7 +2134,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 }
 
 .btn-pengurus:hover  { box-shadow: var(--sh-1-press); transform: translate(2px, 2px); }
-.btn-pengurus:active { box-shadow: none;              transform: translate(4px, 4px); }
+.btn-pengurus:active { box-shadow: none;              transform: translate(3px, 3px); }
 
 .btn-pengurus svg { width: 16px; height: 16px; flex: none; }
 
@@ -1978,7 +2146,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   color: var(--ink);
 }
 
-.btn-pengurus.btn-pengurus--keluar:hover { background: var(--critical); color: #FFFFFF; }
+.btn-pengurus.btn-pengurus--keluar:hover { background: var(--critical-ink); color: #FFFFFF; }
 
 /* --- Bilah status admin --------------------------------------------------- */
 
@@ -1992,6 +2160,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   background: var(--highlight);
   color: var(--ink);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-md);
   box-shadow: var(--sh-2);
   font-size: var(--fs-sm);
   font-weight: 700;
@@ -2003,7 +2172,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 /* --- Sel matrik yang bisa diklik saat mode admin --------------------------- */
 
 .is-admin .dot-tri { cursor: pointer; }
-.is-admin .dot-tri:hover { outline: var(--bw-2) solid var(--accent); outline-offset: 2px; }
+.is-admin .dot-tri:hover { outline: var(--bw-2) solid var(--accent); outline-offset: 2px; border-radius: var(--r-md); }
 
 .dot-tri.is-menyimpan { opacity: 0.35; pointer-events: none; }
 
@@ -2039,7 +2208,8 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   overflow-y: auto;
   padding: var(--sp-5);
   background: var(--surface);
-  border: var(--bw-2) solid var(--ink);
+  border: var(--bw-3) solid var(--ink);
+  border-radius: var(--r-lg);
   box-shadow: var(--sh-3);
 }
 
@@ -2051,7 +2221,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   gap: var(--sp-3);
   margin-bottom: var(--sp-4);
   padding-bottom: var(--sp-4);
-  border-bottom: var(--bw-2) solid var(--ink);
+  border-bottom: var(--bw-1) solid var(--line-soft);
 }
 
 .auth-modal__judul,
@@ -2069,13 +2239,14 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   width: 40px; height: 40px;
   flex: none;
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   background: var(--surface);
   color: var(--ink);
   transition: background var(--t-press) ease, color var(--t-press) ease;
 }
 
 .auth-modal__tutup:hover,
-.form-modal__tutup:hover { background: var(--critical); color: #FFFFFF; }
+.form-modal__tutup:hover { background: var(--critical-ink); color: #FFFFFF; }
 
 .auth-modal__tutup svg,
 .form-modal__tutup svg { width: 18px; height: 18px; }
@@ -2092,9 +2263,10 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 .form-modal__galat {
   margin-top: var(--sp-4);
   padding: var(--sp-3);
-  background: var(--critical);
-  border: var(--bw-2) solid var(--ink);
-  color: #FFFFFF;
+  background: var(--critical-soft);
+  border: var(--bw-2) solid var(--critical);
+  border-radius: var(--r-md);
+  color: var(--critical-ink);
   font-size: var(--fs-sm);
   font-weight: 700;
 }
@@ -2121,6 +2293,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   min-height: var(--touch);
   padding: var(--sp-2) var(--sp-3);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-md);
   background: var(--surface);
   color: var(--ink);
   /* 16px cegah iOS otomatis memperbesar saat kolom difokus */
@@ -2139,7 +2312,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   gap: var(--sp-4);
   margin-top: var(--sp-5);
   padding-top: var(--sp-5);
-  border-top: var(--bw-2) solid var(--ink);
+  border-top: var(--bw-1) solid var(--line-soft);
 }
 
 .form-aksi .btn { flex: 1; min-width: 130px; }
@@ -2154,6 +2327,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   place-items: center;
   width: 34px; height: 34px;
   border: var(--bw-1) solid var(--ink);
+  border-radius: var(--r-pill);
   background: var(--surface);
   color: var(--ink);
   transition: background var(--t-press) ease, color var(--t-press) ease;
@@ -2161,7 +2335,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 
 .baris-aksi button svg { width: 16px; height: 16px; }
 .baris-aksi button:hover { background: var(--accent); color: #FFFFFF; }
-.baris-aksi button.hapus:hover { background: var(--critical); color: #FFFFFF; }
+.baris-aksi button.hapus:hover { background: var(--critical-ink); color: #FFFFFF; }
 
 /* --- Pemberitahuan hasil operasi ------------------------------------------
    Muncul di pojok bawah, hilang sendiri. Dipakai untuk mengonfirmasi bahwa
@@ -2184,6 +2358,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   gap: var(--sp-3);
   padding: var(--sp-3) var(--sp-4);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-md);
   box-shadow: var(--sh-2);
   background: var(--surface);
   font-size: var(--fs-sm);
@@ -2192,8 +2367,8 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 }
 
 .toast svg { width: 19px; height: 19px; flex: none; margin-top: 1px; }
-.toast--ok    { background: var(--accent);    color: #FFFFFF; }
-.toast--galat { background: var(--critical);  color: #FFFFFF; }
+.toast--ok    { background: var(--positive-ink); color: #FFFFFF; }
+.toast--galat { background: var(--critical-ink); color: #FFFFFF; }
 .toast--sibuk { background: var(--highlight); color: var(--ink); }
 
 /* --------------------------------------------------------------------------
@@ -2222,6 +2397,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
   min-width: 0;
   border: var(--bw-2) solid var(--ink);
   border-left-width: 8px;
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--sh-2);
   padding: var(--sp-4);
@@ -2249,8 +2425,9 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 
 .antrian-kartu__status {
   flex: none;
-  padding: 2px var(--sp-2);
+  padding: 2px var(--sp-3);
   border: var(--bw-1) solid var(--ink);
+  border-radius: var(--r-pill);
   background: var(--surface-alt);
   font-size: var(--fs-2xs);
   font-weight: 800;
@@ -2260,7 +2437,7 @@ a.entry.entry--ringkasan:hover { background: var(--highlight); }
 
 .antrian-kartu--bentrok .antrian-kartu__status,
 .antrian-kartu--gagal .antrian-kartu__status {
-  background: var(--critical);
+  background: var(--critical-ink);
   color: #FFFFFF;
 }
 

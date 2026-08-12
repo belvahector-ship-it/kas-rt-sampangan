@@ -40,19 +40,21 @@ function renderProgres() {
   const wadah = document.getElementById('wadah-progres');
 
   const kartu = [
+    /* `warna` = ISIAN (titik & bilah progres), `teks` = ANGKA RUPIAH di atas
+       kartu putih. Sejak palet berganti ke tema dasbor, ketiga warna pos
+       terlalu terang untuk jadi warna teks — emerald 2,54:1, sky 3,68:1,
+       amber 1,25:1 — jadi ketiganya kini memakai varian `-ink` yang gelap.
+       Sebelumnya hanya IPAL (yang dulu kuning) yang butuh. */
     {
-      pos: 'iuran', nama: 'Iuran Wajib', warna: 'var(--pos-iuran)', teks: 'var(--pos-iuran)',
+      pos: 'iuran', nama: 'Iuran Wajib', warna: 'var(--pos-iuran)', teks: 'var(--pos-iuran-ink)',
       terkumpul: stat.setoranIuran, target: stat.targetIuran,
     },
     {
-      /* IPAL = kuning murni. Dipakai apa adanya untuk titik & bilah progres
-         (isian, bukan teks), tapi angka rupiah butuh varian --pos-ipal-ink
-         yang gelap supaya tetap terbaca di atas kartu putih. */
       pos: 'ipal', nama: 'IPAL Bulanan', warna: 'var(--pos-ipal)', teks: 'var(--pos-ipal-ink)',
       terkumpul: stat.setoranIpal, target: stat.targetIpal,
     },
     {
-      pos: 'lelayu', nama: 'Dana Lelayu', warna: 'var(--pos-lelayu)', teks: 'var(--pos-lelayu)',
+      pos: 'lelayu', nama: 'Dana Lelayu', warna: 'var(--pos-lelayu)', teks: 'var(--pos-lelayu-ink)',
       terkumpul: stat.setoranLelayu,
       /* Lelayu tetap sukarela — ini BUKAN kewajiban seperti Iuran/IPAL.
          "Target" di sini hanya ada kalau bendahara mengisi nominal standar
@@ -76,7 +78,7 @@ function renderProgres() {
     return `
       <div class="stat reveal">
         <div class="stat__head">
-          <span style="width:12px;height:12px;border:2px solid var(--ink);background:${k.warna};flex:none"></span>
+          <span style="width:12px;height:12px;border:2px solid var(--ink);border-radius:var(--r-pill);background:${k.warna};flex:none"></span>
           <span class="stat__label">${amankan(k.nama)}</span>
         </div>
         <p class="stat__value num" style="color:${k.teks}">${amankan(rupiah(k.terkumpul))}</p>

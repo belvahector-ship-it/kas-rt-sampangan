@@ -1144,3 +1144,83 @@ sendirian adalah `Code.gs` v2 selama masih ada APK beredar — antrian di HP war
 akan kehilangan jaminan idempotennya.
 
 **Status:** confirmed (aplikasi belum pernah dikompilasi — lihat README project)
+
+## CP-28 · Build · 2026-08-12
+
+**Decision:** Tema visual diganti dari **"BRUTAL"** (CP-24) menjadi
+**"DASHBOARD"** — spesifikasi *Modern Clean Dashboard / Soft Neubrutalism
+Hybrid* yang diberikan user, dengan situs rujukan
+`keuangan-rt-…run.app` sebagai acuan tampilan. Perubahan HANYA desain;
+tidak ada data, alur, atau logika yang disentuh.
+
+Tiga hal yang benar-benar berubah:
+
+1. **Sudut.** Dari `border-radius: 0` yang dipaku ke SEMUA elemen lewat
+   reset global di `base.css`, menjadi skala membulat: 8 / 12 / 16 / 20 /
+   999px. Reset globalnya dicabut dan diganti aturan sempit yang hanya
+   menyeragamkan sudut kontrol form lintas peramban. Ini perubahan
+   terbesar — kotak siku terbaca sebagai poster, kotak bulat sebagai panel
+   dasbor.
+2. **Warna.** Primer murni diganti palet dasbor: amber `#FACC15`, emerald
+   `#10B981`, coral `#EF4444`, sky `#3B82F6`, di atas tinta arang `#111827`
+   dan latar halaman `#F8F9FA` (token baru `--canvas`; sebelumnya halaman
+   dan kartu sama-sama putih murni sehingga kartu hanya terpisah oleh
+   bordernya).
+3. **Berat garis.** 3px di mana-mana → berjenjang 1,5 / 2 / 3px, dan
+   bayangan keras dipendekkan 4/6/8 → 3/5/6px. Selisih tiap tingkat
+   bayangan sengaja dijaga sama dengan tema lama (2/3/4px) supaya seluruh
+   aturan `transform: translate(...)` untuk efek "tekan" tetap benar tanpa
+   dihitung ulang satu per satu.
+
+**Yang dipertahankan dari CP-24:** kontur gelap di setiap kotak, bayangan
+offset TANPA blur, dan interaksi "ditekan turun". Tanpa ketiganya halaman
+ini jatuh jadi dasbor generik; justru itu yang membuat spesifikasinya
+disebut *hybrid*, bukan sekadar *clean*.
+
+**Pemetaan pos dana bergeser.** Iuran biru→**hijau**, IPAL kuning→**biru**,
+Lelayu merah→**kuning**, mengikuti legenda desain barunya. Efek sampingnya
+lebih dari kosmetik: merah kini berarti SATU hal saja di seluruh situs —
+uang keluar atau ada yang salah — dan pemasukan-vs-pengeluaran jadi
+hijau-vs-merah, bukan biru-vs-merah yang lemah untuk mata protan/deutan.
+
+**Aturan kontras yang lahir dari palet baru.** Warna dasbor jauh lebih
+terang daripada primer murni, jadi teks putih di atasnya gagal WCAG:
+emerald 2,13:1, sky 3,68:1, amber 1,25:1. Dua aturan dipasang menggantikan
+pengecualian per-warna:
+- apa pun yang berlatar **warna pos dana** memakai tinta gelap `#111827`
+  (8,4 / 4,8 / 14,9:1), tanpa kecuali;
+- lencana **arah** (naik/turun) memakai varian `-ink` yang gelap sebagai
+  ISIAN supaya huruf putih di atasnya lulus AA (5,63:1 dan 4,83:1).
+
+**Typographic scale diturunkan.** Batas atas hero 6rem → 2,35rem (~40px,
+sesuai spesifikasi "Hero Title 32–40px"), `--fs-lg` 1,5 → 1,25rem. Judul
+setinggi 100px memakan seluruh layar pertama dan mendorong kartu metrik —
+isi halaman yang sebenarnya — turun sampai harus digulir. Ukuran teks isi
+(`--fs-base` ke bawah) TIDAK disentuh: basis 17px itu dinaikkan demi warga
+sepuh (CP-06), bukan bagian dari gaya yang diganti.
+
+**Font TIDAK diganti.** Spesifikasi menyebut Inter / Plus Jakarta Sans /
+Montserrat sebagai contoh sans-serif modern. Archivo + Manrope
+dipertahankan karena sudah di-vendor sebagai berkas lokal (CP-27):
+menukarnya berarti menambah unduhan font baru atau memanggil CDN yang
+pasti gagal saat aplikasi Android dipakai offline. Identitas tema ini
+dibawa warna, sudut, dan bayangan — bukan nama font.
+
+**Kepala tabel amber, bukan hitam.** Strip hitam setebal kepala tabel
+menjadi benda paling gelap di halaman, sehingga mata jatuh ke nama bulan
+lebih dulu — padahal lencana status tiap warga yang seharusnya jadi tujuan.
+Pemisah baris di matrik 91 warga juga diredam dari hitam penuh ke garis
+abu: 91 garis hitam terbaca sebagai jeruji dan menenggelamkan isinya.
+
+**Affects:** `assets/css/tokens.css`, `base.css`, `components.css`,
+`motion.css`; `assets/js/chart.js` dan `assets/js/pages/iuran.js` (warna
+yang ditulis ke markup dari JS); `index.html` (kelas kolase hero jadi
+semantik `--iuran/--ipal/--lelayu/--bpd`, pil sorotan judul jadi kuning),
+`laporan.html` (swatch legenda grafik), dan favicon di ketujuh berkas HTML.
+
+**Reversible:** ya. Sebagian besar terbalik dengan mengembalikan nilai di
+`tokens.css` (palet, radius, border, bayangan, skala tipografi) plus reset
+`border-radius: 0` di `base.css`. Yang tidak ikut kembali otomatis adalah
+pasangan warna/tinta di `components.css` dan penamaan kelas kolase hero.
+
+**Status:** confirmed

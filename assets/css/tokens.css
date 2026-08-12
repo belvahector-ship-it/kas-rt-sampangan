@@ -1,16 +1,36 @@
 /* ==========================================================================
-   TOKENS — Tema "BRUTAL" (Neo-Brutalism)
+   TOKENS — Tema "DASHBOARD" (Modern Clean Dashboard / Soft Neubrutalism Hybrid)
    Sumber tunggal untuk warna, tipografi, spasi, bentuk, dan gerak.
    Ubah di sini, seluruh situs ikut. Jangan menulis hex mentah di berkas lain.
 
-   Identitas diambil utuh dari spesifikasi tema BRUTAL: empat warna murni
-   (merah/biru/kuning + hitam-putih), font Syne untuk judul dan Manrope untuk
-   teks, border hitam 3px, sudut 0 di mana-mana, dan bayangan KERAS ber-offset
-   (Npx Npx 0) — bukan blur. Interaksi khasnya: elemen "ditekan turun" saat
-   hover/klik, bergeser ke arah bayangannya sementara bayangannya mengecil.
+   Menggantikan tema BRUTAL. Yang DIPERTAHANKAN dari tema lama — karena justru
+   itu yang membuat data keuangan terbaca tegas — adalah kontur: setiap kotak
+   masih punya garis tepi gelap dan bayangan KERAS ber-offset (Npx Npx 0, tanpa
+   blur), dan interaksinya masih "ditekan turun" saat hover/klik.
 
-   Rujukan keputusan: DECISIONS.md CP-24 (menggantikan CP-19 "Neo-Brutalist RT",
-   yang sendiri menggantikan CP-05 "Editorial Ledger").
+   Yang DIGANTI ada tiga, dan ketiganya yang mengubah kesan halaman:
+
+     1. Sudut. Dari 0px di mana-mana menjadi membulat lembut (12–16px). Inilah
+        satu-satunya perubahan terbesar: kotak bersudut siku terbaca sebagai
+        poster, kotak bersudut bulat terbaca sebagai panel dasbor.
+     2. Warna. Primer murni (#FF0000/#0000FF/#FFFF00 + hitam pekat) diganti
+        palet dasbor: amber, emerald, coral, sky, di atas tinta arang gelap
+        #111827 dan latar netral #F8F9FA. Merah murni pada angka rupiah tampak
+        seperti peringatan darurat; coral membawa arti yang sama tanpa berteriak.
+     3. Ketebalan garis. 3px di semua tempat → 1,5–2px untuk kartu metrik dan
+        3px hanya untuk elemen paling utama. Kontur tetap tegas, tapi tidak
+        lagi mendominasi angkanya sendiri.
+
+   Perlu dicatat, karena ini menyimpang dari spesifikasi desain barunya: font
+   TIDAK diganti. Spesifikasi menyebut Inter / Plus Jakarta Sans / Montserrat
+   sebagai contoh "sans-serif modern"; situs ini memakai Archivo + Manrope yang
+   sudah ada sebagai berkas lokal (lihat catatan @font-face di bawah). Keduanya
+   grotesque modern dengan karakter yang sama, dan menukarnya berarti menambah
+   unduhan font baru atau — lebih buruk — memanggil CDN yang pasti gagal saat
+   aplikasi Android dipakai offline. Identitas visual tema ini dibawa oleh
+   warna, sudut, dan bayangan; bukan oleh nama fontnya.
+
+   Rujukan keputusan: DECISIONS.md CP-24 (tema BRUTAL, digantikan tema ini).
    ========================================================================== */
 
 /* ==========================================================================
@@ -59,90 +79,133 @@
 
 :root {
   /* --- Palet inti ----------------------------------------------------------
-     Empat warna aksen saja, semuanya PRIMER MURNI — tidak ada tint, shade,
-     atau gradien. Kedalaman dibawa oleh border tebal dan bayangan keras,
-     bukan oleh variasi warna. Ini inti dari bahasa neo-brutalist. */
-  --brutal-red:    #FF0000;
-  --brutal-blue:   #0000FF;
-  --brutal-yellow: #FFFF00;
+     Empat warna aksen, kini versi "dasbor" dari primer murni tema lama.
+     Nama variabelnya sengaja TIDAK diubah (--brutal-*) supaya seluruh
+     components.css tidak perlu disentuh untuk pergantian palet ini; yang
+     berubah cuma nilainya. Kedalaman tetap dibawa oleh border dan bayangan
+     keras, bukan oleh gradien. */
+  --brutal-red:    #EF4444;   /* coral — pengeluaran, defisit, tunggakan */
+  --brutal-blue:   #3B82F6;   /* sky   — info, indikator warga */
+  --brutal-yellow: #FACC15;   /* amber — sorotan, CTA, pos Lelayu */
 
   /* --- Permukaan ------------------------------------------------------------
-     Putih murni. Bukan kertas hangat — brutalism tidak berpura-pura jadi
-     benda fisik. Dua abu netral hanya untuk isian yang sengaja diredam
-     (kepala tabel, sel terkunci), bukan untuk membentuk hierarki. */
+     Dua lapis yang harus dibedakan: --canvas adalah latar HALAMAN, --paper /
+     --surface adalah latar KARTU. Di tema lama keduanya sama-sama putih,
+     sehingga kartu hanya terpisah oleh bordernya. Di tema dasbor, kartu putih
+     mengambang di atas netral #F8F9FA — itu yang membuat grid metrik terbaca
+     sebagai kumpulan panel, bukan sebagai kotak-kotak yang digambar di kertas. */
+  --canvas:         #F8F9FA;
   --paper:          #FFFFFF;
   --surface:        #FFFFFF;
-  --surface-alt:    #F5F5F5;
-  --surface-sunk:   #EBEBEB;
+  --surface-alt:    #F4F5F7;
+  --surface-sunk:   #E9EBEF;
+
+  /* Isian krem hangat untuk kotak callout di dalam kartu (mis. penanda defisit
+     pos Lelayu). Cukup beda dari putih untuk terbaca sebagai "catatan tempel",
+     tapi tidak cukup kuat untuk bersaing dengan angka utamanya. */
+  --surface-note:   #FEFCE8;
 
   /* --- Tinta ----------------------------------------------------------------
-     Hitam penuh, bukan "hampir hitam". --ink-3 dipatok #666666 persis seperti
-     --text-muted di spesifikasi: 5.74:1 di atas putih, aman untuk teks kecil. */
-  --ink:            #000000;
-  --ink-2:          #333333;   /* 12.6:1 — paragraf sekunder */
-  --ink-3:          #666666;   /* 5.74:1 — label eyebrow, keterangan kaki */
+     Arang gelap, bukan hitam pekat: #111827 masih 17,8:1 di atas putih, jadi
+     tidak ada keterbacaan yang dikorbankan, tapi kontur kartu jadi terasa
+     kokoh alih-alih dicetak. */
+  --ink:            #111827;
+  --ink-2:          #374151;   /* 10,3:1 — paragraf sekunder */
+  --ink-3:          #6B7280;   /* 4,83:1 — label eyebrow, keterangan kaki */
 
   /* --- Garis ----------------------------------------------------------------
-     SEMUA border hitam penuh, termasuk pemisah internal. Tidak ada garis
-     rambut abu-abu di tema ini; kalau sebuah garis tidak layak hitam, garis
-     itu tidak layak ada. --line-soft tetap ada sebagai nama supaya komponen
-     lama tidak perlu diubah, tapi nilainya kini sama-sama hitam. */
-  --line:           #000000;
-  --line-soft:      #000000;
-  --line-strong:    #000000;
+     Tema lama melarang garis rambut abu-abu ("kalau tidak layak hitam, tidak
+     layak ada"). Tema dasbor mencabut larangan itu untuk SATU keperluan:
+     pemisah antar-baris di dalam kartu dan tabel matrik 91 warga. Di sana
+     garis gelap penuh justru merugikan — 91 garis tebal membuat tabel terlihat
+     seperti jeruji dan menenggelamkan lencana status yang harusnya jadi fokus.
+     Kontur LUAR tetap gelap; hanya pemisah DALAM yang diredam. */
+  --line:           #111827;
+  --line-soft:      #E5E7EB;
+  --line-strong:    #111827;
 
-  /* Footer kini putih dengan garis atas hitam tebal (spesifikasi bagian 8),
-     menggantikan latar biru-navy #0D1117 dari tema sebelumnya. Navy bukan
-     bagian dari palet BRUTAL. */
   --footer-bg:      #FFFFFF;
 
   /* --- Aksen interaktif -----------------------------------------------------
-     Biru = tautan, fokus, dan pos "Iuran". 8.59:1 di atas putih, jadi aman
-     dipakai sebagai warna teks berukuran berapa pun. */
-  --accent:         #0000FF;
-  --accent-hover:   #0000CC;
-  --accent-soft:    #E0E0FF;
-  --accent-line:    #0000FF;
+     Biru = tautan, fokus, dan info. Spesifikasi menyebut #0EA5E9 / #3B82F6,
+     tapi keduanya hanya 3,1:1 dan 3,68:1 di atas putih — GAGAL untuk teks
+     kecil. Jadi pembagiannya dibuat eksplisit, sama seperti pola merah dan
+     kuning di bawah: nilai terang untuk ISIAN, nilai gelap untuk TEKS.
 
-  /* Kuning CTA — SELALU sebagai isian dengan teks hitam di atasnya, tidak
-     pernah sebagai warna teks (1.07:1 di atas putih, mustahil terbaca). */
-  --highlight:      #FFFF00;
-  --highlight-ink:  #000000;
+       --accent-line → isian lencana/bilah biru (#3B82F6, spesifikasi)
+       --accent      → teks tautan dan ikon (#2563EB, 5,17:1 — aman) */
+  --accent:         #2563EB;
+  --accent-hover:   #1D4ED8;
+  --accent-soft:    #DBEAFE;
+  --accent-line:    #3B82F6;
+
+  /* --- Hijau pemasukan ------------------------------------------------------
+     Pos baru di tema ini. Tema lama tidak punya hijau sama sekali: pemasukan
+     memakai biru yang sama dengan tautan, sehingga "masuk" dan "keluar" hanya
+     terbedakan oleh biru-vs-merah — pasangan yang lemah untuk buta warna
+     protan/deutan. Emerald memisahkannya dengan jelas.
+
+     Pembagian isian/teks sama seperti aksen: #10B981 hanya 2,54:1 di atas
+     putih, jadi ia TIDAK pernah jadi warna teks. */
+  --positive:       #10B981;   /* isian: lencana lunas, kepala kolom kas masuk */
+  --positive-ink:   #047857;   /* teks:  angka surplus, nominal pemasukan (4,76:1) */
+  --positive-soft:  #D1FAE5;
+
+  /* Kuning CTA — SELALU sebagai isian dengan teks gelap di atasnya, tidak
+     pernah sebagai warna teks (1,25:1 di atas putih, mustahil terbaca). */
+  --highlight:      #FACC15;
+  --highlight-ink:  #111827;
+
+  /* Isian sorotan yang jauh lebih redup, untuk hover baris tabel. Kuning penuh
+     sebagai latar hover di tabel 91 warga membuat seluruh baris berkedip
+     terlalu keras; versi ini cukup untuk menandai baris yang sedang ditunjuk. */
+  --highlight-soft: #FEF3C7;
 
   /* --- Merah kritis ---------------------------------------------------------
-     #FF0000 di atas putih hanya 4.0:1 — LULUS untuk teks besar (≥24px, atau
-     ≥18.7px tebal) tapi GAGAL untuk teks kecil. Karena situs ini dibaca warga
-     sepuh (CP-06), pembagiannya dibuat eksplisit:
+     Coral #EF4444 di atas putih hanya 3,76:1 — GAGAL bahkan untuk teks besar
+     berukuran normal. Karena situs ini dibaca warga sepuh (CP-06),
+     pembagiannya dibuat eksplisit:
 
        --critical      → isian, border, angka besar, judul yang disorot
        --critical-ink  → SATU-SATUNYA merah yang boleh jadi teks kecil (5.53:1)
 
      Pola yang sama sudah dipakai tema sebelumnya untuk kuning
      (--pos-ipal-ink), jadi ini bukan pengecualian baru. */
-  --critical:       #FF0000;
-  --critical-ink:   #D40000;
-  --critical-soft:  #FFE0E0;
-  --critical-line:  #FF0000;
+  --critical:       #EF4444;
+  --critical-ink:   #DC2626;   /* 4,83:1 — aman untuk nominal kecil */
+  --critical-soft:  #FEE2E2;
+  --critical-line:  #EF4444;
 
   /* --- Tiga pos dana --------------------------------------------------------
      Warna hanya penguat, tidak pernah satu-satunya penyampai makna — selalu
-     didampingi huruf I/P/L di matrik iuran. Iuran = biru, IPAL = kuning,
-     Lelayu = merah. */
-  --pos-iuran:      #0000FF;
-  --pos-ipal:       #FFFF00;
-  --pos-lelayu:     #FF0000;
-  --pos-iuran-soft: #E0E0FF;
-  --pos-ipal-soft:  #FFFACC;
-  --pos-lelayu-soft:#FFE0E0;
+     didampingi huruf I/P/L di matrik iuran.
 
-  /* Kuning murni sebagai warna TEKS mustahil dibaca. Nilai amber gelap ini
-     dipakai di tempat pos-ipal muncul sebagai teks/ikon, bukan isian (7.34:1). */
-  --pos-ipal-ink:   #665500;
+     Pemetaannya BERGESER di tema ini, mengikuti legenda desain barunya:
+     Iuran = hijau, IPAL = biru, Lelayu = kuning. Sebelumnya Iuran = biru,
+     IPAL = kuning, Lelayu = merah. Konsekuensinya harus diikuti di
+     components.css: pos yang isiannya terang (kini Lelayu, dulu IPAL) butuh
+     teks gelap di atasnya, dan sebaliknya — dicatat di sana. Merah dilepas
+     dari trio pos dana supaya ia kembali berarti satu hal saja di seluruh
+     situs: uang keluar atau ada yang salah. */
+  --pos-iuran:      #10B981;
+  --pos-ipal:       #3B82F6;
+  --pos-lelayu:     #FACC15;
+  --pos-iuran-soft: #D1FAE5;
+  --pos-ipal-soft:  #DBEAFE;
+  --pos-lelayu-soft:#FEF3C7;
+
+  /* Nilai gelap untuk tempat sebuah pos muncul sebagai TEKS/ikon, bukan isian.
+     Hanya Lelayu yang benar-benar butuh (kuning mustahil dibaca, 1,25:1);
+     dua lainnya disediakan supaya ketiganya bisa dipakai seragam. */
+  --pos-iuran-ink:  #047857;
+  --pos-ipal-ink:   #1D4ED8;
+  --pos-lelayu-ink: #92610A;
 
   /* --- Fokus ----------------------------------------------------------------
-     Cincin fokus brutalist: kotak tegas, bukan halo lembut. Dua lapis supaya
-     tetap terlihat baik di atas putih maupun di atas isian berwarna. */
-  --focus:          #0000FF;
+     Dua lapis supaya tetap terlihat baik di atas putih maupun di atas isian
+     berwarna. Bentuknya kini mengikuti sudut elemennya sendiri (box-shadow
+     memang selalu begitu), jadi cincinnya ikut membulat tanpa aturan tambahan. */
+  --focus:          #2563EB;
   --focus-ring:     0 0 0 3px var(--paper), 0 0 0 6px var(--focus);
 
   /* --- Latar halaman --------------------------------------------------------
@@ -150,10 +213,12 @@
      bertentangan langsung dengan bahasa yang datar dan tegas. Yang tersisa
      hanya kisi garis 40px — pola dekoratif `.grid-pattern` dari spesifikasi,
      dipakai sebagai latar halaman yang sangat diredam. */
-  --aurora-a:       #0000FF;
-  --aurora-b:       #FF0000;
+  --aurora-a:       #3B82F6;
+  --aurora-b:       #EF4444;
   --aurora-opacity: 0;
-  --grid-opacity:   0.06;
+  /* Diturunkan dari 0.06: kisinya kini digambar di atas netral #F8F9FA, bukan
+     putih, jadi pada opacity lama ia terbaca sebagai kertas milimeter. */
+  --grid-opacity:   0.035;
   --grain-opacity:  0;
   --grid-size:      40px;
 
@@ -162,18 +227,21 @@
      angka uang — kalau sebuah huruf atau angka bisa salah dibaca, desainnya
      gagal, sebagus apa pun tampilannya.
 
-     Spesifikasi BRUTAL meminta Syne untuk judul. Syne DILEPAS (lihat CP-25):
-     ia font display geometris dengan bentuk huruf nyeleneh, dan dipakai di
-     ukuran kecil — apalagi untuk ANGKA RUPIAH — jadi sulit dibaca. Nilai
-     brutalis tema ini sebenarnya tidak dibawa oleh font sama sekali,
-     melainkan oleh border 3px, bayangan keras, sudut 0, dan warna primer.
-     Jadi font bisa diganti tanpa kehilangan identitas sedikit pun.
+     Alasan yang sama sudah dipakai dua kali di proyek ini, dan tetap berlaku
+     untuk tema dasbor: identitas visual situs ini dibawa oleh warna, sudut,
+     border, dan bayangan — bukan oleh nama font. Spesifikasi BRUTAL dulu
+     meminta Syne dan Syne dilepas (CP-25) karena bentuk hurufnya nyeleneh di
+     ukuran kecil; spesifikasi dasbor sekarang menyebut Inter / Plus Jakarta
+     Sans / Montserrat, dan itu pun tidak diambil. Menukarnya berarti menambah
+     berkas font baru atau memanggil CDN yang PASTI gagal saat aplikasi Android
+     dipakai offline — dan yang terlihat warga bukan "sedang offline",
+     melainkan angka rupiah yang mendadak berganti font sistem.
 
-     Archivo menggantikannya: grotesque dengan x-height besar, apertur
-     terbuka (c/e/a/s tidak menutup), dan bentuk 1/l/I serta 0/O yang jelas
-     berbeda — dirancang justru untuk tetap terbaca di ukuran kecil, tapi
-     tetap punya bobot 800 yang tegas untuk judul raksasa. Archivo juga
-     sudah pernah dipakai proyek ini (CP-19), jadi sudah terbukti cocok.
+     Archivo dipertahankan: grotesque dengan x-height besar, apertur terbuka
+     (c/e/a/s tidak menutup), dan bentuk 1/l/I serta 0/O yang jelas berbeda —
+     dirancang justru untuk tetap terbaca di ukuran kecil, tapi tetap punya
+     bobot 800 yang tegas untuk judul. Archivo juga sudah pernah dipakai
+     proyek ini (CP-19), jadi sudah terbukti cocok.
 
      Angka memakai Manrope + `tabular-nums` (lihat .num di base.css): satu
      lebar untuk semua digit sehingga kolom rupiah lurus, dengan bentuk
@@ -194,18 +262,35 @@
   --fs-xs:   0.86rem;
   --fs-sm:   0.94rem;
   --fs-base: 1rem;
-  --fs-md:   1.2rem;
-  --fs-lg:   1.5rem;
+  /* Diturunkan dari 1.2rem / 1.5rem. Pada basis 17px, nilai lama jatuh di
+     20,4px dan 25,5px — di atas rentang "Section Header 18–22px" yang diminta
+     spesifikasi desain baru. Sekarang 18,7px dan 21,3px. Yang mengecil hanya
+     JUDUL; ukuran teks isi (--fs-base ke bawah) tidak disentuh sama sekali,
+     karena angka 17px itu dinaikkan justru demi warga sepuh (CP-06) dan bukan
+     bagian dari gaya yang sedang diganti. */
+  --fs-md:   1.1rem;
+  --fs-lg:   1.25rem;
   /* Batas BAWAH tiap clamp ditentukan oleh kata terpanjang yang harus muat
      di layar 320px, bukan dipilih karena enak dilihat. Judul brutalist tidak
      bisa membungkus di tengah kata tanpa terlihat rusak, jadi kata seperti
      "TERBUKA" (hero) dan "OPERASIONAL" (judul halaman) yang menetapkan
      lantainya. Batas atas tetap besar — di desktop judul memang harus terasa
      terlalu besar. */
-  --fs-xl:   clamp(1.7rem, 1.4rem + 2.2vw, 2.6rem);
-  --fs-2xl:  clamp(1.85rem, 1.1rem + 3.4vw, 3.6rem);
-  --fs-3xl:  clamp(2.2rem, 1.3rem + 5vw, 4.6rem);
-  --fs-hero: clamp(1.9rem, 0.6rem + 6.6vw, 6rem);
+  /* Batas ATAS dipangkas jauh dari tema BRUTAL (2.6 / 3.6 / 4.6 / 6rem), yang
+     memang sengaja dibuat "terasa terlalu besar" seperti poster. Dasbor tidak
+     bekerja begitu: judul setinggi 100px memakan seluruh layar pertama dan
+     mendorong kartu metrik — isi halaman yang sebenarnya — turun sampai harus
+     digulir untuk terlihat. Spesifikasi barunya mematok Hero Title 32–40px,
+     dan pada basis 17px itu berarti langit-langit ~2.35rem.
+
+     Batas BAWAH tetap ditentukan oleh kata terpanjang yang harus muat di layar
+     320px, bukan dipilih karena enak dilihat — "TERBUKA" (hero) dan
+     "OPERASIONAL" (judul halaman) yang menetapkannya. Karena batas atas turun,
+     batas bawah lama otomatis tetap aman. */
+  --fs-xl:   clamp(1.35rem, 1.15rem + 1.1vw, 1.7rem);
+  --fs-2xl:  clamp(1.55rem, 1.2rem + 1.7vw, 2.1rem);
+  --fs-3xl:  clamp(1.7rem, 1.25rem + 2.2vw, 2.35rem);
+  --fs-hero: clamp(1.8rem, 1.1rem + 3.2vw, 2.35rem);
 
   /* Revisi pertama memakai 1:1 persis ("judul menumpuk", ciri brutalist).
      Itu terlalu rapat begitu judulnya lebih dari satu baris — baris saling
@@ -243,49 +328,61 @@
   --container-narrow: 860px;
 
   /* --- Bentuk ---------------------------------------------------------------
-     NOL di semua tempat, tanpa kecuali — termasuk --r-pill. Tema sebelumnya
-     masih menyisakan lencana bulat; spesifikasi BRUTAL menutup celah itu:
-     "tidak ada sudut membulat sama sekali". Karena hampir seluruh komponen
-     memakai variabel ini, cukup diubah di sini. */
-  --r-sm:   0px;
-  --r-md:   0px;
-  --r-lg:   0px;
-  --r-xl:   0px;
-  --r-pill: 0px;
+     Perubahan tunggal terbesar dari tema BRUTAL, yang dulu memaku semuanya di
+     0px. Skalanya sengaja pendek dan tugasnya jelas:
+
+       --r-sm   (8px)  → sel, kotak kecil, input di dalam kartu
+       --r-md   (12px) → tombol, lencana persegi, select, callout
+       --r-lg   (16px) → kartu metrik, panel, tabel — nilai utama tema ini
+       --r-xl   (20px) → kartu terbesar dan pil sorotan judul hero
+       --r-pill (999px)→ lencana lingkaran I/P/L, pil tahun, tombol bundar */
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   16px;
+  --r-xl:   20px;
+  --r-pill: 999px;
 
   /* --- Ketebalan border -----------------------------------------------------
-     3px adalah standar `.brutal-border` dari spesifikasi. Hierarki TIDAK
-     dibuat dengan menebalkan border (semua kotak penting sama tebal), tapi
-     dengan kedalaman bayangan di bawah. --bw-1 hanya untuk pemisah paling
-     rapat, mis. baris tabel matrik 91 warga. */
-  --bw-1: 2px;
-  --bw-2: 3px;
+     Tema lama memakai 3px di mana-mana dan membuat hierarki lewat kedalaman
+     bayangan saja. Di tema dasbor border ikut berjenjang, karena 3px pada
+     kartu bersudut 16px membuat konturnya terlihat lebih penting daripada
+     angka di dalamnya.
+
+       --bw-1 (1,5px) → pemisah rapat: baris matrik 91 warga
+       --bw-2 (2px)   → standar: kartu metrik, tombol, lencana, input
+       --bw-3 (3px)   → hanya elemen utama: kartu saldo, header, panel besar */
+  --bw-1: 1.5px;
+  --bw-2: 2px;
   --bw-3: 3px;
 
   /* --- Bayangan keras -------------------------------------------------------
-     Offset tanpa blur, tanpa opacity. Inilah tanda tangan tema ini.
-     Tiga tingkat kedalaman = tiga tingkat kepentingan:
+     Offset tanpa blur, tanpa opacity — DIPERTAHANKAN dari tema BRUTAL, karena
+     inilah yang menahan halaman ini supaya tidak jatuh jadi dasbor generik.
+     Yang berubah cuma jaraknya: dipendekkan supaya cocok dengan sudut membulat
+     dan border yang lebih tipis.
 
-       --sh-1 (4px) → lencana, tombol kecil, kartu sekunder
-       --sh-2 (6px) → tombol utama, kartu, panel
-       --sh-3 (8px) → kartu saldo, modal, elemen hero
+       --sh-1 (3px) → lencana, tombol kecil, select
+       --sh-2 (5px) → tombol utama, kartu metrik, panel
+       --sh-3 (6px) → kartu saldo, modal, elemen hero
 
      Tiap tingkat punya pasangan "--press": nilai saat elemen ditekan. Aturan
      mainnya, elemen bergeser PERSIS sejauh selisih offsetnya, sehingga sudut
      kanan-bawah bayangan tidak pernah bergerak — ilusi menekan tombol fisik.
-     Memakai var(--ink) supaya satu definisi cukup. */
-  --sh-1:       4px 4px 0 var(--ink);
-  --sh-1-press: 2px 2px 0 var(--ink);
-  --sh-2:       6px 6px 0 var(--ink);
-  --sh-2-press: 3px 3px 0 var(--ink);
-  --sh-3:       8px 8px 0 var(--ink);
-  --sh-3-press: 4px 4px 0 var(--ink);
+     Selisih tiap tingkat sengaja dijaga sama dengan tema lama (2 / 3 / 4px)
+     supaya seluruh aturan `transform: translate(...)` di components.css tetap
+     benar tanpa perlu dihitung ulang satu per satu. */
+  --sh-1:       3px 3px 0 var(--ink);
+  --sh-1-press: 1px 1px 0 var(--ink);
+  --sh-2:       5px 5px 0 var(--ink);
+  --sh-2-press: 2px 2px 0 var(--ink);
+  --sh-3:       6px 6px 0 var(--ink);
+  --sh-3-press: 2px 2px 0 var(--ink);
 
   /* Bayangan berwarna — dipakai hemat, hanya di kolase hero dan kartu yang
      memang mewakili satu pos dana tertentu. */
-  --sh-red:    8px 8px 0 var(--brutal-red);
-  --sh-blue:   8px 8px 0 var(--brutal-blue);
-  --sh-yellow: 8px 8px 0 var(--brutal-yellow);
+  --sh-red:    6px 6px 0 var(--brutal-red);
+  --sh-blue:   6px 6px 0 var(--brutal-blue);
+  --sh-yellow: 6px 6px 0 var(--brutal-yellow);
 
   /* --- Gerak ----------------------------------------------------------------
      0.1s ease untuk interaksi tekan, persis seperti spesifikasi: brutalism

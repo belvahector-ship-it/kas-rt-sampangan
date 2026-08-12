@@ -1,15 +1,20 @@
 /* ==========================================================================
-   BASE — reset, tipografi, primitif tata letak, utilitas tanda tangan BRUTAL
+   BASE — reset, tipografi, primitif tata letak, utilitas tanda tangan tema
    ========================================================================== */
 
 *, *::before, *::after { box-sizing: border-box; }
 
 * { margin: 0; }
 
-/* Aturan emas tema ini: TIDAK ADA sudut membulat di mana pun. Reset global
-   ini menangkap juga elemen yang radiusnya datang dari user-agent (input,
-   button, select di Safari/iOS) — bukan cuma komponen kita sendiri. */
-*, *::before, *::after { border-radius: 0; }
+/* Tema BRUTAL memaku `border-radius: 0` ke SEMUA elemen di sini, supaya sudut
+   bawaan peramban (input, button, select di Safari/iOS) ikut tertangkap.
+   Aturan itu dicabut — tema dasbor justru dibangun di atas sudut membulat.
+
+   Penggantinya lebih sempit dan hanya menyasar masalah yang tadinya diselesaikan
+   reset itu: menyeragamkan sudut kontrol form lintas peramban, sekarang ke
+   --r-md alih-alih ke nol. Sisa elemen mengambil sudutnya dari komponennya
+   masing-masing di components.css. */
+input, select, textarea, button { border-radius: var(--r-md); }
 
 html {
   /* 106.25% dari 16px = 17px (CP-06, demi warga sepuh) */
@@ -31,7 +36,10 @@ body {
   font-weight: 400;
   line-height: var(--lh-base);
   color: var(--ink);
-  background: var(--paper);
+  /* --canvas, bukan --paper. Kartu di seluruh situs berlatar --paper (putih);
+     kalau halaman ikut putih, kartu hanya terpisah oleh bordernya dan grid
+     metrik kehilangan kesan "panel mengambang" yang jadi inti tema ini. */
+  background: var(--canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -118,7 +126,7 @@ strong, b { font-weight: 700; }
   letter-spacing: -0.01em;
 }
 
-/* Label kecil huruf besar — penanda bahasa BRUTAL di seluruh situs.
+/* Label kecil huruf besar — penanda bahasa visual di seluruh situs.
    Manrope 700, uppercase, tracking 0.05em. */
 .eyebrow {
   font-family: var(--font-text);
@@ -131,14 +139,16 @@ strong, b { font-weight: 700; }
 
 .eyebrow--accent { color: var(--accent); }
 
-/* Eyebrow sebagai LENCANA — kotak kuning berbingkai hitam, wujud "CREATIVE
-   AGENCY" di spesifikasi. Dipakai untuk penanda paling penting saja. */
+/* Eyebrow sebagai LENCANA — pil kuning berbingkai gelap. Dipakai untuk
+   penanda paling penting saja. Bentuknya kini pil penuh, bukan kotak: label
+   pendek satu baris seperti ini adalah tempat --r-pill benar-benar terbaca. */
 .eyebrow--badge {
   display: inline-block;
-  padding: var(--sp-2) var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
   background: var(--highlight);
   color: var(--highlight-ink);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-pill);
   box-shadow: var(--sh-1);
 }
 
@@ -157,29 +167,37 @@ strong, b { font-weight: 700; }
 .muted { color: var(--ink-2); }
 .dim   { color: var(--ink-3); }
 
-.text-pos { color: var(--accent); }
+/* Pemasukan kini hijau, bukan biru. Di tema lama .text-pos memakai --accent
+   yang juga warna tautan, jadi "angka naik" dan "ini bisa diklik" terlihat
+   sama; dan pasangan biru-vs-merah lemah untuk mata protan/deutan. */
+.text-pos { color: var(--positive-ink); }
 .text-neg { color: var(--critical-ink); }
 
-/* --- Sorotan blok (efek stabilo) ------------------------------------------
-   Pola tanda tangan spesifikasi: kata kunci di dalam judul diberi latar
-   warna solid, seperti dicoret stabilo. Selalu dipakai pada teks BESAR —
-   putih di atas #FF0000 hanya 4.0:1, yang lulus AA untuk teks besar saja.
-   Untuk teks berukuran normal, pakai .highlight-yellow (hitam di atas
-   kuning, 19.6:1) yang aman di ukuran berapa pun. */
+/* --- Sorotan judul (pil stabilo) ------------------------------------------
+   Kata kunci di dalam judul dibungkus latar warna solid. Di tema BRUTAL ini
+   kotak siku menempel ketat pada hurufnya; sekarang ia jadi PIL — padding
+   samping dilebarkan dan sudutnya dibulatkan penuh, persis pola "KAS & IURAN
+   WARGA" pada desain rujukan.
+
+   Kontras tetap dijaga: coral #EF4444 hanya 3,76:1 dengan teks putih, jadi
+   .highlight-red memakai tinta gelapnya (--critical-ink, 4,83:1) sebagai
+   latar. Untuk teks berukuran normal, .highlight-yellow (tinta gelap di atas
+   amber, 14,9:1) aman di ukuran berapa pun. */
 
 .highlight-red,
 .highlight-blue,
 .highlight-yellow {
-  padding: 0 0.18em;
+  padding: 0.04em 0.34em;
+  border-radius: var(--r-xl);
   /* box-decoration-break menjaga latar tetap utuh ketika judul patah baris —
      tanpa ini, potongan kedua kehilangan padding kirinya. */
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
-.highlight-red    { background: var(--brutal-red);    color: #FFFFFF; }
-.highlight-blue   { background: var(--brutal-blue);   color: #FFFFFF; }
-.highlight-yellow { background: var(--brutal-yellow); color: var(--ink); }
+.highlight-red    { background: var(--critical-ink);  color: #FFFFFF; }
+.highlight-blue   { background: var(--accent);        color: #FFFFFF; }
+.highlight-yellow { background: var(--brutal-yellow); color: var(--highlight-ink); }
 
 /* --- Primitif tata letak -------------------------------------------------- */
 
@@ -246,21 +264,31 @@ strong, b { font-weight: 700; }
   .grid-2 { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* Garis pemisah — tebal dan hitam, bukan garis rambut */
+/* Garis pemisah. Versi biasa kini diredam jadi garis rambut --line-soft:
+   dipakai di DALAM kartu, tempat garis gelap tebal memotong panel jadi dua
+   kotak yang saling bersaing. Versi --strong tetap gelap, untuk memisahkan
+   bagian besar halaman. */
 .rule {
-  height: var(--bw-2);
-  background: var(--ink);
+  height: 1px;
+  background: var(--line-soft);
   border: 0;
+  border-radius: var(--r-pill);
 }
 
-.rule--strong { height: 6px; }
+.rule--strong { height: var(--bw-3); background: var(--ink); }
 
-/* --- Utilitas tanda tangan BRUTAL -----------------------------------------
-   Tiga kelas inti dari spesifikasi bagian 4. Sebagian besar komponen di
-   components.css sudah memakai kombinasi ini secara langsung lewat token;
-   kelas di sini untuk markup yang dirakit di JS dan penggunaan sekali pakai. */
+/* --- Utilitas tanda tangan tema -------------------------------------------
+   Nama kelasnya tetap `.brutal-*`: ia dipakai di markup yang dirakit di JS,
+   dan mengganti nama kelas hanya karena temanya berganti akan menyeret
+   berkas-berkas yang sebetulnya tidak ada urusan dengan desain. Isinya yang
+   mengikuti tema sekarang — border 2px + sudut membulat + bayangan keras.
+   Sebagian besar komponen di components.css memakai kombinasi ini langsung
+   lewat token; kelas di sini untuk markup JS dan penggunaan sekali pakai. */
 
-.brutal-border { border: var(--bw-2) solid var(--ink); }
+.brutal-border {
+  border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-lg);
+}
 
 .brutal-shadow {
   box-shadow: var(--sh-3);
@@ -269,7 +297,7 @@ strong, b { font-weight: 700; }
 }
 
 /* Efek "ditekan": elemen bergeser 4px ke kanan-bawah sementara bayangannya
-   menyusut 8px→4px. Karena geseran sama persis dengan penyusutan, sudut
+   menyusut 6px→2px. Karena geseran sama persis dengan penyusutan, sudut
    kanan-bawah bayangan diam di tempat — itu yang membuatnya terbaca sebagai
    tekanan, bukan sekadar pergerakan. */
 .brutal-shadow:hover {
@@ -339,6 +367,7 @@ strong, b { font-weight: 700; }
   background: var(--highlight);
   color: var(--ink);
   border: var(--bw-2) solid var(--ink);
+  border-radius: var(--r-md);
   box-shadow: var(--sh-2);
   font-size: var(--fs-sm);
   font-weight: 700;
@@ -411,8 +440,8 @@ strong, b { font-weight: 700; }
    struktur. */
 @media print {
   .bg-canvas, .site-header, .site-footer, .marquee, .no-print { display: none !important; }
-  body { background: #fff; color: #000; }
+  body { background: #fff; color: #111827; }
   * { box-shadow: none !important; }
-  .card, .panel, .balance, .stat { border: 1.5px solid #000 !important; }
+  .card, .panel, .balance, .stat { border: 1px solid #111827 !important; }
   .section--dark { background: #fff !important; color: #000 !important; }
 }

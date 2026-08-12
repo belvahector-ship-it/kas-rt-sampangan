@@ -6,7 +6,7 @@
 <title data-pola="{rt} — Portal Transparansi Kas">RT 01 / RW 04 Sampangan — Portal Transparansi Kas</title>
 <meta name="description" content="Portal transparansi kas RT 01/RW 04 Sampangan. Lihat saldo kas, jurnal pemasukan-pengeluaran, dan status iuran warga secara terbuka.">
 <meta name="color-scheme" content="light">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23FFFF00'/%3E%3Crect x='1.5' y='1.5' width='21' height='21' fill='none' stroke='%23000000' stroke-width='3'/%3E%3Ctext x='12' y='16.5' font-family='Verdana,sans-serif' font-size='10' font-weight='700' fill='%23000000' text-anchor='middle'%3ERT%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23FACC15'/%3E%3Crect x='1.25' y='1.25' width='21.5' height='21.5' rx='5' fill='none' stroke='%23111827' stroke-width='2.5'/%3E%3Ctext x='12' y='16.5' font-family='Verdana,sans-serif' font-size='10' font-weight='700' fill='%23111827' text-anchor='middle'%3ERT%3C/text%3E%3C/svg%3E">
 <!-- Font dimuat lokal lewat @font-face di tokens.css (lihat catatan di sana).
      Tidak ada permintaan ke CDN Google: situs jadi satu perjalanan jaringan
      lebih ringan, dan di dalam aplikasi Android tipografinya tetap benar saat
@@ -93,7 +93,10 @@
         <h1 class="hero__title reveal">
           Kas Warga<br>
           Tercatat &amp;<br>
-          <span class="highlight-red">Transparan</span>
+          <!-- Kuning, bukan merah. Pil sorotan judul hero adalah penanda
+               identitas halaman (spesifikasi bagian B), dan merah di situs ini
+               sudah punya satu arti tetap: uang keluar atau ada yang salah. -->
+          <span class="highlight-yellow">Transparan</span>
         </h1>
         <p class="lede reveal">
           Portal ini menampilkan pembukuan kas <span data-isi="nama_rt">RT 01/RW 04 Sampangan</span>
@@ -121,10 +124,10 @@
            visual — setiap namanya juga tertulis di kartu saldo di bawah, jadi
            tidak ada informasi yang hilang kalau blok ini tidak terbaca. -->
       <div class="hero__collage reveal" aria-hidden="true">
-        <div class="hero__block hero__block--blue">Iuran</div>
-        <div class="hero__block hero__block--yellow">IPAL</div>
-        <div class="hero__block hero__block--red">Lelayu</div>
-        <div class="hero__block hero__block--white">BPD</div>
+        <div class="hero__block hero__block--iuran">Iuran</div>
+        <div class="hero__block hero__block--ipal">IPAL</div>
+        <div class="hero__block hero__block--lelayu">Lelayu</div>
+        <div class="hero__block hero__block--bpd">BPD</div>
         <div class="hero__star"><span>&lowast;</span></div>
       </div>
     </div>
